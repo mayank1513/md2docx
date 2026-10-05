@@ -9,14 +9,7 @@
   "editor.formatOnSaveMode": "file",
   "mayank1513.trello-kanban.Workspace.filePath": ".tkb",
   "cSpell.words": ["noscss"],
-  "conventionalCommits.scopes": [
-    "@app/web",
-    "@tool/scripts",
-    "@tool/tsconfig",
-    "@turboforge/cli-kit",
-    "@turboforge/remark-typedoc-mdx",
-    "@turboforge/sync"
-  ],
+  "conventionalCommits.scopes": ["@app/web", "@tool/scripts", "@tool/tsconfig"],
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },

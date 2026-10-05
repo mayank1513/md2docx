@@ -1,16 +1,5 @@
 ## Step-by-Step Instructions and Checklist
 
-- [ ] Star [this repository](https://github.com/turboforge-dev/turborepo-template/) for easy access and to show your support
-- [x] Create a new GitHub repository using this template.
-  - Click the `Use this template` button at the top right -> `Create a new repository`
-  - Click `Create repository` and wait for the setup workflow to finish rebranding your repo.
-- [ ] Install and set up Node.js and your IDE (VSCode recommended)
-- [ ] Install the recommended VSCode extensions:
-  - [Trello Kanban](https://marketplace.visualstudio.com/items?itemName=mayank1513.trello-kanban-task-board)
-  - [PromptShield](https://marketplace.visualstudio.com/items?itemName=mayank1513.promptshield)
-- [ ] Install `pnpm` using `npm i -g pnpm`
-- [ ] Install dependencies using `pnpm`
-  - Run `pnpm i` to install dependencies
 - [ ] Make sure you run `pnpm rebrand` from the root directory to rebrand your repo.
 - [ ] Run `yarn gen`, and follow prompts to generate new package, or server / client components for your library
 - [ ] 🌟 Enable [private vulnerability reporting](https://github.com/turboforge-dev/turboforge/security)

@@ -26,16 +26,3 @@ echo "$FILES" | xargs -n 50 pnpx @promptshield/cli --check
 
 git add $FILES
 
-# Update .forge-meta.json to keep track of last synced commit (behind by one commit)
-REMOTE_URL=$(git remote get-url --push origin)
-
-if [ "$REMOTE_URL" = "https://github.com/turboforge-dev/turboforge.git" ]; then
-  TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  COMMIT_HASH=$(git rev-parse HEAD)
-  echo "{
-    \"lastSyncedCommit\": \"$COMMIT_HASH\",
-    \"generatedAt\": \"$TIMESTAMP\"
-  }" > .forge-meta.json
-fi
-
-git add .forge-meta.json
