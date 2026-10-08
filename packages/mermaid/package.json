@@ -1,0 +1,91 @@
+{
+  "name": "@m2d/mermaid",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "1.2.2",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Enhance Markdown-to-DOCX conversion with Mermaid and mindmap diagram support using this plugin for @m2d/core. Converts code blocks into SVG images with customizable Mermaid config.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/mermaid"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/mermaid/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "@md2docx/mermaid",
+      "@mdast2docx/mermaid"
+    ],
+    "icon": "GitGraph",
+    "description": "Mermaid to DOCX Plugin"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "mermaid",
+    "mindmap",
+    "markdown",
+    "mdast",
+    "mdast-to-docx",
+    "markdown-to-docx",
+    "md2docx",
+    "mdast2docx",
+    "docx",
+    "docx-generator",
+    "document-generation",
+    "document-conversion",
+    "svg-diagram",
+    "code-block",
+    "diagram-plugin",
+    "remark-plugin",
+    "unified-plugin",
+    "typescript",
+    "plugin",
+    "open-source",
+    "m2d",
+    "mayank1513"
+  ]
+}
