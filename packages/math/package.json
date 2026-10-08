@@ -1,0 +1,91 @@
+{
+  "name": "@m2d/math",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "0.0.6",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Plugin to convert mathematical expressions in Markdown (MDAST) to DOCX using LaTeX-style syntax. Integrates seamlessly with mdast2docx.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/math"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/math/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "@md2docx/math",
+      "@mdast2docx/math"
+    ],
+    "icon": "Sigma",
+    "description": "LaTeX Math to DOCX"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "math",
+    "latex",
+    "math expressions",
+    "math plugin",
+    "markdown-to-docx",
+    "mdast2docx",
+    "markdown",
+    "mdast",
+    "docx",
+    "ms-word",
+    "text-processing",
+    "export",
+    "document generator",
+    "typescript",
+    "remark",
+    "unified",
+    "open-source",
+    "seamless integration",
+    "automation",
+    "web-development",
+    "rich text",
+    "mayank1513"
+  ]
+}
