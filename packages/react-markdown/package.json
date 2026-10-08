@@ -1,0 +1,74 @@
+{
+  "name": "@m2d/react-markdown",
+  "version": "1.0.0",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@tool/tsconfig": "workspace:*",
+    "tsup": "^8.0.0",
+    "typescript": "catalog:"
+  },
+  "forge": {
+    "aliases": [
+      "@m2d/jsx",
+      "@md2docx/jsx",
+      "@mdast2docx/jsx",
+      "@md2docx/react-markdown",
+      "mdx-render"
+    ],
+    "icon": "Atom",
+    "description": "SSR-Friendly React Markdown"
+  },
+  "license": "MIT",
+  "description": "A modern, SSR-friendly React Markdown renderer that preserves the MDAST tree for reuse (e.g., mdast2docx), supports full JSX children, unified plugins, and component overrides.",
+  "keywords": [
+    "react",
+    "react-markdown",
+    "mdx-renderer",
+    "markdown",
+    "jsx",
+    "ssr",
+    "mdast",
+    "mdast2docx",
+    "hast",
+    "remark",
+    "rehype",
+    "unified",
+    "docx",
+    "custom-components",
+    "lightweight",
+    "renderer",
+    "react 18",
+    "react 19",
+    "next.js",
+    "next.js 14",
+    "next.js 15",
+    "react server components",
+    "frontend development",
+    "web development",
+    "ui components",
+    "customizable",
+    "modern",
+    "progressive",
+    "cutting-edge",
+    "compatibility",
+    "seamless integration"
+  ]
+}
