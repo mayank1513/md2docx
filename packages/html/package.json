@@ -1,0 +1,109 @@
+{
+  "name": "@m2d/html",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "1.1.11",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Extend MDAST by parsing embedded HTML in Markdown. Converts HTML into structured MDAST nodes compatible with @m2d/core for DOCX generation.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/html"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/html/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "@md2docx/html",
+      "@mdast2docx/html"
+    ],
+    "icon": "Code",
+    "description": "HTML to MDAST Plugin"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "html",
+    "html-in-markdown",
+    "html-to-mdast",
+    "extended-mdast",
+    "mdast",
+    "plugin",
+    "markdown",
+    "markdown-to-docx",
+    "mdast-to-docx",
+    "md2docx",
+    "mdast2docx",
+    "converter",
+    "remark",
+    "unified",
+    "docx",
+    "ms-word",
+    "document-generator",
+    "document-generation",
+    "parser",
+    "text-processing",
+    "rich-text",
+    "export",
+    "images",
+    "hyperlinks",
+    "footnotes",
+    "typescript",
+    "open-source",
+    "customizable",
+    "modern",
+    "seamless-integration",
+    "cutting-edge",
+    "compatibility",
+    "progressive",
+    "web-development",
+    "frontend",
+    "automation",
+    "google-sheets",
+    "generative-ai",
+    "m2d",
+    "mayank1513"
+  ]
+}
