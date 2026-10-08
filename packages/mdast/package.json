@@ -1,0 +1,93 @@
+{
+  "name": "@m2d/mdast",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "0.2.4",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Extended MDAST types and custom node data for mdast2docx with support for DOCX formatting.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/mdast"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/mdast/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "@md2docx/mdast",
+      "@mdast2docx/mdast"
+    ],
+    "icon": "Network",
+    "description": "Extended MDAST Node Definitions"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "mdast",
+    "mdast extensions",
+    "custom nodes",
+    "unist custom nodes",
+    "unist",
+    "markdown",
+    "markdown-to-docx",
+    "customizable",
+    "docx formatting",
+    "text-processing",
+    "typescript",
+    "remark",
+    "unified",
+    "open-source",
+    "web-development",
+    "automation",
+    "docx",
+    "document generator",
+    "ms-word",
+    "rich text",
+    "footnotes",
+    "hyperlinks",
+    "images",
+    "mdast2docx"
+  ]
+}
