@@ -10,6 +10,7 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - lucide-react@1.25.0
+  - '@turboforge/sync@0.0.2'
 
 onlyBuiltDependencies:
   - '@parcel/watcher'
