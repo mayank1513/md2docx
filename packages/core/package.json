@@ -51,7 +51,7 @@
       "@md2docx/core",
       "@mdast2docx/core"
     ],
-    "icon": "LibraryBig",
+    "icon": "FileText",
     "description": "Core MDAST to DOCX Engine"
   },
   "funding": [
