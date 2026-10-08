@@ -190,7 +190,7 @@ importers:
         specifier: workspace:*
         version: link:tooling/tsconfig
       '@turboforge/sync':
-        specifier: ^0.0.2
+        specifier: latest
         version: 0.0.2(micromatch@4.0.8)(picomatch@4.0.7)(yaml@2.9.1)
       '@types/envinfo':
         specifier: ^7.8.4
