@@ -189,6 +189,9 @@ importers:
       '@tool/tsconfig':
         specifier: workspace:*
         version: link:tooling/tsconfig
+      '@turboforge/sync':
+        specifier: ^0.0.1
+        version: 0.0.1(micromatch@4.0.8)(picomatch@4.0.7)(yaml@2.9.1)
       '@types/envinfo':
         specifier: ^7.8.4
         version: 7.8.4
@@ -1875,6 +1878,10 @@ packages:
   '@turboforge/remark-typedoc-mdx@0.1.0':
     resolution: {integrity: sha512-0HZs/hXIg8Lm+3exmQCL9o+3wpUYbplEryx27wX0OHCYQUWZjLrXRbZpZrzyq7rdHeAK7C7fEqfeWOrH+bie+A==}
 
+  '@turboforge/sync@0.0.1':
+    resolution: {integrity: sha512-2HuuUg81+iZYNKgkNk7p3B9NwMPW5t19LeImld1qBTW5TZU9diElpAGptBv3GHN3jWmkwu+DDP4ohub/09Ke/g==}
+    hasBin: true
+
   '@types/chai@5.2.3':
     resolution: {integrity: sha512-Mw558oeA9fFbv65/y4mHtXDs9bPnFMZAL/jxdPFUpOHHIXX91mcgEHbS5Lahr+pwZFR8A7GQleRWeI6cGFC2UA==}
 
@@ -2719,6 +2726,35 @@ packages:
   get-nonce@1.0.1:
     resolution: {integrity: sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q==}
     engines: {node: '>=6'}
+
+  git-json-resolver-semver@1.0.0:
+    resolution: {integrity: sha512-mkT4B8LdrmyEFQj4J5mNgPu8/BQUQjd+GVUTxD/qASakf4fjvm/PvlRNxYVeq5L3ONzoVtLwb4vfEH3TcWOUTw==}
+    peerDependencies:
+      git-json-resolver: ^1.2.0
+
+  git-json-resolver@1.3.7:
+    resolution: {integrity: sha512-ml8lECMqvRtcnQc5bBMY/0ltydMlKrW4VIKJe0Nc/Kh9nCjPD+8VVBobaMrGIPiZuHQnKfyPu86qQ9LFdqa8ZA==}
+    hasBin: true
+    peerDependencies:
+      fast-xml-parser: ^5.2.5
+      json5: ^2.2.3
+      micromatch: ^4.0.8
+      picomatch: ^4.0.3
+      smol-toml: ^1.4.2
+      yaml: ^2.8.1
+    peerDependenciesMeta:
+      fast-xml-parser:
+        optional: true
+      json5:
+        optional: true
+      micromatch:
+        optional: true
+      picomatch:
+        optional: true
+      smol-toml:
+        optional: true
+      yaml:
+        optional: true
 
   github-slugger@2.0.0:
     resolution: {integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==}
@@ -5612,6 +5648,18 @@ snapshots:
     dependencies:
       unist-util-visit: 5.1.0
 
+  '@turboforge/sync@0.0.1(micromatch@4.0.8)(picomatch@4.0.7)(yaml@2.9.1)':
+    dependencies:
+      git-json-resolver: 1.3.7(micromatch@4.0.8)(picomatch@4.0.7)(yaml@2.9.1)
+      git-json-resolver-semver: 1.0.0(git-json-resolver@1.3.7(micromatch@4.0.8)(picomatch@4.0.7)(yaml@2.9.1))
+    transitivePeerDependencies:
+      - fast-xml-parser
+      - json5
+      - micromatch
+      - picomatch
+      - smol-toml
+      - yaml
+
   '@types/chai@5.2.3':
     dependencies:
       '@types/deep-eql': 4.0.2
@@ -6363,6 +6411,16 @@ snapshots:
   get-east-asian-width@1.7.0: {}
 
   get-nonce@1.0.1: {}
+
+  git-json-resolver-semver@1.0.0(git-json-resolver@1.3.7(micromatch@4.0.8)(picomatch@4.0.7)(yaml@2.9.1)):
+    dependencies:
+      git-json-resolver: 1.3.7(micromatch@4.0.8)(picomatch@4.0.7)(yaml@2.9.1)
+
+  git-json-resolver@1.3.7(micromatch@4.0.8)(picomatch@4.0.7)(yaml@2.9.1):
+    optionalDependencies:
+      micromatch: 4.0.8
+      picomatch: 4.0.7
+      yaml: 2.9.1
 
   github-slugger@2.0.0: {}
 
