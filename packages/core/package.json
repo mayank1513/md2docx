@@ -1,0 +1,102 @@
+{
+  "name": "@m2d/core",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "1.7.1",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Core engine to convert extended MDAST to DOCX. Supports plugins for footnotes, images, lists, tables, and more. Designed for seamless Markdown-to-DOCX conversion.",
+  "license": "MPL-2.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/core"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/core/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "@md2docx/core",
+      "@mdast2docx/core"
+    ],
+    "icon": "LibraryBig",
+    "description": "Core MDAST to DOCX Engine"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "@m2d/core",
+    "mdast",
+    "markdown",
+    "generative-ai",
+    "docx-for-generative-ai",
+    "docx",
+    "markdown-to-docx",
+    "mdast-to-docx",
+    "remark",
+    "unified",
+    "text-processing",
+    "document-generator",
+    "typescript",
+    "open-source",
+    "export",
+    "document-generation",
+    "customizable",
+    "renderer",
+    "plugin-system",
+    "footnotes",
+    "tables",
+    "lists",
+    "images",
+    "headings",
+    "rich-text",
+    "automation",
+    "seamless-integration",
+    "cutting-edge",
+    "frontend",
+    "modern",
+    "compatibility",
+    "mayank1513",
+    "turboforge"
+  ]
+}
