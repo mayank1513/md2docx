@@ -4,7 +4,23 @@
     "ignoreDeprecations": "6.0",
     "rootDir": "../../",
     "paths": {
-      "@m2d/core": ["./packages/core/src", "./packages/core/dist"]
+      "@m2d/core": ["./packages/core/src", "./packages/core/dist"],
+      "@m2d/html": ["./packages/html/src", "./packages/html/dist"],
+      "@m2d/image": ["./packages/image/src", "./packages/image/dist"],
+      "@m2d/list": ["./packages/list/src", "./packages/list/dist"],
+      "@m2d/math": ["./packages/math/src", "./packages/math/dist"],
+      "@m2d/mdast": ["./packages/mdast/src", "./packages/mdast/dist"],
+      "@m2d/mermaid": ["./packages/mermaid/src", "./packages/mermaid/dist"],
+      "@m2d/react-markdown": [
+        "./packages/react-markdown/src",
+        "./packages/react-markdown/dist"
+      ],
+      "@m2d/remark-docx": [
+        "./packages/remark-docx/src",
+        "./packages/remark-docx/dist"
+      ],
+      "@m2d/table": ["./packages/table/src", "./packages/table/dist"],
+      "mdast2docx": ["./packages/mdast2docx/src", "./packages/mdast2docx/dist"]
     }
   }
 }

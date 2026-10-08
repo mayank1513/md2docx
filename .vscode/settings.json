@@ -12,8 +12,18 @@
   "conventionalCommits.scopes": [
     "@app/web",
     "@m2d/core",
+    "@m2d/html",
+    "@m2d/image",
+    "@m2d/list",
+    "@m2d/math",
+    "@m2d/mdast",
+    "@m2d/mermaid",
+    "@m2d/react-markdown",
+    "@m2d/remark-docx",
+    "@m2d/table",
     "@tool/scripts",
-    "@tool/tsconfig"
+    "@tool/tsconfig",
+    "mdast2docx"
   ],
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
