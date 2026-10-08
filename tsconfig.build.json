@@ -3,6 +3,8 @@
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
     "rootDir": "../../",
-    "paths": {}
+    "paths": {
+      "@m2d/core": ["./packages/core/src", "./packages/core/dist"]
+    }
   }
 }

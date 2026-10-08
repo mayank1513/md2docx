@@ -25,7 +25,9 @@
     "noPropertyAccessFromIndexSignature": true,
 
     /* Path Mapping */
-    "paths": {}
+    "paths": {
+      "@m2d/core": ["./packages/core/src", "./packages/core/dist"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts", "vitest.config.ts"],
   "exclude": [

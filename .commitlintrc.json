@@ -1,6 +1,10 @@
 {
   "extends": ["@commitlint/config-conventional"],
   "rules": {
-    "scope-enum": [2, "always", ["@app/web", "@tool/scripts", "@tool/tsconfig"]]
+    "scope-enum": [
+      2,
+      "always",
+      ["@app/web", "@m2d/core", "@tool/scripts", "@tool/tsconfig"]
+    ]
   }
 }
