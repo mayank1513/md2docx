@@ -1,0 +1,101 @@
+{
+  "name": "mdast2docx",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "1.6.1",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Convert Markdown Abstract Syntax Tree (MDAST) to DOCX seamlessly. Supports footnotes, images, links, and customizable document properties.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/mdast2docx"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/mdast2docx/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "md-to-docx",
+      "mdast-to-docx"
+    ],
+    "icon": "FileOutput",
+    "description": "Complete Markdown to DOCX"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "mdast",
+    "markdown",
+    "generative-ai",
+    "docx",
+    "md2docx",
+    "markdown-to-docx",
+    "mdast-to-docx",
+    "converter",
+    "remark",
+    "unified",
+    "footnotes",
+    "images",
+    "hyperlinks",
+    "text-processing",
+    "document-generator",
+    "typescript",
+    "open-source",
+    "modern",
+    "customizable",
+    "seamless-integration",
+    "cutting-edge",
+    "compatibility",
+    "progressive",
+    "frontend",
+    "document-generation",
+    "web-development",
+    "rich-text",
+    "export",
+    "google-sheets",
+    "ms-word",
+    "automation",
+    "mayank1513"
+  ]
+}
