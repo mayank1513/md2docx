@@ -1,0 +1,106 @@
+{
+  "name": "@m2d/table",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "0.1.1",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Plugin to convert Markdown tables (MDAST) to DOCX with support for rich formatting and seamless integration into mdast2docx.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/table"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/table/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "@md2docx/table",
+      "@mdast2docx/table"
+    ],
+    "icon": "Table",
+    "description": "MDAST Table Formatting Plugin"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "table-plugin",
+    "tables",
+    "mdast-tables",
+    "markdown-tables",
+    "docx-tables",
+    "markdown-to-docx",
+    "mdast-to-docx",
+    "mdast",
+    "markdown",
+    "plugin",
+    "converter",
+    "docx",
+    "ms-word",
+    "export",
+    "document-generator",
+    "document-generation",
+    "text-processing",
+    "remark",
+    "unified",
+    "typescript",
+    "open-source",
+    "customizable",
+    "seamless-integration",
+    "modern",
+    "web-development",
+    "automation",
+    "google-sheets",
+    "rich-text",
+    "compatibility",
+    "progressive",
+    "cutting-edge",
+    "frontend",
+    "generative-ai",
+    "md2docx",
+    "mdast2docx",
+    "m2d",
+    "mayank1513"
+  ]
+}
