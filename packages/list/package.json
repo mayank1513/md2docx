@@ -1,0 +1,90 @@
+{
+  "name": "@m2d/list",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "0.0.9",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Plugin to convert ordered and unordered lists from Markdown (MDAST) to DOCX. Supports nesting, custom bullets, and numbering styles.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/list"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/list/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "@md2docx/list",
+      "@mdast2docx/list"
+    ],
+    "icon": "ListOrdered",
+    "description": "MDAST List Conversion Plugin"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "mdast",
+    "markdown",
+    "docx",
+    "markdown-to-docx",
+    "mdast-to-docx",
+    "ordered-list",
+    "unordered-list",
+    "nested-lists",
+    "bullet-points",
+    "numbered-lists",
+    "document-generation",
+    "text-processing",
+    "open-source",
+    "typescript",
+    "converter",
+    "automation",
+    "unified",
+    "remark",
+    "web-development",
+    "export",
+    "rich-text"
+  ]
+}
