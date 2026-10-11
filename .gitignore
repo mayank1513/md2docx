@@ -17,6 +17,7 @@ coverage
 tsup.config.bundled*
 *.patch
 .merge-backups
+.plans
 
 # promptshield artifacts
 .promptshield
