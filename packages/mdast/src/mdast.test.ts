@@ -1,9 +1,0 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: Use of any is ok for test files */
-
-import { describe, test } from "vitest";
-
-describe("m2dMdast", () => {
-  test("should pass", ({ expect }) => {
-    expect(true).toBe(true);
-  });
-});
