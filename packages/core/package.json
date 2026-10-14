@@ -14,14 +14,44 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./section": {
+      "types": "./dist/section.d.ts",
+      "import": "./dist/section.mjs",
+      "require": "./dist/section.js"
+    },
+    "./dist/section": {
+      "types": "./dist/section.d.ts",
+      "import": "./dist/section.mjs",
+      "require": "./dist/section.js"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.js"
+    },
+    "./dist/utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.js"
+    },
+    "./cache": {
+      "types": "./dist/utils/cache.d.ts",
+      "import": "./dist/utils/cache.mjs",
+      "require": "./dist/utils/cache.js"
+    },
+    "./utils/cache": {
+      "types": "./dist/utils/cache.d.ts",
+      "import": "./dist/utils/cache.mjs",
+      "require": "./dist/utils/cache.js"
+    },
+    "./dist/utils/cache": {
+      "types": "./dist/utils/cache.d.ts",
+      "import": "./dist/utils/cache.mjs",
+      "require": "./dist/utils/cache.js"
     },
     "./package.json": "./package.json"
   },
@@ -37,14 +67,26 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "@m2d/mdast": "workspace:*"
+  },
+  "peerDependencies": {
+    "docx": "^9.3.0"
+  },
   "devDependencies": {
-    "@types/node": "latest",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^26.6.4",
+    "docx": "^9.6.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
     "tsup": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "unified": "^11.0.5",
+    "xxhash-wasm": "^1.1.0"
   },
   "forge": {
     "aliases": [

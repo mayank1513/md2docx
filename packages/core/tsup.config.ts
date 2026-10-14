@@ -7,7 +7,12 @@ export default defineConfig(
       target: "es2022",
       tsconfig: "../../tsconfig.build.json",
       dts: true,
-      entry: ["./src/index.ts"],
+      entry: [
+        "./src/index.ts",
+        "./src/section.ts",
+        "./src/utils/index.ts",
+        "./src/utils/cache.ts",
+      ],
       sourcemap: false,
       clean: !options.watch,
       bundle: true,
