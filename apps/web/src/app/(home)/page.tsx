@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DocxDemo } from "../../components/docx-demo";
 import { DriftComparison } from "../../components/drift-comparison";
 import { Footer } from "../../components/footer";
 import { Hero } from "../../components/hero";
@@ -6,13 +7,13 @@ import { PackageGrid } from "../../components/package-grid";
 import { TechnicalPreview } from "../../components/technical-preview";
 
 export const metadata: Metadata = {
-  title: "Turboforge - The Monorepo Operating System",
+  title: "md2docx - Markdown to DOCX Engine",
   description:
-    "Stop codebase drift. Turboforge keeps your packages, tooling, and docs aligned long after day zero.",
+    "Convert Markdown Abstract Syntax Trees (MDAST) into Microsoft Word (.docx) documents with ease.",
   openGraph: {
-    title: "Turboforge - The Monorepo Operating System",
+    title: "md2docx - Markdown to DOCX Engine",
     description:
-      "Stop codebase drift. Turboforge keeps your packages, tooling, and docs aligned long after day zero.",
+      "Convert Markdown Abstract Syntax Trees (MDAST) into Microsoft Word (.docx) documents with ease.",
   },
 };
 
@@ -20,6 +21,7 @@ export default function HomePage() {
   return (
     <main className="flex flex-col flex-1 w-full bg-background text-foreground antialiased selection:bg-primary/30">
       <Hero />
+      <DocxDemo />
       <DriftComparison />
       <PackageGrid />
       <TechnicalPreview />
