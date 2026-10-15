@@ -450,16 +450,38 @@ importers:
         version: 11.0.5
 
   packages/math:
+    dependencies:
+      '@m2d/core':
+        specifier: workspace:*
+        version: link:../core
+      latex-math:
+        specifier: ^0.0.2
+        version: 0.0.2
     devDependencies:
       '@types/node':
-        specifier: latest
+        specifier: ^26.6.4
         version: 26.6.5
+      '@unified-latex/unified-latex-types':
+        specifier: ^1.8.4
+        version: 1.8.4
+      docx:
+        specifier: ^9.6.1
+        version: 9.9.0
+      remark-math:
+        specifier: ^6.0.0
+        version: 6.0.0(supports-color@7.2.0)
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0(supports-color@7.2.0)
       tsup:
         specifier: latest
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.29)(supports-color@7.2.0)(typescript@6.0.3)(yaml@2.9.1)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
 
   packages/mdast:
     devDependencies:
@@ -2609,6 +2631,9 @@ packages:
   '@ungap/structured-clone@1.4.0':
     resolution: {integrity: sha512-1mEZtMKPM09vDmQt5y7YvmN2+DFTP7Tg0EWXdic8/C6VRnpb33e4ghisCIE3WZjsE2N8mf+QV1Zqh7ZFYLWInQ==}
 
+  '@unified-latex/unified-latex-types@1.8.4':
+    resolution: {integrity: sha512-nQ6YS4WYVOA89qdmxw57vl3KfmRGFHGTyLsw9LxCC7DSE6oma3rvXIGjBDUe7E3bgWocBqRITPcz25VqCRlFzA==}
+
   '@upsetjs/venn.js@2.0.0':
     resolution: {integrity: sha512-WbBhLrooyePuQ1VZxrJjtLvTc4NVfpOyKx0sKqioq9bX1C1m7Jgykkn8gLrtwumBioXIqam8DLxp88Adbue6Hw==}
 
@@ -3925,6 +3950,9 @@ packages:
 
   khroma@2.1.0:
     resolution: {integrity: sha512-Ls993zuzfayK269Svk9hzpeGUKob/sIgZzyHYdjQoAdQetRKpOLj+k/QQQ/6Qi0Yz65mlROrfd+Ev+1+7dz9Kw==}
+
+  latex-math@0.0.2:
+    resolution: {integrity: sha512-tJbCMbMhkeocxkx5H9pGISfay6pctCmcZW7yajYe3KrytIxIChqlAw1cvp9VlobNZC27LeV0PoChM96xa0ATew==}
 
   launch-editor@2.14.2:
     resolution: {integrity: sha512-NHJEb30MGBCkmZXLZwz25t37QR4aY03ZzPYUJXOJaOa92uWwExI9SBQUuIznBYc1xkD7cJNGX7oc3Nl3sq2kQQ==}
@@ -7141,6 +7169,8 @@ snapshots:
 
   '@ungap/structured-clone@1.4.0': {}
 
+  '@unified-latex/unified-latex-types@1.8.4': {}
+
   '@upsetjs/venn.js@2.0.0':
     optionalDependencies:
       d3-selection: 3.0.0
@@ -8499,6 +8529,10 @@ snapshots:
       commander: 15.0.0
 
   khroma@2.1.0: {}
+
+  latex-math@0.0.2:
+    dependencies:
+      unified: 11.0.5
 
   launch-editor@2.14.2:
     dependencies:
