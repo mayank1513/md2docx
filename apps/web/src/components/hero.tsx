@@ -28,17 +28,18 @@ export const Hero = () => {
       <div className="container relative z-10 mx-auto px-4 text-center">
         <div className="inline-flex items-center rounded-full border border-border bg-muted/50 px-3 py-1 text-sm text-muted-foreground mb-8">
           <span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
-          Introducing Turboforge Beta
+          Universal Markdown to Word Engine
         </div>
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-6">
-          The Monorepo <br className="hidden md:block" />
+          Markdown to Word <br className="hidden md:block" />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-400 to-neutral-800 dark:from-neutral-300 dark:to-neutral-600">
-            Operating System
+            Made Effortless
           </span>
         </h1>
         <p className="mx-auto max-w-2xl text-lg md:text-xl text-muted-foreground mb-10">
-          Stop codebase drift. Turboforge keeps your packages, tooling, and docs
-          aligned long after day zero.
+          Convert standard Markdown, GFM tables, math, and diagrams into native
+          Microsoft Word (.docx) documents — with zero-server client execution
+          and robust Node.js backend streaming.
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <Button size="lg" className="w-full sm:w-auto font-semibold" asChild>
@@ -54,7 +55,7 @@ export const Hero = () => {
             asChild
           >
             <Link
-              href="https://github.com/turboforge-dev/turboforge"
+              href="https://github.com/md2docx/md2docx"
               target="_blank"
               rel="noopener noreferrer"
             >

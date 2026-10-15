@@ -17,6 +17,8 @@ export const GET = async () => {
   try {
     const samplePath = path.resolve(process.cwd(), "../../sample.md");
     const md = readFileSync(samplePath, "utf-8");
+
+    const start = performance.now();
     const mdast = docxProcessor.parse(md);
     const buffer = await toDocx(
       mdast,
@@ -24,6 +26,7 @@ export const GET = async () => {
       {},
       "arraybuffer",
     );
+    const renderTimeMs = Math.round(performance.now() - start);
 
     return new NextResponse(new Uint8Array(buffer as ArrayBuffer), {
       status: 200,
@@ -31,6 +34,9 @@ export const GET = async () => {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "Content-Disposition": 'attachment; filename="sample.docx"',
+        "X-Render-Time": `${renderTimeMs}`,
+        "Server-Timing": `render;dur=${renderTimeMs}`,
+        "Access-Control-Expose-Headers": "X-Render-Time, Server-Timing",
       },
     });
   } catch (error) {
@@ -46,8 +52,11 @@ export const POST = async (req: NextRequest) => {
   try {
     const body = await req.json();
     const md = body?.markdown || "# Empty Document";
+
+    const start = performance.now();
     const mdast = docxProcessor.parse(md);
     const buffer = await toDocx(mdast, {}, {}, "arraybuffer");
+    const renderTimeMs = Math.round(performance.now() - start);
 
     return new NextResponse(new Uint8Array(buffer as ArrayBuffer), {
       status: 200,
@@ -55,6 +64,9 @@ export const POST = async (req: NextRequest) => {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "Content-Disposition": 'attachment; filename="document.docx"',
+        "X-Render-Time": `${renderTimeMs}`,
+        "Server-Timing": `render;dur=${renderTimeMs}`,
+        "Access-Control-Expose-Headers": "X-Render-Time, Server-Timing",
       },
     });
   } catch (error) {

@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { DocxDemo } from "../../components/docx-demo";
-import { DriftComparison } from "../../components/drift-comparison";
 import { Footer } from "../../components/footer";
 import { Hero } from "../../components/hero";
 import { PackageGrid } from "../../components/package-grid";
-import { TechnicalPreview } from "../../components/technical-preview";
 
 export const metadata: Metadata = {
   title: "md2docx - Markdown to DOCX Engine",
@@ -22,9 +20,7 @@ export default function HomePage() {
     <main className="flex flex-col flex-1 w-full bg-background text-foreground antialiased selection:bg-primary/30">
       <Hero />
       <DocxDemo />
-      <DriftComparison />
       <PackageGrid />
-      <TechnicalPreview />
       <Footer />
     </main>
   );
