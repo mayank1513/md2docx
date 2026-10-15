@@ -531,16 +531,35 @@ importers:
         version: 6.0.3
 
   packages/table:
+    dependencies:
+      '@m2d/core':
+        specifier: workspace:*
+        version: link:../core
     devDependencies:
+      '@m2d/html':
+        specifier: workspace:*
+        version: link:../html
       '@types/node':
-        specifier: latest
+        specifier: ^26.6.4
         version: 26.6.5
+      docx:
+        specifier: ^9.6.1
+        version: 9.9.0
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1(supports-color@7.2.0)
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0(supports-color@7.2.0)
       tsup:
         specifier: latest
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.29)(supports-color@7.2.0)(typescript@6.0.3)(yaml@2.9.1)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
 
   tooling/scripts: {}
 
