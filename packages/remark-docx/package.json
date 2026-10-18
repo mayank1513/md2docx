@@ -37,14 +37,22 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "docx": "^9.6.1",
+    "mdast2docx": "workspace:*"
+  },
   "devDependencies": {
-    "@types/node": "latest",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^26.6.4",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
     "tsup": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "unified": "^11.0.5"
   },
   "forge": {
     "aliases": [
