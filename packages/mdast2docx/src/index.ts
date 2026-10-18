@@ -1,1 +1,1 @@
-export * from "./mdast2docx";
+export * from "@m2d/core";
