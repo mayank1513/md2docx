@@ -74,7 +74,8 @@ describe.concurrent("toDocx", () => {
     };
     // @ts-expect-error -- ok
     const placeholderImg = await getPlaceHolderImage(options);
-    expect(placeholderImg.data).toBe("");
+    expect(placeholderImg.data).toBeInstanceOf(ArrayBuffer);
+    expect((placeholderImg.data as ArrayBuffer).byteLength).toBe(43);
     expect(placeholderImg.type).toBe("gif");
   });
 });

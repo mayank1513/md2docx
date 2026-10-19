@@ -134,10 +134,18 @@ export const handleSvg = async (
       isGantt = rendered.diagramType === "gantt";
     }
 
-    const cropped =
-      isGantt || !svg
-        ? { svg, scale: 1 }
-        : await tightlyCropSvg(svg, getContainer(options));
+    let cropped = { svg, scale: 1 };
+    if (!isGantt && svg) {
+      try {
+        cropped = await tightlyCropSvg(svg, getContainer(options));
+      } catch (cropErr) {
+        console.warn(
+          "[handleSvg] tightlyCropSvg failed, falling back to raw SVG:",
+          cropErr,
+        );
+        cropped = { svg, scale: 1 };
+      }
+    }
 
     const { blob, width, height } = await svgToBlob(cropped.svg, {
       format: options.fallbackImageType,
