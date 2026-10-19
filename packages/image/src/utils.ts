@@ -55,12 +55,12 @@ const TRANSPARENT_1X1_GIF = new Uint8Array([
  */
 export const getPlaceHolderImage = async (
   options: IDefaultImagePluginOptions,
-) => {
+): Promise<IImageOptions> => {
   if (!placeholderImg && options.placeholder && !shouldEmitEmptyPlaceholder) {
     shouldEmitEmptyPlaceholder = true;
     // skipcq: JS-0357
     placeholderImg = await options.imageResolver(options.placeholder, options);
-  } else {
+  } else if (!placeholderImg) {
     placeholderImg = {
       type: "gif",
       data: TRANSPARENT_1X1_GIF.buffer,
@@ -68,7 +68,9 @@ export const getPlaceHolderImage = async (
         width: 200,
         height: 200,
       },
+      // @ts-expect-error -- internal marker to prevent cache poisoning
+      isPlaceholder: true,
     };
   }
-  return placeholderImg;
+  return placeholderImg as IImageOptions;
 };

@@ -188,6 +188,12 @@ interface BaseCacheConfig<TResult> {
    * In-memory cache object, useful for cache sharing across plugins/tabs.
    */
   cache?: Record<string, Promise<TResult>>;
+
+  /**
+   * Predicate to determine whether a result is valid for caching.
+   * If false, the result is returned to caller but NOT persisted to storage or memory.
+   */
+  shouldCache?: (result: TResult) => boolean;
 }
 
 interface MemoryOnlyCacheConfig<TResult> extends BaseCacheConfig<TResult> {
@@ -264,12 +270,23 @@ export const createPersistentCache = <TArgs extends unknown[], TResult>(
     cache = defaultCache as Record<string, Promise<TResult>>,
     cacheMode = "both",
     parallel = true,
+    shouldCache,
   } = config ?? {};
 
   return async (...args: TArgs): Promise<TResult> => {
     const cacheKey = await generateCacheKey(ignoreKeys, namespace, ...args);
 
     if (cacheMode === "memory") {
+      if (shouldCache) {
+        if (!cache[cacheKey]) {
+          const promise = generator(...args);
+          cache[cacheKey] = promise;
+          promise.then((res) => {
+            if (!shouldCache(res)) delete cache[cacheKey];
+          });
+        }
+        return cache[cacheKey];
+      }
       cache[cacheKey] ??= generator(...args);
       return cache[cacheKey];
     }
@@ -285,16 +302,20 @@ export const createPersistentCache = <TArgs extends unknown[], TResult>(
         : ((await readFromCache<TResult>(cacheKey)) ??
           (await generator(...args)));
 
-      const resultsToCache = { id: cacheKey, namespace } as {
-        id: string;
-        namespace: string;
-        [key: string]: unknown;
-      };
-      if (result)
-        getSerializableKeys(result).forEach((key) => {
-          resultsToCache[key] = (result as Record<string, unknown>)[key];
-        });
-      writeToCache(resultsToCache);
+      if (!shouldCache || shouldCache(result)) {
+        const resultsToCache = { id: cacheKey, namespace } as {
+          id: string;
+          namespace: string;
+          [key: string]: unknown;
+        };
+        if (result)
+          getSerializableKeys(result).forEach((key) => {
+            resultsToCache[key] = (result as Record<string, unknown>)[key];
+          });
+        writeToCache(resultsToCache);
+      } else if (cacheMode === "both") {
+        delete cache[cacheKey];
+      }
       return result;
     })();
 

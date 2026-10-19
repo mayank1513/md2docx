@@ -276,6 +276,26 @@ const defaultOptions: IDefaultImagePluginOptions = {
   maxAgeMinutes: 7 * 24 * 60,
   fixGeneratedSvg,
 };
+/**
+ * Predicate to determine whether an image result should be cached.
+ * Prevents caching of placeholder fallbacks and empty image data.
+ *
+ * @param imgOpts - Resolved image options to validate.
+ * @returns True if the image is valid and should be cached.
+ */
+const shouldCacheImage = (imgOpts: IImageOptions) => {
+  if (!imgOpts) return false;
+  // biome-ignore lint/suspicious/noExplicitAny: inspect internal placeholder flag
+  if ((imgOpts as any).isPlaceholder) return false;
+  if (!imgOpts.data) return false;
+  if (typeof imgOpts.data === "string" && imgOpts.data.length === 0)
+    return false;
+  if (imgOpts.data instanceof ArrayBuffer && imgOpts.data.byteLength === 0)
+    return false;
+  if (ArrayBuffer.isView(imgOpts.data) && imgOpts.data.byteLength === 0)
+    return false;
+  return true;
+};
 
 /**
  * Image plugin for `@m2d/core`.
@@ -299,7 +319,10 @@ export const imagePlugin: (options?: IImagePluginOptions) => IPlugin = (
   options.imageResolver = createPersistentCache(
     options.imageResolver,
     NAMESPACE,
-    cacheConfig,
+    {
+      ...cacheConfig,
+      shouldCache: shouldCacheImage,
+    },
   );
 
   /** Preprocess step: resolves all image references in the MDAST. */

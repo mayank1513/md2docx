@@ -207,4 +207,32 @@ describe.concurrent("createPersistentCache", () => {
     expect(result2).toBe("result-1"); // From cache
     expect(mockFn).toHaveBeenCalledTimes(1);
   });
+
+  it("should not cache invalid results when shouldCache returns false", async ({
+    expect,
+  }) => {
+    let callCount = 0;
+    const mockFn = vi.fn(() => {
+      callCount++;
+      return Promise.resolve({
+        data: callCount === 1 ? "" : "valid-data",
+        valid: callCount !== 1,
+      });
+    });
+
+    const cache: Record<string, Promise<{ data: string; valid: boolean }>> = {};
+    const cachedFn = createPersistentCache(mockFn, "test", {
+      cacheMode: "memory",
+      cache,
+      shouldCache: (res) => res.valid,
+    });
+
+    const result1 = await cachedFn();
+    expect(result1.valid).toBe(false);
+    expect(Object.keys(cache)).toHaveLength(0); // Not cached!
+
+    const result2 = await cachedFn();
+    expect(result2.data).toBe("valid-data");
+    expect(callCount).toBe(2); // Called again because invalid result was not cached
+  });
 });

@@ -135,11 +135,10 @@ export const mermaidPlugin: (options?: IMermaidPluginOptions) => IPlugin = (
       }
       const svgNode: SVG = {
         type: "svg",
-        value: createPersistentCache(
-          mermaidProcessor,
-          NAMESPACE,
-          cacheConfig,
-        )(value, finalConfig),
+        value: createPersistentCache(mermaidProcessor, NAMESPACE, {
+          ...cacheConfig,
+          shouldCache: (res) => Boolean(res?.svg?.length),
+        })(value, finalConfig),
         data: { mermaid: value }, // Preserve original source
       };
 
