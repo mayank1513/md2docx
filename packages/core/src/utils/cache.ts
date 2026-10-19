@@ -163,12 +163,13 @@ const getXxhash = () => {
  */
 export const generateCacheKey = async (
   ignoreKeys: string[],
+  namespace: string,
   ...args: unknown[]
 ): Promise<string> => {
   const { h64ToString } = await getXxhash();
-  const serialized = args
+  const serialized = `${namespace}:${args
     .map((arg) => stableSerialize(arg, ignoreKeys))
-    .join(",");
+    .join(",")}`;
   return h64ToString(serialized);
 };
 
@@ -266,7 +267,7 @@ export const createPersistentCache = <TArgs extends unknown[], TResult>(
   } = config ?? {};
 
   return async (...args: TArgs): Promise<TResult> => {
-    const cacheKey = await generateCacheKey(ignoreKeys, ...args);
+    const cacheKey = await generateCacheKey(ignoreKeys, namespace, ...args);
 
     if (cacheMode === "memory") {
       cache[cacheKey] ??= generator(...args);

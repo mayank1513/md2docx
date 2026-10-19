@@ -10,7 +10,7 @@ vi.mock("xxhash-wasm", () => ({
   default: vi.fn(() =>
     Promise.resolve({
       h64ToString: vi.fn((input: string) => {
-        return `hash-${Buffer.from(input).toString("base64").slice(0, 8)}`;
+        return `hash-${Buffer.from(input).toString("base64")}`;
       }),
     }),
   ),
@@ -55,25 +55,35 @@ describe.concurrent("stableSerialize", () => {
 });
 
 describe.concurrent("generateCacheKey", () => {
-  it("should generate consistent hash for same inputs", async ({ expect }) => {
+  it("should generate consistent hash for same inputs and namespace", async ({
+    expect,
+  }) => {
     const key1 = await generateCacheKey([], "test", 123);
     const key2 = await generateCacheKey([], "test", 123);
     expect(key1).toBe(key2);
   });
 
+  it("should isolate namespaces even with identical arguments", async ({
+    expect,
+  }) => {
+    const key1 = await generateCacheKey([], "ns1", "common-arg");
+    const key2 = await generateCacheKey([], "ns2", "common-arg");
+    expect(key1).not.toBe(key2);
+  });
+
   it("should generate different hashes for different inputs", async ({
     expect,
   }) => {
-    const key1 = await generateCacheKey([], "test1");
-    const key2 = await generateCacheKey([], "test2");
+    const key1 = await generateCacheKey([], "test", "input1");
+    const key2 = await generateCacheKey([], "test", "input2");
     expect(key1).not.toBe(key2);
   });
 
   it("should respect ignoreKeys parameter", async ({ expect }) => {
     const obj1 = { a: 1, ignore: "x" };
     const obj2 = { a: 1, ignore: "y" };
-    const key1 = await generateCacheKey(["ignore"], obj1);
-    const key2 = await generateCacheKey(["ignore"], obj2);
+    const key1 = await generateCacheKey(["ignore"], "test", obj1);
+    const key2 = await generateCacheKey(["ignore"], "test", obj2);
     expect(key1).toBe(key2);
   });
 });
