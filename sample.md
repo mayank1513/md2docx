@@ -225,9 +225,9 @@ def transform_ast(node):
 
 | Left Aligned | Centered Content | Right Aligned |
 | :----------- | :--------------: | ------------: |
-| Item Alpha   |       42         |       $19.99 |
-| Item Beta    |      128         |      $149.50 |
-| Item Gamma   |     1024         |    $1,200.00 |
+| Item Alpha   |       42         |      \$19.99 |
+| Item Beta    |      128         |     \$149.50 |
+| Item Gamma   |     1024         |   \$1,200.00 |
 
 ### Multi-line and Formatted Cells
 
@@ -344,26 +344,36 @@ The Pythagorean theorem is defined as $a^2 + b^2 = c^2$. Einstein's energy-mass 
 
 ### Display Equations
 
-$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
 
 Euler's identity:
-$$e^{i\pi} + 1 = 0$$
+$$
+e^{i\pi} + 1 = 0
+$$
 
 Quadratic formula:
-$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+$$
+x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
 
 ### Matrices and Alignments
 
-$$\begin{pmatrix}
+$$
+\begin{pmatrix}
 1 & 0 & 0 \\
 0 & 1 & 0 \\
 0 & 0 & 1
-\end{pmatrix}$$
+\end{pmatrix}
+$$
 
-$$\begin{aligned}
+$$
+\begin{aligned}
 f(x) &= (x + 3)^2 \\
      &= x^2 + 6x + 9
-\end{aligned}$$
+\end{aligned}
+$$
 
 ---
 

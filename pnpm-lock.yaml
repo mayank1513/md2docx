@@ -237,6 +237,24 @@ importers:
       '@m2d/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@m2d/html':
+        specifier: workspace:*
+        version: link:../../packages/html
+      '@m2d/image':
+        specifier: workspace:*
+        version: link:../../packages/image
+      '@m2d/list':
+        specifier: workspace:*
+        version: link:../../packages/list
+      '@m2d/math':
+        specifier: workspace:*
+        version: link:../../packages/math
+      '@m2d/mermaid':
+        specifier: workspace:*
+        version: link:../../packages/mermaid
+      '@m2d/table':
+        specifier: workspace:*
+        version: link:../../packages/table
       '@mayank1513/fork-me':
         specifier: ^2.1.3
         version: 2.1.3(@types/react@19.3.0)(next@16.4.0(@types/node@26.6.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react@19.3.0)
@@ -288,6 +306,9 @@ importers:
       lucide-react:
         specifier: ^1.52.0
         version: 1.52.0(@types/react@19.3.0)(react@19.3.0)
+      mdast2docx:
+        specifier: workspace:*
+        version: link:../../packages/mdast2docx
       next:
         specifier: 16.4.0
         version: 16.4.0(@types/node@26.6.4)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)

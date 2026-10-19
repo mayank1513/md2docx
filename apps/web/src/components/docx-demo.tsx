@@ -1,47 +1,190 @@
 "use client";
 
 import { toDocx } from "@m2d/core";
+import { htmlPlugin } from "@m2d/html";
+import { imagePlugin } from "@m2d/image";
+import { listPlugin } from "@m2d/list";
+import { mathPlugin } from "@m2d/math";
+import { mermaidPlugin } from "@m2d/mermaid";
+import { tablePlugin } from "@m2d/table";
 import {
+  AlertCircle,
+  Calculator,
   CheckCircle2,
   Clock,
-  Code2,
   Cpu,
-  FileText,
+  FileSpreadsheet,
+  GitBranch,
   Globe,
+  ImageIcon,
+  ListOrdered,
   Loader2,
   RotateCcw,
   Server,
+  Sparkles,
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
 import { Button } from "./ui/button";
 
-const SHORT_SAMPLE = `# Project Status Report
+const ALL_PLUGINS_SAMPLE = `# md2docx Feature Showcase
 
-Welcome to **md2docx** — high-performance Markdown to Word (.docx) generation.
+A balanced, complete demonstration of standard Markdown, GitHub Flavored Markdown (GFM), math formulas, diagrams, tables, and rich HTML tags converted into a native Microsoft Word (.docx) document.
 
-## Key Highlights
-- **Dual Execution**: Runs both in **Node.js/Server** and natively in the **Browser**.
-- **Typographic Fidelity**: Preserves headings, bold, italic, strikethrough, and lists.
-- **Privacy & Speed**: Client-side generation requires **zero network requests**.
+## 1. Mathematical Formulas (@m2d/math)
+Inline equation: Einstein's mass-energy equivalence is $E = mc^2$.
+Pythagorean theorem: $a^2 + b^2 = c^2$.
 
-### Task Checklist
-- [x] Monorepo architecture setup
-- [x] Client-side DOCX compilation
-- [x] Server-side API endpoint
-- [ ] Extended media plugins
+Display integral equation:
+$$
+\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}
+$$
 
-> "Convert documents seamlessly with full AST control."
+Euler's identity:
+$$
+e^{i\\pi} + 1 = 0
+$$
 
-### Performance Characteristics
-| Environment | Execution | Network | Best For |
-| :--- | :---: | :---: | :--- |
-| **Client-Side** | In-Browser JS | 0ms | Offline apps, user privacy, instant downloads |
-| **Server-Side** | Node.js API | Transfer | Batch jobs, heavy documents, CLI exports |
+Quadratic formula:
+$$
+x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}
+$$
+
+## 2. Mermaid Diagram (@m2d/mermaid + @m2d/image)
+\`\`\`mermaid
+graph LR
+    A[Markdown Source] --> B[Unified / Remark Parser]
+    B --> C[Extended MDAST Tree]
+    C --> D[Plugin Pipeline]
+    D --> E[@m2d/core Converter]
+    E --> F[docx Document (.docx)]
+\`\`\`
+
+## 3. Data Tables (@m2d/table)
+| Plugin Package | Category | Execution Target | Status |
+| :--- | :---: | :---: | ---: |
+| \`@m2d/core\` | Engine | Universal (Browser + Node) | Stable |
+| \`@m2d/math\` | Plugin | Word MathRuns / Equations | Active |
+| \`@m2d/mermaid\` | Plugin | SVG to Raster Embedding | Active |
+| \`@m2d/table\` | Plugin | OpenXML Tables & Alignments | Active |
+| \`@m2d/list\` | Plugin | Numbered & Bulleted Hierarchies | Active |
+| \`@m2d/html\` | Plugin | Raw HTML to DOCX Elements | Active |
+
+## 4. Nested Hierarchical Lists (@m2d/list)
+1. Engine Architecture
+   - Core AST parsing
+   - Section configuration
+2. Plugin Ecosystem
+   1. Graphic Renderers
+      - Mermaid Diagrams
+      - Math LaTeX
+   2. Typography
+      - Rich HTML styling
+      - Custom bullet sets
+
+## 5. Inline HTML & Styling (@m2d/html)
+Press <kbd>Ctrl</kbd> + <kbd>P</kbd> to export or inspect.
+Status: <span style="color: #16a34a; font-weight: bold;">● Live & Ready</span>
+Important note: <mark style="background-color: #fef08a;">Highlighted text rendered directly in Word</mark>.
+
+## 6. Embedded Graphics (@m2d/image)
+![Sample Badge](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAYElEQVQYV2NkgIL//xmCgcxMIHaGCu0F0tMZGRnWgviMIAKoqANIlcM0odGtQMU1jEBFPkCJzTgUwYS9QAoPAHn2BBQeBCn8AFTET0DhR5IUEm21J9DabQQ9Q3TwEBvgACT3J/F3uWU/AAAAAElFTkSuQmCC)
 `;
+
+const MATH_SAMPLE = `# LaTeX Math Equations Showcase
+
+Powered by **@m2d/math** — compiles LaTeX syntax into native Microsoft Word \`MathRun\`, \`MathFraction\`, \`MathRadical\`, and \`MathSum\` elements.
+
+## Fundamental Physics & Mathematics
+
+Einstein's mass-energy equivalence:
+$E = mc^2$
+
+The Pythagorean Theorem:
+$a^2 + b^2 = c^2$
+
+The Quadratic Formula:
+$$
+x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}
+$$
+
+Euler's Identity:
+$$
+e^{i\\pi} + 1 = 0
+$$
+
+Gaussian Integral:
+$$
+\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}
+$$
+
+Summation and Series:
+$$
+\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}
+$$
+`;
+
+const MERMAID_SAMPLE = `# Mermaid Diagram Showcase
+
+Powered by **@m2d/mermaid** and **@m2d/image** — compiles Mermaid diagram specifications into centered SVG vector graphics and embeds them into the DOCX document.
+
+## Architecture Flowchart
+
+\`\`\`mermaid
+graph TD
+    A[Markdown Input] --> B[Unified Pipeline]
+    B --> C[AST Transformation]
+    C --> D[Plugin Engine]
+    D --> E[OpenXML Generation]
+    E --> F[DOCX Output]
+\`\`\`
+
+## System Sequence Flow
+
+\`\`\`mermaid
+sequenceDiagram
+    autonumber
+    Client->>Server API: POST /api/docx with Markdown
+    Server API->>Unified Engine: Parse AST
+    Unified Engine->>Core Converter: toDocx(mdast, props)
+    Core Converter->>DOCX Packer: Pack OpenXML Document
+    DOCX Packer-->>Server API: Uint8Array Buffer
+    Server API-->>Client: 200 OK (application/vnd.openxmlformats...)
+\`\`\`
+`;
+
+const TABLE_SAMPLE = `# Advanced Tables & Alignment Showcase
+
+Powered by **@m2d/table** — converts Markdown and GFM tables into styled Microsoft Word tables with custom borders, headers, and column alignments.
+
+## Multi-Column Performance Matrix
+
+| Feature | Browser Execution | Server Execution | Benchmark Status |
+| :--- | :---: | :---: | ---: |
+| **AST Parsing** | In-Memory (V8) | Node.js Runtime | < 5ms |
+| **LaTeX Math** | Native MathRuns | Native MathRuns | < 12ms |
+| **Mermaid SVG** | Client-rendered | Vector/Fallback | < 35ms |
+| **Table Layout** | Percentage Width | Percentage Width | < 8ms |
+| **DOCX Packaging** | Blob Stream | Buffer Stream | < 45ms |
+
+## Formatting Details
+- Header rows automatically set \`tableHeader: true\` to repeat across page breaks.
+- Text alignment in columns (\`:---\`, \`:---:\`, \`---:\`) is preserved in OpenXML.
+`;
+
+const PRESETS = [
+  { id: "all", label: "Showcase (All Plugins)", sample: ALL_PLUGINS_SAMPLE },
+  { id: "math", label: "Math Equations", sample: MATH_SAMPLE },
+  { id: "mermaid", label: "Mermaid Diagrams", sample: MERMAID_SAMPLE },
+  { id: "table", label: "Tables & Data", sample: TABLE_SAMPLE },
+  { id: "full", label: "Full Reference (sample.md)", sample: "" },
+] as const;
+
+type PresetId = (typeof PRESETS)[number]["id"];
 
 type TimingResult = {
   mode: "client" | "server";
@@ -52,54 +195,82 @@ type TimingResult = {
   sizeKb: number;
 };
 
+const ACTIVE_PLUGINS = [
+  { name: "@m2d/math", icon: Calculator, desc: "LaTeX Equations" },
+  { name: "@m2d/mermaid", icon: GitBranch, desc: "Mermaid Diagrams" },
+  { name: "@m2d/image", icon: ImageIcon, desc: "Images & SVGs" },
+  { name: "@m2d/table", icon: FileSpreadsheet, desc: "GFM Tables" },
+  { name: "@m2d/list", icon: ListOrdered, desc: "Nested Lists" },
+  { name: "@m2d/html", icon: Globe, desc: "HTML Tags" },
+];
+
 export const DocxDemo = () => {
-  const [docType, setDocType] = useState<"short" | "full">("short");
-  const [markdown, setMarkdown] = useState(SHORT_SAMPLE);
+  const [selectedPreset, setSelectedPreset] = useState<PresetId>("all");
+  const [markdown, setMarkdown] = useState(ALL_PLUGINS_SAMPLE);
   const [fullSampleText, setFullSampleText] = useState<string | null>(null);
   const [loadingSample, setLoadingSample] = useState(false);
 
   const [clientLoading, setClientLoading] = useState(false);
   const [serverLoading, setServerLoading] = useState(false);
   const [timing, setTiming] = useState<TimingResult | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Lazy-load full sample text when switched to "full"
   useEffect(() => {
-    if (docType === "full" && !fullSampleText) {
-      setLoadingSample(true);
-      fetch("/api/sample")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data?.markdown) {
-            setFullSampleText(data.markdown);
-            setMarkdown(data.markdown);
-          }
-        })
-        .catch((err) => console.error("Failed to load sample.md:", err))
-        .finally(() => setLoadingSample(false));
-    } else if (docType === "short") {
-      setMarkdown(SHORT_SAMPLE);
-    } else if (docType === "full" && fullSampleText) {
-      setMarkdown(fullSampleText);
+    if (selectedPreset === "full") {
+      if (!fullSampleText) {
+        setLoadingSample(true);
+        fetch("/api/sample")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data?.markdown) {
+              setFullSampleText(data.markdown);
+              setMarkdown(data.markdown);
+            }
+          })
+          .catch((err) => console.error("Failed to load sample.md:", err))
+          .finally(() => setLoadingSample(false));
+      } else {
+        setMarkdown(fullSampleText);
+      }
+    } else {
+      const match = PRESETS.find((p) => p.id === selectedPreset);
+      if (match) setMarkdown(match.sample);
     }
-  }, [docType, fullSampleText]);
+  }, [selectedPreset, fullSampleText]);
 
-  /** Client-Side Generation: 100% inside the browser */
+  /** Client-Side Generation: All plugins run 100% inside the browser */
   const handleClientGenerate = async () => {
     setClientLoading(true);
+    setErrorMsg(null);
     const start = performance.now();
     try {
-      const processor = unified().use(remarkParse).use(remarkGfm);
+      const processor = unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkMath);
       const mdast = processor.parse(markdown);
+
+      // Instantiate all plugins for client compilation
+      const plugins = [
+        htmlPlugin(),
+        mermaidPlugin(),
+        imagePlugin(),
+        listPlugin(),
+        tablePlugin(),
+        mathPlugin(),
+      ];
+
       const docxBlob = (await toDocx(
         mdast,
         {
           title:
-            docType === "full"
+            selectedPreset === "full"
               ? "Markdown Syntax Showcase"
-              : "Project Status Report",
+              : "md2docx Feature Showcase",
           creator: "md2docx Browser Engine",
         },
-        {},
+        { plugins },
         "blob",
       )) as Blob;
 
@@ -111,15 +282,20 @@ export const DocxDemo = () => {
       const link = document.createElement("a");
       link.href = url;
       link.download =
-        docType === "full" ? "full-sample-client.docx" : "client-document.docx";
+        selectedPreset === "full"
+          ? "full-sample-client.docx"
+          : `md2docx-${selectedPreset}-client.docx`;
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
 
+      const targetLabel =
+        PRESETS.find((p) => p.id === selectedPreset)?.label || "Custom Doc";
+
       setTiming({
         mode: "client",
-        targetName: docType === "full" ? "Full Sample" : "Custom Document",
+        targetName: targetLabel,
         renderTimeMs,
         networkTimeMs: 0,
         totalTimeMs: renderTimeMs,
@@ -127,6 +303,11 @@ export const DocxDemo = () => {
       });
     } catch (err) {
       console.error("Client conversion failed:", err);
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : "Client-side DOCX conversion encountered an error.",
+      );
     } finally {
       setClientLoading(false);
     }
@@ -135,11 +316,12 @@ export const DocxDemo = () => {
   /** Server-Side Generation: via API endpoint with server vs network profiling */
   const handleServerGenerate = async () => {
     setServerLoading(true);
+    setErrorMsg(null);
     const roundtripStart = performance.now();
     try {
       let response: Response;
-      if (docType === "full") {
-        // GET /api/docx converts monorepo root sample.md directly on server
+      if (selectedPreset === "full") {
+        // GET /api/docx converts sample.md directly on server
         response = await fetch("/api/docx");
       } else {
         // POST /api/docx converts provided markdown on server
@@ -167,15 +349,20 @@ export const DocxDemo = () => {
       const link = document.createElement("a");
       link.href = url;
       link.download =
-        docType === "full" ? "full-sample-server.docx" : "server-document.docx";
+        selectedPreset === "full"
+          ? "full-sample-server.docx"
+          : `md2docx-${selectedPreset}-server.docx`;
       document.body.appendChild(link);
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
 
+      const targetLabel =
+        PRESETS.find((p) => p.id === selectedPreset)?.label || "Custom Doc";
+
       setTiming({
         mode: "server",
-        targetName: docType === "full" ? "Full Sample" : "Custom Document",
+        targetName: targetLabel,
         renderTimeMs: serverRenderMs,
         networkTimeMs,
         totalTimeMs,
@@ -183,6 +370,11 @@ export const DocxDemo = () => {
       });
     } catch (err) {
       console.error("Server conversion failed:", err);
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : "Server-side DOCX conversion encountered an error.",
+      );
     } finally {
       setServerLoading(false);
     }
@@ -192,7 +384,7 @@ export const DocxDemo = () => {
     <section className="py-20 border-y border-border/40 bg-muted/20">
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
+        <div className="text-center max-w-2xl mx-auto mb-8">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-4">
             <Cpu className="w-3.5 h-3.5" />
             Interactive Playground
@@ -201,9 +393,38 @@ export const DocxDemo = () => {
             Universal Client & Server DOCX Generation
           </h2>
           <p className="text-muted-foreground mt-3 text-base">
-            Test the exact same Markdown document rendered 100% locally in your
-            browser vs. streamed from a server API route.
+            Test the complete plugin ecosystem rendered 100% locally in your
+            browser or streamed on demand from a Node.js server API.
           </p>
+        </div>
+
+        {/* Active Plugins Strip */}
+        <div className="mb-6 p-4 rounded-xl border border-border/70 bg-card/70 backdrop-blur-sm">
+          <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-foreground">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            Active Ecosystem Plugins Loaded in Pipeline:
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+            {ACTIVE_PLUGINS.map((plugin) => {
+              const Icon = plugin.icon;
+              return (
+                <div
+                  key={plugin.name}
+                  className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 border border-border/60 text-xs"
+                >
+                  <Icon className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <div className="overflow-hidden">
+                    <div className="font-medium text-foreground truncate">
+                      {plugin.name}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground truncate">
+                      {plugin.desc}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         {/* Comparison Overview */}
@@ -222,8 +443,8 @@ export const DocxDemo = () => {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Compiles directly in browser memory using WebAssembly & JS. Zero
-                server cost, 100% private, and works offline.
+                All 6 plugins active: Mermaid diagrams to SVG, LaTeX to
+                MathRuns, GFM tables, and images compiled in WebAssembly/JS.
               </p>
             </div>
           </div>
@@ -235,15 +456,16 @@ export const DocxDemo = () => {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-semibold text-foreground text-sm">
-                  Server-Side (Node / Edge API)
+                  Server-Side (Node API)
                 </span>
                 <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500">
                   HTTP Streaming
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Rendered on demand via <code>/api/docx</code>. Ideal for
-                automated exports, webhook pipelines, and background reports.
+                Rendered on demand via <code>/api/docx</code> with server-timing
+                diagnostics. Ideal for CLI exports, webhooks, and automated
+                batch runs.
               </p>
             </div>
           </div>
@@ -251,52 +473,45 @@ export const DocxDemo = () => {
 
         {/* Workspace Card */}
         <div className="rounded-2xl border border-border bg-card shadow-xl overflow-hidden">
-          {/* Document Selector & Toolbar */}
+          {/* Document Preset Selector & Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-b border-border bg-muted/40">
             {/* Presets */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
               <span className="text-xs font-medium text-muted-foreground mr-1">
-                Document:
+                Presets:
               </span>
-              <button
-                type="button"
-                onClick={() => setDocType("short")}
-                className={`text-xs px-2.5 py-1 rounded-md transition-colors font-medium ${
-                  docType === "short"
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                Project Status (Short)
-              </button>
-              <button
-                type="button"
-                onClick={() => setDocType("full")}
-                className={`text-xs px-2.5 py-1 rounded-md transition-colors font-medium ${
-                  docType === "full"
-                    ? "bg-primary text-primary-foreground shadow-xs"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {loadingSample
-                  ? "Loading sample.md..."
-                  : "Full Showcase (sample.md)"}
-              </button>
+              {PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => setSelectedPreset(preset.id)}
+                  className={`text-xs px-2.5 py-1 rounded-md transition-colors font-medium ${
+                    selectedPreset === preset.id
+                      ? "bg-primary text-primary-foreground shadow-xs"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {preset.id === "full" && loadingSample
+                    ? "Loading sample.md..."
+                    : preset.label}
+                </button>
+              ))}
             </div>
 
             {/* Actions */}
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() =>
-                  setMarkdown(
-                    docType === "full" && fullSampleText
-                      ? fullSampleText
-                      : SHORT_SAMPLE,
-                  )
-                }
+                onClick={() => {
+                  if (selectedPreset === "full" && fullSampleText) {
+                    setMarkdown(fullSampleText);
+                  } else {
+                    const match = PRESETS.find((p) => p.id === selectedPreset);
+                    if (match) setMarkdown(match.sample);
+                  }
+                }}
                 className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                title="Reset editor text"
+                title="Reset editor text to preset"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset</span>
@@ -309,11 +524,19 @@ export const DocxDemo = () => {
             <textarea
               value={markdown}
               onChange={(e) => setMarkdown(e.target.value)}
-              rows={docType === "full" ? 14 : 9}
+              rows={selectedPreset === "full" ? 14 : 10}
               className="w-full font-mono text-xs md:text-sm p-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y leading-relaxed"
               placeholder="Write Markdown here..."
             />
           </div>
+
+          {/* Error Banner */}
+          {errorMsg && (
+            <div className="mx-5 mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
 
           {/* Action Bar & Performance Metrics */}
           <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 px-5 py-4 border-t border-border bg-muted/30">

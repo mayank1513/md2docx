@@ -1,12 +1,18 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { toDocx } from "@m2d/core";
+import { listPlugin } from "@m2d/list";
+import { mathPlugin } from "@m2d/math";
+import { tablePlugin } from "@m2d/table";
 import { type NextRequest, NextResponse } from "next/server";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
 
-const docxProcessor = unified().use(remarkParse).use(remarkGfm);
+const docxProcessor = unified().use(remarkParse).use(remarkGfm).use(remarkMath);
+
+const getServerPlugins = () => [listPlugin(), tablePlugin(), mathPlugin()];
 
 /**
  * Generate a docx file from markdown on server side.
@@ -23,7 +29,7 @@ export const GET = async () => {
     const buffer = await toDocx(
       mdast,
       { title: "Markdown Syntax Showcase" },
-      {},
+      { plugins: getServerPlugins() },
       "arraybuffer",
     );
     const renderTimeMs = Math.round(performance.now() - start);
@@ -55,7 +61,12 @@ export const POST = async (req: NextRequest) => {
 
     const start = performance.now();
     const mdast = docxProcessor.parse(md);
-    const buffer = await toDocx(mdast, {}, {}, "arraybuffer");
+    const buffer = await toDocx(
+      mdast,
+      {},
+      { plugins: getServerPlugins() },
+      "arraybuffer",
+    );
     const renderTimeMs = Math.round(performance.now() - start);
 
     return new NextResponse(new Uint8Array(buffer as ArrayBuffer), {
