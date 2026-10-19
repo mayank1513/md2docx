@@ -16,14 +16,13 @@ import type { IImageOptions } from "docx";
 import sharp from "sharp";
 
 /** Supported raster image MIME types for DOCX */
-export const SUPPORTED_IMAGE_TYPES = [
-  "jpg",
-  "jpeg",
-  "png",
-  "gif",
-  "bmp",
-] as const;
+export const SUPPORTED_IMAGE_TYPES = ["jpg", "png", "gif", "bmp"] as const;
 export type SupportedImageType = (typeof SUPPORTED_IMAGE_TYPES)[number];
+
+/** Maps DOCX image types to Sharp format identifiers */
+const toSharpFormat = (
+  format: "jpg" | "png" | "gif",
+): "jpeg" | "png" | "gif" => (format === "jpg" ? "jpeg" : format);
 
 /** Minimal 1x1 transparent GIF binary data fallback */
 const TRANSPARENT_1X1_GIF = Buffer.from([
@@ -117,22 +116,27 @@ const handleDataUrls: NodeImageResolver = async (
   const transformation = calculateDimensions(rawW, rawH, options);
 
   const fallback = options?.fallbackImageType ?? "png";
-  const format = (
+  const rawFormat = (
     metadata.format ??
     mimeType.split("/")[1] ??
     fallback
   ).toLowerCase();
+  const docxType = (
+    rawFormat === "jpeg" ? "jpg" : rawFormat
+  ) as SupportedImageType;
 
-  if (SUPPORTED_IMAGE_TYPES.includes(format as any) && format !== "svg") {
+  if (SUPPORTED_IMAGE_TYPES.includes(docxType)) {
     return {
-      type: (format === "jpeg" ? "jpg" : format) as SupportedImageType,
+      type: docxType,
       data: buffer,
       transformation,
     };
   }
 
   // Convert SVG or unsupported formats (webp, avif, tiff) to raster PNG/JPEG
-  const convertedBuffer = await sharpImg.toFormat(fallback).toBuffer();
+  const convertedBuffer = await sharpImg
+    .toFormat(toSharpFormat(fallback))
+    .toBuffer();
   return {
     type: fallback,
     data: convertedBuffer,
@@ -170,17 +174,22 @@ const handleNonDataUrls: NodeImageResolver = async (
   const transformation = calculateDimensions(rawW, rawH, options);
 
   const fallback = options?.fallbackImageType ?? "png";
-  const format = (metadata.format ?? fallback).toLowerCase();
+  const rawFormat = (metadata.format ?? fallback).toLowerCase();
+  const docxType = (
+    rawFormat === "jpeg" ? "jpg" : rawFormat
+  ) as SupportedImageType;
 
-  if (SUPPORTED_IMAGE_TYPES.includes(format as any) && format !== "svg") {
+  if (SUPPORTED_IMAGE_TYPES.includes(docxType)) {
     return {
-      type: (format === "jpeg" ? "jpg" : format) as SupportedImageType,
+      type: docxType,
       data: buffer,
       transformation,
     };
   }
 
-  const convertedBuffer = await sharpImg.toFormat(fallback).toBuffer();
+  const convertedBuffer = await sharpImg
+    .toFormat(toSharpFormat(fallback))
+    .toBuffer();
   return {
     type: fallback,
     data: convertedBuffer,
@@ -219,7 +228,9 @@ const handleSvgNode = async (
   const transformation = calculateDimensions(rawW, rawH, options);
 
   const fallback = options?.fallbackImageType ?? "png";
-  const convertedBuffer = await sharpImg.toFormat(fallback).toBuffer();
+  const convertedBuffer = await sharpImg
+    .toFormat(toSharpFormat(fallback))
+    .toBuffer();
 
   return {
     type: fallback,
@@ -250,6 +261,7 @@ export const defaultNodeImageResolver: NodeImageResolver = async (
       type: "gif",
       data: TRANSPARENT_1X1_GIF,
       transformation: { width: 1, height: 1 },
+      isPlaceholder: true,
     };
   }
 };
