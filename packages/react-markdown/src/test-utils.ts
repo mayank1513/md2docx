@@ -20,13 +20,15 @@ function flattenHast(node: HastNode): HastNode[] {
   return [node, ...(node as Parent).children.flatMap(flattenHast)];
 }
 
+type ExpectFn = (actual: unknown) => { toBe: (expected: unknown) => void };
+
 /**
  * Expect MDAST tree to contain a specific node type.
  */
 export function expectMdastToContain(
   mdast: MdastRoot,
   type: MdastNode["type"],
-  expect?: Function,
+  expect?: ExpectFn,
 ) {
   const nodes = flattenMdast(mdast);
   const found = nodes.some((n) => n.type === type);
@@ -40,7 +42,7 @@ export function expectMdastToContain(
 export function expectHastToExclude(
   hast: HastRoot,
   tagName: string,
-  expect?: Function,
+  expect?: ExpectFn,
 ) {
   const nodes = flattenHast(hast);
   const found = nodes.some(
@@ -56,7 +58,7 @@ export function expectHastToExclude(
 export function expectSingleMdastNode(
   mdast: MdastRoot,
   type: MdastNode["type"],
-  expect?: Function,
+  expect?: ExpectFn,
 ) {
   const nodes = flattenMdast(mdast);
   const count = nodes.filter((n) => n.type === type).length;

@@ -1,7 +1,9 @@
 import { cleanup, render, screen } from "@testing-library/react";
+import type { Root as MdastRoot } from "mdast";
+import type React from "react";
 import { afterEach, describe, test } from "vitest";
 import md from "../../../../../sample.md?raw";
-import { uuid } from "../../utils";
+import { type AstRef, uuid } from "../../utils";
 import { Mdx } from "./mdx";
 
 describe.concurrent("Md", () => {
@@ -40,7 +42,7 @@ describe.concurrent("Md", () => {
 
   test("renders with custom component for tag", ({ expect }) => {
     const testId = "md-root-3";
-    const CustomP = ({ children }: any) => (
+    const CustomP = ({ children }: { children?: React.ReactNode }) => (
       <p data-testid="custom-p">{children}</p>
     );
     render(
@@ -73,14 +75,14 @@ describe.concurrent("Md", () => {
 
   test("passes mdastRef with parsed mdast", ({ expect }) => {
     const testId = `md-root-${crypto.randomUUID()}`;
-    const ref = { current: null as any };
+    const ref: AstRef = {};
     render(
       <Mdx data-testid={testId} astRef={ref}>
         # Title
       </Mdx>,
     );
     expect(ref.current).toBeTruthy();
-    expect(ref.current[0].mdast.type).toBe("root");
+    expect(ref.current?.[0]?.mdast.type).toBe("root");
   });
 
   test("renders nested React elements with MarkdownRecursive", ({ expect }) => {
@@ -101,7 +103,7 @@ describe.concurrent("Md", () => {
 
   test("supports remarkPlugins and rehypePlugins", async ({ expect }) => {
     const testId = `md-root-${crypto.randomUUID()}`;
-    const plugin = () => (tree: any) => {
+    const plugin = () => (tree: MdastRoot) => {
       tree.children.push({
         type: "paragraph",
         children: [{ type: "text", value: "plugin!" }],
@@ -118,7 +120,9 @@ describe.concurrent("Md", () => {
 
   test("Handle children tree containing custom components", ({ expect }) => {
     const testId = `md-root-${crypto.randomUUID()}`;
-    const CustomComponent = ({ children }: any) => <div>{children}</div>;
+    const CustomComponent = ({ children }: { children?: React.ReactNode }) => (
+      <div>{children}</div>
+    );
     render(
       <Mdx data-testid={testId}>
         <CustomComponent>

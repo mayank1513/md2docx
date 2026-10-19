@@ -91,16 +91,21 @@ globalThis.Image = class {
   }
 } as unknown as typeof Image;
 
-(SVGElement.prototype as any).getComputedTextLength = () => 100;
+(
+  SVGElement.prototype as unknown as {
+    getComputedTextLength: () => number;
+  }
+).getComputedTextLength = () => 100;
 
-(HTMLCanvasElement.prototype as any).getContext = vi.fn(() => {
-  return {
-    drawImage: vi.fn(),
-    toDataURL: vi.fn(() => "data:image/png;base64,fakepng"),
-  };
-});
+(HTMLCanvasElement.prototype as unknown as { getContext: unknown }).getContext =
+  vi.fn(() => {
+    return {
+      drawImage: vi.fn(),
+      toDataURL: vi.fn(() => "data:image/png;base64,fakepng"),
+    };
+  });
 
-(HTMLCanvasElement.prototype as any).toBlob = vi.fn(
+(HTMLCanvasElement.prototype as unknown as { toBlob: unknown }).toBlob = vi.fn(
   (callback: (blob: Blob) => void) => {
     const blob = new Blob(["fakepng"], { type: "image/png" });
     callback(blob);
