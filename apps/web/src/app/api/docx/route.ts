@@ -1,18 +1,29 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { toDocx } from "@m2d/core";
+import { nodeImagePlugin } from "@m2d/image-node";
 import { listPlugin } from "@m2d/list";
 import { mathPlugin } from "@m2d/math";
 import { tablePlugin } from "@m2d/table";
 import { type NextRequest, NextResponse } from "next/server";
+import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
 
-const docxProcessor = unified().use(remarkParse).use(remarkGfm).use(remarkMath);
+const docxProcessor = unified()
+  .use(remarkFrontmatter)
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath);
 
-const getServerPlugins = () => [listPlugin(), tablePlugin(), mathPlugin()];
+const getServerPlugins = () => [
+  listPlugin(),
+  tablePlugin(),
+  mathPlugin(),
+  nodeImagePlugin(),
+];
 
 /**
  * Generate a docx file from markdown on server side.

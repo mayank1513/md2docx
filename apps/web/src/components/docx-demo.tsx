@@ -22,6 +22,7 @@ import {
   RotateCcw,
   Server,
   Sparkles,
+  Trash2,
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -74,6 +75,8 @@ graph LR
 | \`@m2d/table\` | Plugin | OpenXML Tables & Alignments | Active |
 | \`@m2d/list\` | Plugin | Numbered & Bulleted Hierarchies | Active |
 | \`@m2d/html\` | Plugin | Raw HTML to DOCX Elements | Active |
+| \`@m2d/image\` | Plugin | Browser Image / Canvas Rasterizer | Active |
+| \`@m2d/image-node\` | Plugin | Node.js / Sharp Image Rasterizer | Active |
 
 ## 4. Nested Hierarchical Lists (@m2d/list)
 1. Engine Architecture
@@ -199,7 +202,8 @@ type TimingResult = {
 const ACTIVE_PLUGINS = [
   { name: "@m2d/math", icon: Calculator, desc: "LaTeX Equations" },
   { name: "@m2d/mermaid", icon: GitBranch, desc: "Mermaid Diagrams" },
-  { name: "@m2d/image", icon: ImageIcon, desc: "Images & SVGs" },
+  { name: "@m2d/image", icon: ImageIcon, desc: "Browser Images & SVGs" },
+  { name: "@m2d/image-node", icon: Server, desc: "Node Sharp Rasterizer" },
   { name: "@m2d/table", icon: FileSpreadsheet, desc: "GFM Tables" },
   { name: "@m2d/list", icon: ListOrdered, desc: "Nested Lists" },
   { name: "@m2d/html", icon: Globe, desc: "HTML Tags" },
@@ -215,6 +219,19 @@ export const DocxDemo = () => {
   const [serverLoading, setServerLoading] = useState(false);
   const [timing, setTiming] = useState<TimingResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [cacheCleared, setCacheCleared] = useState(false);
+
+  const handleClearCache = () => {
+    try {
+      if (typeof window !== "undefined" && window.indexedDB) {
+        window.indexedDB.deleteDatabase("m2d-cache");
+        setCacheCleared(true);
+        setTimeout(() => setCacheCleared(false), 2000);
+      }
+    } catch (err) {
+      console.error("Failed to clear IndexedDB cache:", err);
+    }
+  };
 
   // Lazy-load full sample text when switched to "full"
   useEffect(() => {
@@ -406,7 +423,7 @@ export const DocxDemo = () => {
             <Sparkles className="w-3.5 h-3.5 text-primary" />
             Active Ecosystem Plugins Loaded in Pipeline:
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
             {ACTIVE_PLUGINS.map((plugin) => {
               const Icon = plugin.icon;
               return (
@@ -445,8 +462,8 @@ export const DocxDemo = () => {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                All 6 plugins active: Mermaid diagrams to SVG, LaTeX to
-                MathRuns, GFM tables, and images compiled in WebAssembly/JS.
+                6 client plugins active: Mermaid diagrams to SVG, LaTeX to
+                MathRuns, GFM tables, and browser image rasterization.
               </p>
             </div>
           </div>
@@ -465,7 +482,8 @@ export const DocxDemo = () => {
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Rendered on demand via <code>/api/docx</code> with server-timing
+                Rendered on demand via <code>/api/docx</code> with{" "}
+                <code>@m2d/image-node</code> (Sharp) and server-timing
                 diagnostics. Ideal for CLI exports, webhooks, and automated
                 batch runs.
               </p>
@@ -502,6 +520,15 @@ export const DocxDemo = () => {
 
             {/* Actions */}
             <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleClearCache}
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                title="Clear browser IndexedDB diagram/image cache"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{cacheCleared ? "Cache Cleared!" : "Clear Cache"}</span>
+              </button>
               <button
                 type="button"
                 onClick={() => {

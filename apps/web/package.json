@@ -12,6 +12,7 @@
     "@m2d/core": "workspace:*",
     "@m2d/html": "workspace:*",
     "@m2d/image": "workspace:*",
+    "@m2d/image-node": "workspace:*",
     "@m2d/list": "workspace:*",
     "@m2d/math": "workspace:*",
     "@m2d/mermaid": "workspace:*",

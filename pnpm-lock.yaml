@@ -243,6 +243,9 @@ importers:
       '@m2d/image':
         specifier: workspace:*
         version: link:../../packages/image
+      '@m2d/image-node':
+        specifier: workspace:*
+        version: link:../../packages/image-node
       '@m2d/list':
         specifier: workspace:*
         version: link:../../packages/list

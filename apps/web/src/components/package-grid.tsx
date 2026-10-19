@@ -23,6 +23,10 @@ export const PackageGrid = async () => {
 
   const packages: { pkgId: string; meta: PackageMeta }[] = [];
 
+  if (!fs.existsSync(docsDir)) {
+    return null;
+  }
+
   try {
     const folders = fs.readdirSync(docsDir, { withFileTypes: true });
 
@@ -45,6 +49,10 @@ export const PackageGrid = async () => {
     }
   } catch (error) {
     console.error("Error reading docs directory:", error);
+  }
+
+  if (packages.length === 0) {
+    return null;
   }
 
   // Sort by title alphabetically
