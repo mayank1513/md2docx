@@ -48,6 +48,27 @@ $ npm install @m2d/core
 $ yarn add @m2d/core
 ```
 
+---
+
+## ⚡ Caching Architecture
+
+`@m2d/core` includes a persistent caching utility (`createPersistentCache`) powered by IndexedDB and an in-memory runtime cache. It deduplicates concurrent computations, persists expensive conversions across sessions, and supports cache bypass via `bypassCache`.
+
+### Why TTL Instead of Write-on-Read LRU?
+
+In document generation workflows, assets (raster images, Mermaid diagrams, KaTeX formulas) frequently contain multi-kilobyte or multi-megabyte binary payloads. We intentionally do **not** use write-on-read LRU (updating access timestamps during cache hits):
+
+1. **Eliminate Write Amplification**: IndexedDB does not support partial or delta record updates. Touching a timestamp on access forces IndexedDB to re-serialize and overwrite the entire record (including binary buffers) back to disk.
+2. **Lock-Free Concurrency**: `readonly` IndexedDB transactions run fully in parallel across async operations and browser tabs. Opening `readwrite` transactions on every read serializes execution, creating severe lock contention when rendering documents with dozens of images.
+3. **Zero Read Side-Effects**: Read operations are completely pure with no unhandled background promise rejections or quota spikes.
+
+Instead, records are timestamped when generated and cleaned up via age-based Time-To-Live (`simpleCleanup(maxAgeMinutes, namespace)`).
+
+### Consumer Validation (`shouldCache`)
+
+`@m2d/core` remains strictly domain-agnostic. Determining whether a result is valid to cache (e.g., non-empty buffers, successfully resolved images, error-free diagrams) is the responsibility of the consumer plugin via the `shouldCache(result)` predicate.
+
+---
 
 ## License
 
