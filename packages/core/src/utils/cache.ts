@@ -143,6 +143,12 @@ export const stableSerialize = (obj: unknown, ignoreKeys: string[]): string => {
     .join("|");
 };
 
+let xxhashPromise: Promise<Awaited<ReturnType<typeof xxhash>>> | null = null;
+const getXxhash = () => {
+  xxhashPromise ??= xxhash();
+  return xxhashPromise;
+};
+
 /**
  * Generates a consistent 64-bit hash key for caching based on input arguments.
  *
@@ -157,7 +163,7 @@ export const generateCacheKey = async (
   ignoreKeys: string[],
   ...args: unknown[]
 ): Promise<string> => {
-  const { h64ToString } = await xxhash();
+  const { h64ToString } = await getXxhash();
   const serialized = args
     .map((arg) => stableSerialize(arg, ignoreKeys))
     .join(",");
