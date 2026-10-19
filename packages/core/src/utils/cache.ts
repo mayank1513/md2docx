@@ -123,12 +123,14 @@ const getSerializableKeys = (
  * @param ignoreKeys - Keys to exclude from object serialization
  * @returns A stable, stringified representation
  */
-export const stableSerialize = (obj: unknown, ignoreKeys: string[]): string => {
+export const stableSerialize = (
+  obj: unknown,
+  ignoreKeys: string[] = [],
+): string => {
   if (Array.isArray(obj)) {
-    return obj
+    return `[${obj
       .map((item) => stableSerialize(item, ignoreKeys))
-      .sort()
-      .join(",");
+      .join(",")}]`;
   }
 
   if (typeof obj !== "object" || obj === null) {

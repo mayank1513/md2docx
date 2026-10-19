@@ -24,9 +24,12 @@ describe.concurrent("stableSerialize", () => {
     expect(stableSerialize(null, [])).toBe("null");
   });
 
-  it("should serialize arrays in sorted order", ({ expect }) => {
-    expect(stableSerialize([3, 1, 2], [])).toBe("1,2,3");
-    expect(stableSerialize(["c", "a", "b"], [])).toBe("a,b,c");
+  it("should preserve array element order", ({ expect }) => {
+    expect(stableSerialize([3, 1, 2], [])).toBe("[3,1,2]");
+    expect(stableSerialize(["c", "a", "b"], [])).toBe("[c,a,b]");
+    expect(stableSerialize(["a", "b"], [])).not.toBe(
+      stableSerialize(["b", "a"], []),
+    );
   });
 
   it("should serialize objects with sorted keys", ({ expect }) => {
