@@ -92,4 +92,21 @@ describe("toDocx", () => {
 
     expect(docxBlob).toBeInstanceOf(Blob);
   });
+
+  it("should not mutate defaultSectionProps.plugins array in place", async ({
+    expect,
+  }) => {
+    const defaultPlugins: any[] = [];
+    const defaultSectionProps = { plugins: defaultPlugins };
+    const sectionPlugins = [{ inline: () => [] }];
+
+    const mdast = { type: "root", children: [] } as any;
+    await toDocx(
+      [{ ast: mdast, props: { plugins: sectionPlugins } }],
+      {},
+      defaultSectionProps,
+    );
+
+    expect(defaultPlugins).toHaveLength(0);
+  });
 });

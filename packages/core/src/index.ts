@@ -37,7 +37,7 @@ export const toDocx = async (
 
   const finalDocxProps = { ...defaultDocxProps, ...docxProps };
 
-  const plugins = defaultSectionProps?.plugins ?? [];
+  const plugins = [...(defaultSectionProps?.plugins ?? [])];
 
   const processedAstInputs = await Promise.all(
     (Array.isArray(astInputs) ? astInputs : [{ ast: astInputs }]).map(
