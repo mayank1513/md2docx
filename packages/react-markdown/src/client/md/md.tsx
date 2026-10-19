@@ -1,7 +1,12 @@
 import equal from "fast-deep-equal";
 import { isValidElement, memo, type ReactNode } from "react";
 import { Fragment } from "react/jsx-runtime";
-import { type IntrinsicProps, Markdown, type MdProps } from "../../utils";
+import {
+  type IntrinsicProps,
+  Markdown,
+  type MdProps,
+  type MdxProps,
+} from "../../utils";
 
 const OptimizedMarkdown = memo(Markdown, equal);
 
@@ -55,7 +60,7 @@ export const Md = ({
   components,
   skipHtml,
   ...props
-}: MdProps) => {
+}: MdxProps) => {
   const Wrapper = wrapper ?? (Object.keys(props).length ? "div" : Fragment);
 
   return (

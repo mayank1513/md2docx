@@ -1,4 +1,4 @@
-import type { Element, Root as HastRoot, Properties } from "hast";
+import type { Element, Root as HastRoot } from "hast";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import type { Root } from "mdast";
 import type { FC, HTMLProps, JSX } from "react";
@@ -8,7 +8,7 @@ import remarkRehype, { type Options } from "remark-rehype";
 import { type PluggableList, unified } from "unified";
 import { visit } from "unist-util-visit";
 
-export const handleAriaAndDataProps = (properties: Properties) =>
+export const handleAriaAndDataProps = (properties: Record<string, unknown>) =>
   Object.fromEntries(
     Object.entries(properties).map(([key, value]) => [
       key.startsWith("data")
@@ -26,11 +26,6 @@ export const handleAriaAndDataProps = (properties: Properties) =>
 export const uuid = () => crypto.randomUUID();
 
 export type IntrinsicProps = JSX.IntrinsicElements[keyof JSX.IntrinsicElements];
-
-/**
- * Tags that are self-closing and must not contain children.
- */
-const emptyHtmlTags = ["br", "hr", "img", "input"];
 
 /**
  * Extended component props to support custom HTML components
@@ -125,7 +120,8 @@ export const Markdown = ({
         parent.children[index] = { type: "text", value: node.value };
       }
     }
-    if (node.type === "element") node.properties.src ||= null;
+    if (node.type === "element")
+      (node.properties as Record<string, unknown>).src ||= null;
   });
 
   return toJsxRuntime(hast, {
