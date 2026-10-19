@@ -3,7 +3,7 @@
   "changelog": [
     "@changesets/changelog-github",
     {
-      "repo": "turboforge-dev/turboforge"
+      "repo": "md2docx/md2docx"
     }
   ],
   "commit": false,
