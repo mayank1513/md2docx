@@ -28,4 +28,11 @@ describe.concurrent("toDocx", () => {
     await toDocx(mdast, {}, { plugins: [htmlPlugin()] });
     expect(consoleSpy).not.toHaveBeenCalled();
   });
+
+  it("should parse CSS border widths using base 10", async ({ expect }) => {
+    const htmlMd = '<div style="border: 5px solid red">Border content</div>';
+    const ast = unified().use(remarkParse).parse(htmlMd);
+    const docxBlob = await toDocx(ast, {}, { plugins: [htmlPlugin()] });
+    expect(docxBlob).toBeInstanceOf(Blob);
+  });
 });

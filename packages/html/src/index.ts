@@ -152,7 +152,7 @@ const parseCssBorders = (borderString: string | null): CssBorders => {
 
     // Assign parsed values to the correct property
     borders[key as keyof CssBorders] = {
-      ...(width ? { width: parseInt(width, 2) } : {}),
+      ...(width ? { width: parseInt(width, 10) } : {}),
       ...(style ? { style } : {}),
       ...(color ? { color } : {}),
     };
