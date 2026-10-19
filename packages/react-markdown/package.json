@@ -166,21 +166,21 @@
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
     "unified": "^11.0.5",
-    "unist-util-visit": "^5.0.0"
+    "unist-util-visit": "^5.1.0"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",
     "react": ">=16.8"
   },
   "devDependencies": {
-    "@testing-library/react": "^16.3.0",
-    "@types/hast": "^3.0.4",
+    "@testing-library/react": "^16.3.3",
+    "@types/hast": "^3.0.5",
     "@types/mdast": "^4.0.4",
-    "@types/node": "^26.6.4",
-    "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.7",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "tsup": "latest",
     "typescript": "latest"
   },

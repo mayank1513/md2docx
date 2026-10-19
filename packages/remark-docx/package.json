@@ -42,12 +42,12 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "docx": "^9.6.1",
+    "docx": "^9.12.0",
     "mdast2docx": "workspace:*"
   },
   "devDependencies": {
     "@types/mdast": "^4.0.4",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "tsup": "latest",

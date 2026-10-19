@@ -160,15 +160,15 @@
     "@m2d/math": "workspace:*",
     "@m2d/mermaid": "workspace:*",
     "@m2d/table": "workspace:*",
-    "docx": "^9.6.1"
+    "docx": "^9.12.0"
   },
   "devDependencies": {
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@types/unist": "^3.0.3",
     "node-fetch": "^3.3.2",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
-    "sharp": "^0.34.4",
+    "sharp": "^0.35.5",
     "tsup": "latest",
     "typescript": "latest",
     "unified": "^11.0.5"
