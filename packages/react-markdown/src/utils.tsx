@@ -14,7 +14,7 @@ export const handleAriaAndDataProps = (properties: Record<string, unknown>) =>
       key.startsWith("data")
         ? key.replace(
             /[A-Z]+(?![a-z])|[A-Z]/g,
-            (match) => "-" + match.toLowerCase(),
+            (match) => `-${match.toLowerCase()}`,
           )
         : key.startsWith("aria")
           ? key.replace("aria", "aria-").toLowerCase()

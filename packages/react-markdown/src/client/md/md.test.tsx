@@ -9,13 +9,13 @@ describe.concurrent("md", () => {
 
   test("renders with custom className", ({ expect }) => {
     const clx = "my-class";
-    const testId = "md-" + uuid();
+    const testId = `md-${uuid()}`;
     render(<Md className={clx} data-testid={testId} />);
     expect(screen.getByTestId(testId).classList).toContain(clx);
   });
 
   test("parses markdown", ({ expect }) => {
-    const testId = "md-" + uuid();
+    const testId = `md-${uuid()}`;
     render(<Md data-testid={testId}>Hello **world**</Md>);
     expect(screen.getByTestId(testId).textContent).toBe("Hello world");
   });
@@ -31,7 +31,7 @@ describe.concurrent("md", () => {
 
   test("renders nested JSX elements", ({ expect }) => {
     render(
-      <Md data-testid={"md-" + uuid()}>
+      <Md data-testid={`md-${uuid()}`}>
         <div data-testid="outer">
           <span data-testid="inner">Nested</span>
         </div>

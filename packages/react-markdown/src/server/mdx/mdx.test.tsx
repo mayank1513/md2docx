@@ -61,7 +61,7 @@ describe.concurrent("Md", () => {
   });
 
   test("skipHtml", ({ expect }) => {
-    const testId = "md-" + uuid();
+    const testId = `md-${uuid()}`;
     render(
       <Mdx
         data-testid={testId}
@@ -72,7 +72,7 @@ describe.concurrent("Md", () => {
   });
 
   test("passes mdastRef with parsed mdast", ({ expect }) => {
-    const testId = "md-root-" + crypto.randomUUID();
+    const testId = `md-root-${crypto.randomUUID()}`;
     const ref = { current: null as any };
     render(
       <Mdx data-testid={testId} astRef={ref}>
@@ -84,7 +84,7 @@ describe.concurrent("Md", () => {
   });
 
   test("renders nested React elements with MarkdownRecursive", ({ expect }) => {
-    const testId = "md-root-" + crypto.randomUUID();
+    const testId = `md-root-${crypto.randomUUID()}`;
     render(
       <Mdx data-testid={testId}>
         <div>
@@ -100,7 +100,7 @@ describe.concurrent("Md", () => {
   });
 
   test("supports remarkPlugins and rehypePlugins", async ({ expect }) => {
-    const testId = "md-root-" + crypto.randomUUID();
+    const testId = `md-root-${crypto.randomUUID()}`;
     const plugin = () => (tree: any) => {
       tree.children.push({
         type: "paragraph",
@@ -117,7 +117,7 @@ describe.concurrent("Md", () => {
   });
 
   test("Handle children tree containing custom components", ({ expect }) => {
-    const testId = "md-root-" + crypto.randomUUID();
+    const testId = `md-root-${crypto.randomUUID()}`;
     const CustomComponent = ({ children }: any) => <div>{children}</div>;
     render(
       <Mdx data-testid={testId}>
