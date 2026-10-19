@@ -1,1 +1,1 @@
-export * from "./node-image";
+export * from "@m2d/image-node";

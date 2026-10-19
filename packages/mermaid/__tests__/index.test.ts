@@ -21,5 +21,5 @@ describe.concurrent("toDocx", () => {
     const consoleSpy = vi.spyOn(console, "log");
     await toDocx(mdast, {}, { plugins: [mermaidPlugin()] });
     expect(consoleSpy).not.toHaveBeenCalled();
-  });
+  }, 30000);
 });

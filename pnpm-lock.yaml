@@ -479,6 +479,37 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
 
+  packages/image-node:
+    dependencies:
+      '@m2d/core':
+        specifier: workspace:*
+        version: link:../core
+      sharp:
+        specifier: ^0.35.5
+        version: 0.35.5(@types/node@26.6.5)
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.5
+      docx:
+        specifier: ^9.12.0
+        version: 9.12.0
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1(supports-color@7.2.0)
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0(supports-color@7.2.0)
+      tsup:
+        specifier: latest
+        version: 9.0.0(jiti@2.7.0)(postcss@8.5.30)(typescript@6.0.3)(yaml@2.9.1)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
+
   packages/list:
     dependencies:
       '@m2d/core':
@@ -576,6 +607,9 @@ importers:
       '@m2d/image':
         specifier: workspace:*
         version: link:../image
+      '@m2d/image-node':
+        specifier: workspace:*
+        version: link:../image-node
       '@m2d/list':
         specifier: workspace:*
         version: link:../list

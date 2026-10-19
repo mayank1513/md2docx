@@ -9,6 +9,7 @@
         "@m2d/core",
         "@m2d/html",
         "@m2d/image",
+        "@m2d/image-node",
         "@m2d/list",
         "@m2d/math",
         "@m2d/mdast",
