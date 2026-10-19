@@ -25,6 +25,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
@@ -248,7 +249,8 @@ export const DocxDemo = () => {
       const processor = unified()
         .use(remarkParse)
         .use(remarkGfm)
-        .use(remarkMath);
+        .use(remarkMath)
+        .use(remarkFrontmatter);
       const mdast = processor.parse(markdown);
 
       // Instantiate all plugins for client compilation
