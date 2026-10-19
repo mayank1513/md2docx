@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Bypass check for GitHub Actions or automated commits
+if [ "$GITHUB_ACTIONS" = "true" ]; then
+  exit 0
+fi
+
 pnpm typecheck
 
 # Run a topological build to ensure the graph is valid
