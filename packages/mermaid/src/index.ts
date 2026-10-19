@@ -1,11 +1,10 @@
-import {
-  Code,
-  type IPlugin,
-  type Parent,
-  type PhrasingContent,
-  type Root,
-  type RootContent,
-  type SVG,
+import type {
+  IPlugin,
+  Parent,
+  PhrasingContent,
+  Root,
+  RootContent,
+  SVG,
 } from "@m2d/core";
 import {
   type CacheConfigType,
@@ -55,6 +54,8 @@ const NAMESPACE = "mmd";
 const defaultMermaidConfig: MermaidConfig = {
   fontFamily: "sans-serif",
   suppressErrorRendering: true,
+  htmlLabels: false,
+  flowchart: { htmlLabels: false },
 };
 
 const defaultCacheConfig = {
@@ -72,7 +73,14 @@ export const mermaidPlugin: (options?: IMermaidPluginOptions) => IPlugin = (
   options,
 ) => {
   // Merge user config with defaults and initialize Mermaid
-  const finalConfig = { ...defaultMermaidConfig, ...options?.mermaidConfig };
+  const finalConfig: MermaidConfig = {
+    ...defaultMermaidConfig,
+    ...options?.mermaidConfig,
+    flowchart: {
+      ...defaultMermaidConfig.flowchart,
+      ...options?.mermaidConfig?.flowchart,
+    },
+  };
   mermaid.initialize(finalConfig);
 
   const cacheConfig = {

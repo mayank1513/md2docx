@@ -58,11 +58,11 @@ $$
 ## 2. Mermaid Diagram (@m2d/mermaid + @m2d/image)
 \`\`\`mermaid
 graph LR
-    A[Markdown Source] --> B[Unified / Remark Parser]
-    B --> C[Extended MDAST Tree]
-    C --> D[Plugin Pipeline]
-    D --> E[@m2d/core Converter]
-    E --> F[docx Document (.docx)]
+    A["Markdown Source"] --> B["Unified / Remark Parser"]
+    B --> C["Extended MDAST Tree"]
+    C --> D["Plugin Pipeline"]
+    D --> E["@m2d/core Converter"]
+    E --> F["docx Document (.docx)"]
 \`\`\`
 
 ## 3. Data Tables (@m2d/table)

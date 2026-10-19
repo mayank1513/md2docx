@@ -383,12 +383,12 @@ $$
 
 ```mermaid
 graph TD
-    A[Markdown Source] --> B[Unified / Remark Parser]
-    B --> C[Extended MDAST Tree]
-    C --> D[Plugin Pipeline]
-    D --> E[@m2d/core Converter]
-    E --> F[docx Document]
-    F --> G[Packer: Blob / Buffer / Stream]
+    A["Markdown Source"] --> B["Unified / Remark Parser"]
+    B["Unified / Remark Parser"] --> C["Extended MDAST Tree"]
+    C["Extended MDAST Tree"] --> D["Plugin Pipeline"]
+    D["Plugin Pipeline"] --> E["@m2d/core Converter"]
+    E["@m2d/core Converter"] --> F["docx Document"]
+    F["docx Document"] --> G["Packer: Blob / Buffer / Stream"]
 ```
 
 ### Sequence Diagrams
