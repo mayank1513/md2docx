@@ -1,9 +1,11 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: Use of any is ok for test files */
 import "./setup";
 import fs from "node:fs";
 import path from "node:path";
 import { toDocx } from "@m2d/core";
 import { htmlPlugin } from "@m2d/html";
 import { mermaidPlugin } from "@m2d/mermaid";
+import * as docx from "docx";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
@@ -77,5 +79,72 @@ describe.concurrent("toDocx", () => {
     expect(placeholderImg.data).toBeInstanceOf(ArrayBuffer);
     expect((placeholderImg.data as ArrayBuffer).byteLength).toBe(43);
     expect(placeholderImg.type).toBe("gif");
+  });
+
+  it("drops the node completely in silent errorMode", async ({ expect }) => {
+    const plugin = imagePlugin({ errorMode: "silent" });
+    const failedNode: any = {
+      type: "image",
+      data: { isError: true, altText: { name: "Missing" } },
+    };
+    const runs = (plugin.inline as any)(docx, failedNode, {});
+    expect(runs).toEqual([]);
+  });
+
+  it("renders a muted text run in warn errorMode", async ({ expect }) => {
+    const plugin = imagePlugin({ errorMode: "warn" });
+    const failedNode: any = {
+      type: "image",
+      data: { isError: true, altText: { name: "Broken Banner" } },
+    };
+    const runs = (plugin.inline as any)(docx, failedNode, {});
+    expect(runs).toHaveLength(1);
+    expect(runs[0]).toBeInstanceOf(docx.TextRun);
+  });
+
+  it("handles placeholder errorMode without placeholder option", async ({
+    expect,
+  }) => {
+    const plugin = imagePlugin({ errorMode: "placeholder" });
+    const missingPlaceholderNode: any = {
+      type: "image",
+      data: {
+        isError: true,
+        errorReason: "placeholder-not-configured",
+        altText: { name: "Hero" },
+      },
+    };
+    const runs = (plugin.inline as any)(docx, missingPlaceholderNode, {});
+    expect(runs).toHaveLength(1);
+    expect(runs[0]).toBeInstanceOf(docx.TextRun);
+  });
+
+  it("handles Mermaid diagram fallback modes", async ({ expect }) => {
+    const createMermaidNode = () => ({
+      type: "svg",
+      data: {
+        isError: true,
+        mermaid: "graph TD\n  A --> B",
+        error: new Error("Syntax error"),
+      },
+    });
+
+    const pluginCode = imagePlugin();
+    const codeRuns = (pluginCode.inline as any)(docx, createMermaidNode(), {});
+    expect(codeRuns).toHaveLength(2);
+    expect(codeRuns[0]).toBeInstanceOf(docx.TextRun);
+
+    const pluginWarn = imagePlugin({ mermaidFallback: "warn" });
+    const warnRuns = (pluginWarn.inline as any)(docx, createMermaidNode(), {});
+    expect(warnRuns).toHaveLength(1);
+    expect(warnRuns[0]).toBeInstanceOf(docx.TextRun);
+
+    const pluginSilent = imagePlugin({ mermaidFallback: "silent" });
+    const silentRuns = (pluginSilent.inline as any)(
+      docx,
+      createMermaidNode(),
+      {},
+    );
+    expect(silentRuns).toEqual([]);
   });
 });

@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: typecasting necessary */
 import path from "node:path";
 import type {
   Image as AstImage,
@@ -12,6 +11,14 @@ import type {
   SVG,
 } from "@m2d/core";
 import type { Definitions } from "@m2d/core/utils";
+import {
+  createFallbackRuns,
+  type ImageErrorMode,
+  type MermaidFallbackMode,
+} from "./fallback";
+
+export type { ImageErrorMode, MermaidFallbackMode };
+
 import type { IImageOptions } from "docx";
 import sharp from "sharp";
 
@@ -24,13 +31,14 @@ const toSharpFormat = (
   format: "jpg" | "png" | "gif",
 ): "jpeg" | "png" | "gif" => (format === "jpg" ? "jpeg" : format);
 
-/** Minimal 1x1 transparent GIF binary data fallback */
-const TRANSPARENT_1X1_GIF = Buffer.from([
-  0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0x21, 0xf9, 0x04, 0x01, 0x00, 0x00, 0x00,
-  0x00, 0x2c, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02,
-  0x44, 0x01, 0x00, 0x3b,
-]);
+export interface NodeImageErrorData {
+  isError: true;
+  error?: Error;
+  errorReason?: string;
+  data: Buffer;
+  type: "png";
+  transformation: { width: number; height: number };
+}
 
 /**
  * Resolves an image source URL or buffer into docx IImageOptions.
@@ -39,7 +47,7 @@ export type NodeImageResolver = (
   src: string,
   options?: INodeImagePluginOptions,
   node?: AstImage | SVG,
-) => Promise<IImageOptions>;
+) => Promise<IImageOptions | NodeImageErrorData>;
 
 export interface INodeImagePluginOptions {
   /** Optional directory prefix for resolving relative local file paths */
@@ -54,6 +62,25 @@ export interface INodeImagePluginOptions {
   dpi?: number;
   /** Optional custom resolver */
   imageResolver?: NodeImageResolver;
+  /**
+   * General image error behavior.
+   * - "warn": Emits a styled, muted text run with alt text.
+   * - "silent": Drops the node completely (0 relationships, 0 XML overhead).
+   * - "throw": Rejects the toDocx conversion promise with the underlying Error.
+   * - "placeholder": Uses custom options.placeholder image. If placeholder is omitted, emits a warning badge.
+   * @default "warn"
+   */
+  errorMode?: ImageErrorMode;
+  /**
+   * Fallback strategy specifically for failed Mermaid diagrams (when data.mermaid is present).
+   * - "code": Renders the raw Mermaid diagram definition as a formatted monospace code block.
+   * - "warn": Emits a warning badge [Mermaid Diagram Error: ...].
+   * - "silent": Drops the node completely.
+   * @default "code" (or inherits "silent" if errorMode is "silent")
+   */
+  mermaidFallback?: MermaidFallbackMode;
+  /** Custom placeholder image source (path, URL, or data URL) */
+  placeholder?: string;
 }
 
 /**
@@ -198,11 +225,7 @@ const handleSvgNode = async (
   }
 
   if (!svgString) {
-    return {
-      type: "gif",
-      data: TRANSPARENT_1X1_GIF,
-      transformation: { width: 1, height: 1 },
-    };
+    throw new Error("Empty SVG string encountered");
   }
 
   const buffer = Buffer.from(svgString, "utf8");
@@ -241,13 +264,52 @@ export const defaultNodeImageResolver: NodeImageResolver = async (
     }
     return await handleNonDataUrls(src, options);
   } catch (error) {
+    if (options?.errorMode === "throw") {
+      throw error;
+    }
+
+    const isMermaid = Boolean(
+      (node as { data?: { mermaid?: string } })?.data?.mermaid,
+    );
+
+    if (options?.errorMode === "placeholder" && !isMermaid) {
+      if (options?.placeholder) {
+        try {
+          if (options.placeholder.startsWith("data:")) {
+            return await handleDataUrls(options.placeholder, options);
+          }
+          return await handleNonDataUrls(options.placeholder, options);
+        } catch (placeholderErr) {
+          console.warn(
+            `[m2d/image-node] Failed to load placeholder ${options.placeholder}:`,
+            placeholderErr,
+          );
+        }
+      } else {
+        console.warn(
+          "[m2d/image-node] errorMode is 'placeholder' but options.placeholder is not provided.",
+        );
+        const errorData: NodeImageErrorData = {
+          isError: true,
+          errorReason: "placeholder-not-configured",
+          error: error as Error,
+          data: Buffer.alloc(0),
+          type: "png",
+          transformation: { width: 1, height: 1 },
+        };
+        return errorData;
+      }
+    }
+
     console.error(`[m2d/image-node] Error resolving image: ${src}`, error);
-    return {
-      type: "gif",
-      data: TRANSPARENT_1X1_GIF,
+    const errorData: NodeImageErrorData = {
+      isError: true,
+      error: error as Error,
+      data: Buffer.alloc(0),
+      type: "png",
       transformation: { width: 1, height: 1 },
-      isPlaceholder: true,
     };
+    return errorData;
   }
 };
 
@@ -275,10 +337,16 @@ const collectImagePromises = (
           (node as AstImage).alt ??
           (url.startsWith("data:") ? "" : url.split("/").pop());
 
+        const existingData = (node as AstImage).data;
+        const resolved = await resolver(url, options, node as AstImage | SVG);
         node.data = {
-          ...(await resolver(url, options, node as AstImage | SVG)),
-          altText: { description: alt, name: alt, title: alt },
-          ...(node as AstImage).data,
+          ...existingData,
+          ...resolved,
+          altText: existingData?.altText ?? {
+            description: alt,
+            name: alt,
+            title: alt,
+          },
         };
       })(),
     );
@@ -306,8 +374,13 @@ export const nodeImagePlugin: (options?: INodeImagePluginOptions) => IPlugin = (
       if (/^(image|svg)/.test(node.type)) {
         (node as EmptyNode)._type = node.type;
         node.type = "";
-        // @ts-expect-error -- extra props used for docx ImageRun
-        return [new docx.ImageRun({ ...(node as AstImage).data, ...runProps })];
+        const data = (node as AstImage).data as
+          | (Record<string, unknown> & Partial<IImageOptions>)
+          | undefined;
+        if (data && "isError" in data && data.isError) {
+          return createFallbackRuns(docx, data, options, runProps);
+        }
+        return [new docx.ImageRun({ ...(data as IImageOptions), ...runProps })];
       }
       return [];
     },

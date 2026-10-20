@@ -54,6 +54,8 @@ A comprehensive living document showcasing standard Markdown, GitHub Flavored Ma
   - [Git Graphs](#git-graphs)
   - [Mindmaps](#mindmaps)
   - [Quadrant Charts](#quadrant-charts)
+  - [Auto-Fixable Flowchart](#auto-fixable-flowchart)
+  - [Failing Diagram Fallback](#failing-diagram-fallback)
 - [11. Definition Lists](#11-definition-lists)
 - [12. Admonitions & Callouts](#12-admonitions--callouts)
 - [13. HTML Elements](#13-html-elements)
@@ -291,6 +293,9 @@ PNG Bitmap Image:
 Base64 Data URL Image:
 ![Yellow Dot](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAYElEQVQYV2NkgIL//xmCgcxMIHaGCu0F0tMZGRnWgviMIAKoqANIlcM0odGtQMU1jEBFPkCJzTgUwYS9QAoPAHn2BBQeBCn8AFTET0DhR5IUEm21J9DabQQ9Q3TwEBvgACT3J/F3uWU/AAAAAElFTkSuQmCC)
 
+Failing Image (Default `errorMode: "warn"` fallback):
+![Broken Remote Image](https://example.com/non-existent-broken-image-404.png)
+
 ### HTML Images with Styling
 
 <p align="center">
@@ -510,6 +515,27 @@ quadrantChart
     Core DOCX Conversion: [0.45, 0.95]
     Web Showcase Demo: [0.35, 0.85]
     Custom HTML Embeds: [0.80, 0.60]
+```
+
+### Auto-Fixable Flowchart
+
+Flowchart demonstrating auto-repair of unquoted special characters (`:`, `/`, parentheses):
+
+```mermaid
+graph TD
+    Start[Init: /api/v1/auth] --> Decision{Status: (200 OK)?}
+    Decision -->|Success: redirect| Dashboard[User Dashboard]
+    Decision -->|Error: 401| Login[Login Page]
+```
+
+### Failing Diagram Fallback
+
+Diagram with unrecoverable invalid syntax demonstrating the default `mermaidFallback: "code"` fallback (renders original diagram source in monospace):
+
+```mermaid
+graph TD
+    A[Start] --> !!! INVALID SYNTAX -- broken tokens ???
+    B <<<--->>> C
 ```
 
 ---

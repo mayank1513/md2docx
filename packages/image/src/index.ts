@@ -18,8 +18,15 @@ import {
 } from "@m2d/core/cache";
 import type { Definitions } from "@m2d/core/utils";
 import type { IImageOptions } from "docx";
+import {
+  createFallbackRuns,
+  type ImageErrorMode,
+  type MermaidFallbackMode,
+} from "./fallback";
 import { fixGeneratedSvg, handleSvg } from "./svg-utils";
-import { getImageMimeType, getPlaceHolderImage } from "./utils";
+import { getImageMimeType } from "./utils";
+
+export type { ImageErrorMode, MermaidFallbackMode };
 
 /**
  * List of supported image MIME types that can be embedded directly in DOCX.
@@ -29,6 +36,15 @@ const SUPPORTED_IMAGE_TYPES = ["jpeg", "jpg", "bmp", "gif", "png"] as const;
 
 /** namespace used for cleaning up the idb cache */
 const NAMESPACE = "img";
+
+export interface ImageErrorData {
+  isError: true;
+  error?: Error;
+  errorReason?: string;
+  data: ArrayBuffer;
+  type: "png";
+  transformation: { width: number; height: number };
+}
 
 /**
  * A resolver function that transforms an image `src` into
@@ -42,7 +58,7 @@ export type ImageResolver = (
   src: string,
   options: IDefaultImagePluginOptions,
   node?: Image | SVG,
-) => Promise<IImageOptions>;
+) => Promise<IImageOptions | ImageErrorData>;
 
 /**
  * Full configuration for the image plugin including defaulted and required options.
@@ -68,6 +84,25 @@ export interface IDefaultImagePluginOptions {
 
   /** Optional placeholder image (base64 or URL) used on errors */
   placeholder?: string;
+
+  /**
+   * General image error behavior.
+   * - "warn": Emits a styled, muted text run with alt text.
+   * - "silent": Drops the node completely (0 relationships, 0 XML overhead).
+   * - "throw": Rejects the toDocx conversion promise with the underlying Error.
+   * - "placeholder": Uses custom options.placeholder image. If placeholder is omitted, emits a warning badge.
+   * @default "warn"
+   */
+  errorMode?: ImageErrorMode;
+
+  /**
+   * Fallback strategy specifically for failed Mermaid diagrams (when data.mermaid is present).
+   * - "code": Renders the raw Mermaid diagram definition as a formatted monospace code block.
+   * - "warn": Emits a warning badge [Mermaid Diagram Error: ...].
+   * - "silent": Drops the node completely.
+   * @default "code" (or inherits "silent" if errorMode is "silent")
+   */
+  mermaidFallback?: MermaidFallbackMode;
 
   /**
    * In-memory cache object, useful for cache sharing across plugins/tabs.
@@ -251,8 +286,51 @@ const defaultImageResolver: ImageResolver = async (src, options, node) => {
     };
     return imgOptions;
   } catch (error) {
-    console.error(`Error resolving image: ${src}`, error);
-    return getPlaceHolderImage(options);
+    if (options.errorMode === "throw") {
+      throw error;
+    }
+
+    const isMermaid = Boolean(
+      (node as { data?: { mermaid?: string } })?.data?.mermaid,
+    );
+
+    if (options.errorMode === "placeholder" && !isMermaid) {
+      if (options.placeholder) {
+        try {
+          return await (options.placeholder.startsWith("data:")
+            ? handleDataUrls(options.placeholder, options)
+            : handleNonDataUrls(options.placeholder, options));
+        } catch (placeholderErr) {
+          console.warn(
+            `[m2d/image] Failed to load placeholder ${options.placeholder}:`,
+            placeholderErr,
+          );
+        }
+      } else {
+        console.warn(
+          "[m2d/image] errorMode is 'placeholder' but options.placeholder is not provided.",
+        );
+        const errorData: ImageErrorData = {
+          isError: true,
+          errorReason: "placeholder-not-configured",
+          error: error as Error,
+          data: new ArrayBuffer(0),
+          type: "png",
+          transformation: { width: 1, height: 1 },
+        };
+        return errorData;
+      }
+    }
+
+    console.error(`[m2d/image] Error resolving image: ${src}`, error);
+    const errorData: ImageErrorData = {
+      isError: true,
+      error: error as Error,
+      data: new ArrayBuffer(0),
+      type: "png",
+      transformation: { width: 1, height: 1 },
+    };
+    return errorData;
   }
 };
 
@@ -268,6 +346,8 @@ const defaultOptions: IDefaultImagePluginOptions = {
   maxW: 6.3,
   maxH: 9.7,
   dpi: 96,
+  errorMode: "warn",
+  mermaidFallback: "code",
   cacheConfig: {
     cacheMode: "both",
     ignoreKeys: ["dpi", "cacheConfig", "type", "alt"],
@@ -283,10 +363,10 @@ const defaultOptions: IDefaultImagePluginOptions = {
  * @param imgOpts - Resolved image options to validate.
  * @returns True if the image is valid and should be cached.
  */
-const shouldCacheImage = (imgOpts: IImageOptions) => {
+const shouldCacheImage = (imgOpts: IImageOptions | ImageErrorData) => {
   if (!imgOpts) return false;
-  // biome-ignore lint/suspicious/noExplicitAny: inspect internal placeholder flag
-  if ((imgOpts as any).isPlaceholder) return false;
+  if ("isPlaceholder" in imgOpts && imgOpts.isPlaceholder) return false;
+  if ("isError" in imgOpts && imgOpts.isError) return false;
   if (!imgOpts.data) return false;
   if (typeof imgOpts.data === "string" && imgOpts.data.length === 0)
     return false;
@@ -343,14 +423,32 @@ export const imagePlugin: (options?: IImagePluginOptions) => IPlugin = (
               (node as Image).alt ??
               (src?.startsWith("data:") ? "" : (src?.split("/")?.pop() ?? ""));
 
+            const existingData = (node as Image | SVG).data;
+            const existingAltText = (
+              existingData as
+                | {
+                    altText?: {
+                      name?: string;
+                      description?: string;
+                      title?: string;
+                    };
+                  }
+                | undefined
+            )?.altText;
+            const resolved = await options.imageResolver(
+              src,
+              options,
+              node as Image | SVG,
+            );
+
             node.data = {
-              ...(await options.imageResolver(
-                src,
-                options,
-                node as Image | SVG,
-              )),
-              altText: { description: alt, name: alt, title: alt },
-              ...(node as Image | SVG).data,
+              ...existingData,
+              ...resolved,
+              altText: existingAltText ?? {
+                description: alt,
+                name: alt,
+                title: alt,
+              },
             };
           })(),
         );
@@ -370,8 +468,13 @@ export const imagePlugin: (options?: IImagePluginOptions) => IPlugin = (
       if (/^(image|svg)/.test(node.type)) {
         (node as EmptyNode)._type = node.type;
         node.type = "";
-        // @ts-expect-error -- extra props used for ImageRun
-        return [new docx.ImageRun({ ...(node as Image).data, ...runProps })];
+        const data = (node as Image).data as
+          | (Record<string, unknown> & Partial<IImageOptions>)
+          | undefined;
+        if (data && "isError" in data && data.isError) {
+          return createFallbackRuns(docx, data, options, runProps);
+        }
+        return [new docx.ImageRun({ ...(data as IImageOptions), ...runProps })];
       }
       return [];
     },

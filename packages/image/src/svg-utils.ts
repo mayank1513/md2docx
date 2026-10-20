@@ -3,7 +3,6 @@ import { parseSvg } from "@svg-fns/io";
 import { svgToBlob } from "@svg-fns/svg2img";
 import type { IImageOptions } from "docx";
 import type { IDefaultImagePluginOptions } from ".";
-import { getPlaceHolderImage } from "./utils";
 
 let globalContainer: HTMLDivElement;
 
@@ -120,73 +119,68 @@ export const handleSvg = async (
   svgNode: SVG,
   options: IDefaultImagePluginOptions,
 ): Promise<IImageOptions> => {
-  try {
-    const value = svgNode.value;
-    let svg: string;
-    let isGantt = false;
+  const value = svgNode.value;
+  let svg: string;
+  let isGantt = false;
 
-    if (typeof value === "string") {
-      svg = value;
-    } else {
-      const rendered = await value;
-      if (!rendered) return getPlaceHolderImage(options);
-      svg = options.fixGeneratedSvg(rendered.svg, rendered);
-      isGantt = rendered.diagramType === "gantt";
-    }
-
-    let cropped = { svg, scale: 1 };
-    if (!isGantt && svg) {
-      try {
-        cropped = await tightlyCropSvg(svg, getContainer(options));
-      } catch (cropErr) {
-        console.warn(
-          "[handleSvg] tightlyCropSvg failed, falling back to raw SVG:",
-          cropErr,
-        );
-        cropped = { svg, scale: 1 };
-      }
-    }
-
-    const { blob, width, height } = await svgToBlob(cropped.svg, {
-      format: options.fallbackImageType,
-      scale: options.scale,
-      quality: options.quality,
-    });
-
-    if (!blob || !width || !height) {
-      throw new Error("Failed to convert SVG to raster");
-    }
-
-    // Special case: Gantt charts can be upscaled safely
-    if (isGantt) {
-      options.scale = Math.max(
-        options.scale,
-        Math.floor(
-          Math.min(
-            (innerWidth * options.scale) / width,
-            (innerHeight * options.scale) / height,
-          ),
-        ),
-      );
-    }
-
-    const scale =
-      Math.min(
-        (options.maxW * options.dpi) / width,
-        (options.maxH * options.dpi) / height,
-        1,
-      ) * cropped.scale;
-
-    return {
-      type: options.fallbackImageType,
-      data: await blob.arrayBuffer(),
-      transformation: {
-        width: width * scale,
-        height: height * scale,
-      },
-    };
-  } catch (err) {
-    console.error("Error handling SVG:", err);
-    return getPlaceHolderImage(options);
+  if (typeof value === "string") {
+    svg = value;
+  } else {
+    const rendered = await value;
+    if (!rendered) throw new Error("Empty SVG render result");
+    svg = options.fixGeneratedSvg(rendered.svg, rendered);
+    isGantt = rendered.diagramType === "gantt";
   }
+
+  let cropped = { svg, scale: 1 };
+  if (!isGantt && svg) {
+    try {
+      cropped = await tightlyCropSvg(svg, getContainer(options));
+    } catch (cropErr) {
+      console.warn(
+        "[handleSvg] tightlyCropSvg failed, falling back to raw SVG:",
+        cropErr,
+      );
+      cropped = { svg, scale: 1 };
+    }
+  }
+
+  const { blob, width, height } = await svgToBlob(cropped.svg, {
+    format: options.fallbackImageType,
+    scale: options.scale,
+    quality: options.quality,
+  });
+
+  if (!blob || !width || !height) {
+    throw new Error("Failed to convert SVG to raster");
+  }
+
+  // Special case: Gantt charts can be upscaled safely
+  if (isGantt) {
+    options.scale = Math.max(
+      options.scale,
+      Math.floor(
+        Math.min(
+          (innerWidth * options.scale) / width,
+          (innerHeight * options.scale) / height,
+        ),
+      ),
+    );
+  }
+
+  const scale =
+    Math.min(
+      (options.maxW * options.dpi) / width,
+      (options.maxH * options.dpi) / height,
+      1,
+    ) * cropped.scale;
+
+  return {
+    type: options.fallbackImageType,
+    data: await blob.arrayBuffer(),
+    transformation: {
+      width: width * scale,
+      height: height * scale,
+    },
+  };
 };
