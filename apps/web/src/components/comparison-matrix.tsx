@@ -1,4 +1,4 @@
-import { Check, Minus, X } from "lucide-react";
+import { Check } from "lucide-react";
 
 const matrix = [
   {

@@ -1,12 +1,4 @@
-import {
-  Brain,
-  Cpu,
-  FileCheck2,
-  Lock,
-  Puzzle,
-  Sparkles,
-  Zap,
-} from "lucide-react";
+import { Brain, FileCheck2, Puzzle, Sparkles, Zap } from "lucide-react";
 
 const features = [
   {
