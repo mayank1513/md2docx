@@ -1,0 +1,102 @@
+---
+title: Server & Client Rendering
+description: React Server Components (RSC) compatibility, client memoization, JSX parsing, and component overrides.
+---
+
+# Server & Client Rendering
+
+`@m2d/react-markdown` is architected from the ground up to support modern React frameworks (Next.js App Router, Remix, Gatsby) with zero hook overhead in Server Components, while providing rich memoization on the client.
+
+---
+
+## Server Components (RSC Default)
+
+By default, the root import contains no client-side hooks (`useMemo`, `useState`, `useEffect`), making it safe to render inside React Server Components:
+
+```tsx
+import { Md } from "@m2d/react-markdown";
+
+export default async function BlogPost({ markdownContent }: { markdownContent: string }) {
+  return (
+    <article className="prose">
+      <Md>{markdownContent}</Md>
+    </article>
+  );
+}
+```
+
+---
+
+## Client Components (Dynamic Reactivity)
+
+When rendering user-editable Markdown (e.g. live editors, form inputs) or when utilizing client hooks, import from `@m2d/react-markdown/client`:
+
+```tsx
+"use client";
+
+import { Md } from "@m2d/react-markdown/client";
+import { useState } from "react";
+
+export function LivePreview() {
+  const [text, setText] = useState("# Live Markdown");
+
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      <textarea value={text} onChange={(e) => setText(e.target.value)} />
+      <Md>{text}</Md>
+    </div>
+  );
+}
+```
+
+The client bundle includes intelligent memoization to avoid re-parsing ASTs unless markdown strings change.
+
+---
+
+## Arbitrary JSX Children with `<Mdx>`
+
+Unlike traditional Markdown libraries that strictly require a string child, the `<Mdx>` component accepts arbitrary JSX structures containing embedded Markdown:
+
+```tsx
+import { Mdx } from "@m2d/react-markdown/server";
+
+export function DocumentationLayout() {
+  return (
+    <Mdx>
+      <section>
+        {"## Section Title\n\nThis markdown is nested within standard JSX elements."}
+      </section>
+    </Mdx>
+  );
+}
+```
+
+---
+
+## Custom Component Overrides
+
+Customize how HTML elements are rendered using the `components` prop:
+
+```tsx
+import { Md } from "@m2d/react-markdown";
+import { Omit, Unwrap } from "@m2d/react-markdown/server";
+
+<Md
+  components={{
+    // Strip blockquotes entirely
+    blockquote: Omit,
+
+    // Strip italics wrapper but keep the text
+    em: Unwrap,
+
+    // Replace code blocks with a custom syntax highlighter
+    code: ({ className, children }) => (
+      <pre className={`code-box ${className}`}>
+        <code>{children}</code>
+      </pre>
+    ),
+  }}
+>
+  {"*Keep this text plain*\n\n> Remove this quote entirely."}
+</Md>
+```

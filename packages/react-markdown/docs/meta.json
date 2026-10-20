@@ -1,0 +1,9 @@
+{
+  "title": "@m2d/react-markdown",
+  "pages": [
+    "overview",
+    "server-and-client-rendering",
+    "ast-capture-and-docx-export",
+    "api"
+  ]
+}
