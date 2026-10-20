@@ -423,29 +423,190 @@ export const parseLatex = (
   return paragraphs;
 };
 
+export type MathErrorMode = "warn" | "raw" | "throw";
+
+export interface IMathPluginOptions {
+  /**
+   * Error handling strategy when LaTeX parsing fails or runaway syntax is detected.
+   * - "warn": Emits a styled warning text badge: `⚠️ [Math Syntax Error: ...]`
+   * - "raw": Emits the raw formula string as monospace code text
+   * - "throw": Re-throws the underlying parse error
+   * @default "warn"
+   */
+  errorMode?: MathErrorMode;
+  /**
+   * Maximum character length allowed for inline equations.
+   * Prevents runaway AST nodes when unclosed dollar signs occur.
+   * @default 1000
+   */
+  maxInlineLength?: number;
+}
+
+const BLOCK_MARKER_REGEX =
+  /\n\s*(?:#{1,6}\s+|---|\*\*\*|___|```|>|\s*[-*+]\s+|\s*\d+\.\s+|\|)/;
+
+const validateMathString = (
+  value: string,
+  isInline: boolean,
+  maxInlineLength: number,
+): string | null => {
+  if (isInline && value.length > maxInlineLength) {
+    return `Inline equation length (${value.length}) exceeds maximum allowed (${maxInlineLength})`;
+  }
+  if (BLOCK_MARKER_REGEX.test(value)) {
+    return "Unclosed equation delimiter: content contains structural markdown block markers";
+  }
+  return null;
+};
+
+const createMathErrorRuns = (
+  docx: typeof DOCX,
+  errorMessage: string,
+  rawValue: string,
+  options?: IMathPluginOptions,
+  runProps?: DOCX.IRunOptions,
+): DOCX.TextRun[] => {
+  const errorMode = options?.errorMode ?? "warn";
+  if (errorMode === "raw") {
+    return [
+      new docx.TextRun({
+        text: `$${rawValue}$`,
+        font: "Consolas",
+        ...runProps,
+      }),
+    ];
+  }
+  return [
+    new docx.TextRun({
+      text: `⚠️ [Math Error: ${errorMessage}]`,
+      color: "C00000",
+      italics: true,
+      ...runProps,
+    }),
+  ];
+};
+
+const createMathErrorParagraphs = (
+  docx: typeof DOCX,
+  errorMessage: string,
+  rawValue: string,
+  options?: IMathPluginOptions,
+): DOCX.Paragraph[] => {
+  const errorMode = options?.errorMode ?? "warn";
+  if (errorMode === "raw") {
+    return [
+      new docx.Paragraph({
+        children: [
+          new docx.TextRun({
+            text: rawValue,
+            font: "Consolas",
+          }),
+        ],
+      }),
+    ];
+  }
+  return [
+    new docx.Paragraph({
+      children: [
+        new docx.TextRun({
+          text: `⚠️ [Math Syntax Error: ${errorMessage}]`,
+          color: "C00000",
+          italics: true,
+        }),
+      ],
+    }),
+  ];
+};
+
 /**
  * Math Plugin
  */
-export const mathPlugin: () => IPlugin<{
+export const mathPlugin: (options?: IMathPluginOptions) => IPlugin<{
   type: "" | "math" | "inlineMath";
   value?: string;
-}> = () => {
+}> = (options) => {
+  const errorMode = options?.errorMode ?? "warn";
+  const maxInlineLength = options?.maxInlineLength ?? 1000;
+
   return {
-    inline: (docx, node) => {
+    inline: (docx, node, runProps) => {
       if (node.type !== "inlineMath" && node.type !== "math") return [];
       (node as unknown as EmptyNode)._type = node.type;
       node.type = "";
-      return [
-        new docx.Math({ children: parseLatex(docx, node.value ?? "").flat() }),
-      ];
+      const rawValue = node.value ?? "";
+
+      const validationError = validateMathString(
+        rawValue,
+        true,
+        maxInlineLength,
+      );
+      if (validationError) {
+        if (errorMode === "throw") {
+          throw new Error(`[m2d/math] ${validationError}`);
+        }
+        return createMathErrorRuns(
+          docx,
+          validationError,
+          rawValue,
+          options,
+          runProps as DOCX.IRunOptions | undefined,
+        );
+      }
+
+      try {
+        const paragraphs = parseLatex(docx, rawValue);
+        return [new docx.Math({ children: paragraphs.flat() })];
+      } catch (err) {
+        if (errorMode === "throw") {
+          throw err;
+        }
+        const message = err instanceof Error ? err.message : String(err);
+        return createMathErrorRuns(
+          docx,
+          message,
+          rawValue,
+          options,
+          runProps as DOCX.IRunOptions | undefined,
+        );
+      }
     },
     block: (docx, node) => {
       if (node.type !== "math" && node.type !== "inlineMath") return [];
       node.type = "";
-      return parseLatex(docx, node.value ?? "").map(
-        (runs) =>
-          new docx.Paragraph({ children: [new docx.Math({ children: runs })] }),
+      const rawValue = node.value ?? "";
+
+      const validationError = validateMathString(
+        rawValue,
+        false,
+        maxInlineLength,
       );
+      if (validationError) {
+        if (errorMode === "throw") {
+          throw new Error(`[m2d/math] ${validationError}`);
+        }
+        return createMathErrorParagraphs(
+          docx,
+          validationError,
+          rawValue,
+          options,
+        );
+      }
+
+      try {
+        const paragraphs = parseLatex(docx, rawValue);
+        return paragraphs.map(
+          (runs) =>
+            new docx.Paragraph({
+              children: [new docx.Math({ children: runs })],
+            }),
+        );
+      } catch (err) {
+        if (errorMode === "throw") {
+          throw err;
+        }
+        const message = err instanceof Error ? err.message : String(err);
+        return createMathErrorParagraphs(docx, message, rawValue, options);
+      }
     },
   };
 };
