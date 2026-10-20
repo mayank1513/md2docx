@@ -120,7 +120,11 @@ const walkAndTransform = (
         mermaid: code,
       },
     };
-    Object.assign(node, svgNode);
+    Object.assign(node, {
+      type: "paragraph",
+      children: [svgNode],
+      data: { alignment: "center" },
+    });
   }
 };
 

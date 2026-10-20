@@ -19,7 +19,9 @@ describe("mermaidNodePlugin", () => {
     const plugin = mermaidNodePlugin();
     await plugin.preprocess?.(tree as unknown as Root, {});
 
-    const svgNode = (tree.children as any)[0];
+    const para = (tree.children as any)[0];
+    expect(para.type).toBe("paragraph");
+    const svgNode = para.children[0];
     expect(svgNode.type).toBe("svg");
     const result = await svgNode.value;
     expect(result).toBeDefined();
@@ -33,7 +35,8 @@ describe("mermaidNodePlugin", () => {
     const plugin = mermaidNodePlugin({ theme: "github-light" });
     await plugin.preprocess?.(tree as unknown as Root, {});
 
-    const svgNode = (tree.children as any)[0];
+    const para = (tree.children as any)[0];
+    const svgNode = para.children[0];
     const result = await svgNode.value;
     expect(result.svg).toContain("<svg");
   });
@@ -45,7 +48,8 @@ describe("mermaidNodePlugin", () => {
     const plugin = mermaidNodePlugin();
     await plugin.preprocess?.(tree as unknown as Root, {});
 
-    const svgNode = (tree.children as any)[0];
+    const para = (tree.children as any)[0];
+    const svgNode = para.children[0];
     expect(svgNode.type).toBe("svg");
   });
 
@@ -58,7 +62,8 @@ describe("mermaidNodePlugin", () => {
     });
     await plugin.preprocess?.(tree as unknown as Root, {});
 
-    const svgNode = (tree.children as any)[0];
+    const para = (tree.children as any)[0];
+    const svgNode = para.children[0];
     const result = await svgNode.value;
     expect(result?.svg).toContain("<svg");
   });
