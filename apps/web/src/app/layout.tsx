@@ -13,13 +13,13 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
     : `https://${process.env.NEXT_PUBLIC_SITE_URL}`
   : process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
-    : "https://promptshield.js.org";
+    : "https://md2docx.js.org";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    template: "%s | mdast2docx",
-    default: "mdast2docx - Markdown to DOCX Converter",
+    template: "%s | Md2Docx",
+    default: "Md2Docx - Markdown to DOCX Converter",
   },
   description:
     "A powerful, modular, and extensible Markdown to DOCX converter for Node.js and browsers.",
@@ -35,15 +35,15 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    siteName: "mdast2docx",
+    siteName: "Md2Docx",
     locale: "en_US",
-    title: "mdast2docx - Markdown to DOCX Converter",
+    title: "Md2Docx - Markdown to DOCX Converter",
     description:
       "A powerful, modular, and extensible Markdown to DOCX converter for Node.js and browsers.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "mdast2docx - Markdown to DOCX Converter",
+    title: "Md2Docx - Markdown to DOCX Converter",
     description:
       "A powerful, modular, and extensible Markdown to DOCX converter for Node.js and browsers.",
   },
