@@ -237,30 +237,6 @@ importers:
 
   apps/web:
     dependencies:
-      '@m2d/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@m2d/html':
-        specifier: workspace:*
-        version: link:../../packages/html
-      '@m2d/image':
-        specifier: workspace:*
-        version: link:../../packages/image
-      '@m2d/image-node':
-        specifier: workspace:*
-        version: link:../../packages/image-node
-      '@m2d/list':
-        specifier: workspace:*
-        version: link:../../packages/list
-      '@m2d/math':
-        specifier: workspace:*
-        version: link:../../packages/math
-      '@m2d/mermaid':
-        specifier: workspace:*
-        version: link:../../packages/mermaid
-      '@m2d/table':
-        specifier: workspace:*
-        version: link:../../packages/table
       '@mayank1513/fork-me':
         specifier: ^2.1.3
         version: 2.1.3(@types/react@19.3.0)(next@16.4.2(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)

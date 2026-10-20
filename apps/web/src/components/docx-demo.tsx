@@ -1,12 +1,5 @@
 "use client";
 
-import { toDocx } from "@m2d/core";
-import { htmlPlugin } from "@m2d/html";
-import { imagePlugin } from "@m2d/image";
-import { listPlugin } from "@m2d/list";
-import { mathPlugin } from "@m2d/math";
-import { mermaidPlugin } from "@m2d/mermaid";
-import { tablePlugin } from "@m2d/table";
 import {
   AlertCircle,
   Calculator,
@@ -25,6 +18,15 @@ import {
   Trash2,
   Zap,
 } from "lucide-react";
+import { toDocx } from "mdast2docx";
+import {
+  htmlPlugin,
+  imagePlugin,
+  listPlugin,
+  mathPlugin,
+  mermaidPlugin,
+  tablePlugin,
+} from "mdast2docx/plugins";
 import { useEffect, useState } from "react";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
