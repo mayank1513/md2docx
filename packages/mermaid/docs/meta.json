@@ -1,0 +1,9 @@
+{
+  "title": "@m2d/mermaid",
+  "pages": [
+    "overview",
+    "diagram-syntax-and-theming",
+    "auto-fixing-and-fallbacks",
+    "api"
+  ]
+}

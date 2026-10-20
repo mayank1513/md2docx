@@ -1,0 +1,58 @@
+---
+title: Diagram Syntax & Theming
+description: Supported Mermaid diagram types, configuration options, and theming in @m2d/mermaid.
+---
+
+# Diagram Syntax & Theming
+
+`@m2d/mermaid` transforms Mermaid diagram code blocks into responsive, vector SVG AST nodes during document preprocessing.
+
+---
+
+## Supported Code Block Languages
+
+The plugin activates on fenced code blocks tagged with any of the following languages:
+- ` ```mermaid `
+- ` ```mmd `
+- ` ```mindmap `
+
+---
+
+## Supported Diagram Types
+
+Because `@m2d/mermaid` uses the official browser-based `mermaid` library, it supports all diagram types provided by Mermaid.js:
+- **Flowcharts** (`graph TD`, `flowchart LR`)
+- **Sequence Diagrams** (`sequenceDiagram`)
+- **Class Diagrams** (`classDiagram`)
+- **State Diagrams** (`stateDiagram-v2`)
+- **Entity Relationship Diagrams** (`erDiagram`)
+- **User Journey** (`journey`)
+- **Gantt Charts** (`gantt`)
+- **Pie Charts** (`pie`)
+- **Requirement Diagrams** (`requirementDiagram`)
+- **Git Graphs** (`gitGraph`)
+- **Mindmaps** (`mindmap`)
+- **Quadrant Charts** (`quadrantChart`)
+- **C4 Architecture Diagrams** (`C4Context`)
+
+---
+
+## Theming & Configuration
+
+Pass any official Mermaid configuration options via `mermaidConfig`:
+
+```typescript
+import { mermaidPlugin } from "@m2d/mermaid";
+
+const plugin = mermaidPlugin({
+  mermaidConfig: {
+    theme: "neutral", // "default" | "forest" | "dark" | "neutral" | "base"
+    themeVariables: {
+      primaryColor: "#0284c7",
+      primaryTextColor: "#ffffff",
+      lineColor: "#64748b",
+    },
+    fontFamily: "Inter, system-ui, sans-serif",
+  },
+});
+```
