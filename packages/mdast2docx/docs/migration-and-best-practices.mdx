@@ -1,0 +1,50 @@
+---
+title: Production Best Practices & Migration
+description: Architectural best practices for LLM pipelines, server vs browser execution, and migrating from legacy versions.
+---
+
+# Production Best Practices & Migration
+
+`mdast2docx` is designed to power enterprise document generation pipelines, AI agent exports, and automated reporting systems. Follow these best practices to ensure optimal performance and formatting fidelity.
+
+---
+
+## 1. Bridging Generative AI & Markdown
+
+Large Language Models (LLMs) excel at generating Markdown. `mdast2docx` transforms dynamic AI output into professionally formatted Word documents.
+
+### Recommended AI Ingestion Pipeline:
+1. **Sanitize LLM Delimiters**: Use `@m2d/math` with `errorMode: "warn"` to gracefully handle unclosed `$$` delimiters or accidental currency collisions.
+2. **Auto-Repair Code Blocks**: Let `@m2d/mermaid` auto-fix unquoted colons and punctuation in generated diagrams.
+3. **Graceful Fallbacks**: Pair `@m2d/mermaid` and `@m2d/image` so any diagram that fails compilation is cleanly emitted as a collapsible Word code block rather than an ugly empty box.
+
+---
+
+## 2. Server vs Browser Deployment
+
+### Browser (Client-Side Rendering):
+- Use `toDocx(mdast, {}, { ... }, "blob")`.
+- Leverage `@m2d/image` with DOM-based image decoding and IndexedDB caching.
+- Zero server compute cost: client computers bear the compilation load.
+
+### Server (Node.js / Docker / Cloud Run):
+- Use `toDocx(mdast, {}, { ... }, "buffer")`.
+- Substitute `@m2d/mermaid-node` and `@m2d/image-node` (powered by `beautiful-mermaid` and `sharp`) for headless rendering without Chromium/Puppeteer dependencies.
+- Enable high-throughput batch generation of corporate reports.
+
+---
+
+## 3. Large Table Layout & Multi-Page Repetition
+
+When rendering extensive tabular data:
+- Always keep `firstRowProps: { tableHeader: true }` enabled so Word repeats header rows across page breaks.
+- Set `rowProps: { cantSplit: true }` on data rows to prevent awkward page splits in the middle of a multi-line row.
+
+---
+
+## 4. Migrating from v1.x
+
+If upgrading from earlier releases:
+- **Direct Plugin Imports**: Import from `mdast2docx/plugins` instead of individual disparate paths.
+- **Unified Section Model**: Section properties are now consolidated under `ISectionProps` and `ISection`.
+- **Error Modes**: Take advantage of modern `errorMode` options in `mathPlugin` (`"warn" | "raw" | "throw"`) and `imagePlugin` (`"warn" | "placeholder" | "omit" | "throw"`).
