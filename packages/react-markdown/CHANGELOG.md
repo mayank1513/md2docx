@@ -1,5 +1,11 @@
 # @m2d/react-markdown
 
+## 1.0.1
+
+### Patch Changes
+
+- [`10c1162`](https://github.com/md2docx/md2docx/commit/10c116297325b654110ad0f8d743600456b3c0f5) Thanks [@mayank1513](https://github.com/mayank1513)! - Fix type definitions in `@m2d/react-markdown`: support `ReactNode` children in client `Md`, widen `handleAriaAndDataProps` input to `Record<string, unknown>`, remove unused `emptyHtmlTags`, and fix HAST `src` property assignment.
+
 ## 1.0.0
 
 ### Major Changes

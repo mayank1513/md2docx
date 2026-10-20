@@ -1,5 +1,21 @@
 # @m2d/mermaid
 
+## 1.3.0
+
+### Minor Changes
+
+- [`1dab971`](https://github.com/md2docx/md2docx/commit/1dab971b8f05d71ef87de9f8a93f89af9b7f2a37) Thanks [@mayank1513](https://github.com/mayank1513)! - Add built-in best-effort `defaultMermaidFixer` and `autoFix` option to automatically repair unquoted flowchart syntax and special characters.
+
+### Patch Changes
+
+- [`eafade1`](https://github.com/md2docx/md2docx/commit/eafade19075419aeb9a01a9d95d636e800a77e03) Thanks [@mayank1513](https://github.com/mayank1513)! - Add `shouldCache` predicate to `createPersistentCache` to allow consumers to prevent caching invalid, empty, or placeholder results.
+
+- [`8456f9d`](https://github.com/md2docx/md2docx/commit/8456f9d12d822c457030c0c009cb9c45168460fc) Thanks [@mayank1513](https://github.com/mayank1513)! - Disable `htmlLabels` in global and flowchart Mermaid configuration to generate native SVG `<text>` elements instead of HTML `<foreignObject>` tags, resolving unrenderable images in Microsoft Word ("the picture can't be displayed").
+
+- [`c145283`](https://github.com/md2docx/md2docx/commit/c1452834d617640a36915cb32087c7dfd70b5918) Thanks [@mayank1513](https://github.com/mayank1513)! - feat: preserve AST node data and raw diagram source for diagram error fallbacks
+- Updated dependencies [[`98b766d`](https://github.com/md2docx/md2docx/commit/98b766de14a9150bdd4524c0bd18c3b849347187), [`c0a19a9`](https://github.com/md2docx/md2docx/commit/c0a19a95bff499fbfd9275df0d3f9efac99abf80), [`eafade1`](https://github.com/md2docx/md2docx/commit/eafade19075419aeb9a01a9d95d636e800a77e03), [`e5858a2`](https://github.com/md2docx/md2docx/commit/e5858a235b61ffc8e5b9d3b375115373633cf3e7), [`325ee92`](https://github.com/md2docx/md2docx/commit/325ee92ee600c29340898b52a70bb78a3b08a3cb), [`bcac5c4`](https://github.com/md2docx/md2docx/commit/bcac5c463cb3b44116cbf4a553162dd08197ad5a)]:
+  - @m2d/core@1.8.0
+
 ## 1.2.2
 
 ### Patch Changes
