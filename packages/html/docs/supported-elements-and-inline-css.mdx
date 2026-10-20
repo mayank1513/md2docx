@@ -1,0 +1,63 @@
+---
+title: Supported Elements & Inline CSS
+description: Comprehensive list of supported HTML tags, typography mappings, and CSS properties.
+---
+
+# Supported Elements & Inline CSS
+
+`@m2d/html` parses both inline formatting tags and block-level layout structures, translating CSS styles into Microsoft Word OpenXML run and paragraph options.
+
+---
+
+## Supported HTML Elements
+
+| HTML Element | Converted MDAST Node | Word OpenXML Equivalent | Notes |
+| :--- | :--- | :--- | :--- |
+| `<img>` | `image` | `docx.ImageRun` | Converted to MDAST image; rasterized by `@m2d/image` |
+| `<table>`, `<tr>`, `<td>`, `<th>` | `table`, `tableRow`, `tableCell` | `docx.Table` | Converted to MDAST table; formatted by `@m2d/table` |
+| `<ul>`, `<ol>`, `<li>` | `list`, `listItem` | Numbered / bullet paragraph | Formatted by `@m2d/list` |
+| `<strong>`, `<b>` | `strong` | Bold `docx.TextRun` | Preserves font styling |
+| `<em>`, `<i>` | `emphasis` | Italic `docx.TextRun` | Preserves font styling |
+| `<del>`, `<s>`, `<strike>` | `delete` | Strikethrough `docx.TextRun` | |
+| `<u>`, `<ins>` | Extended inline node | Underlined `docx.TextRun` | |
+| `<sub>` | Extended inline node | Subscript `docx.TextRun` | Native Word subscript |
+| `<sup>` | Extended inline node | Superscript `docx.TextRun` | Native Word superscript |
+| `<a>` | `link` | `docx.ExternalHyperlink` | Preserves `href` and text |
+| `<br>` | `break` | Line break | Soft carriage return within paragraph |
+| `<hr>` | `thematicBreak` | Horizontal border rule | |
+| `<blockquote>` | `blockquote` | Indented quote paragraph | Supports left border accents |
+| `<input type="checkbox">` | Checkbox node | Unicode Checkbox | Renders `☑` (checked) or `☐` (unchecked) |
+| `<h1>` – `<h6>` | `heading` | `docx.HeadingLevel` | Level 1 through 6 headings |
+| `<p>`, `<div>` | `paragraph` | `docx.Paragraph` | Preserves block layout and inline styling |
+
+---
+
+## Supported Inline CSS Properties
+
+Inline styles specified via `style="..."` on HTML elements are parsed and standardized:
+
+### Colors & Shading
+- `color`: Hex, RGB, HSL, or named colors are normalized to Word 6-digit hex format (e.g., `#FF0000`).
+- `background-color`: Mapped to `docx.ShadingType` or highlight runs.
+
+### Typography
+- `font-weight`: `bold`, `700`, `800`, `900` trigger bold styling.
+- `font-style`: `italic` triggers italic styling.
+- `font-size`: Pixel, point, or rem dimensions are converted into Word half-points (twips).
+- `text-decoration`: `underline` and `line-through` strike.
+- `text-transform`: `uppercase`, `lowercase`, `capitalize`.
+
+### Alignment & Spacing
+- `text-align`: `left`, `center`, `right`, `justify` map to Word `AlignmentType`.
+- `margin-top`, `margin-bottom`: Converted into paragraph before/after spacing twips.
+
+### Borders
+- `border`, `border-left`: Supports `solid`, `dashed`, `dotted`, `double` with border width and color.
+
+---
+
+## Known Limitations
+
+- **External Stylesheets**: CSS files or `<style>` blocks in the document head are not evaluated.
+- **Complex Flexbox / CSS Grid**: HTML layout grids must use standard `<table>` elements for consistent rendering in Word.
+- **Script Tags**: `<script>`, `<style>`, `<meta>`, and other non-visual tags are stripped.

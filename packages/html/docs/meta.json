@@ -1,0 +1,9 @@
+{
+  "title": "@m2d/html",
+  "pages": [
+    "overview",
+    "ast-transformation-and-pipeline-order",
+    "supported-elements-and-inline-css",
+    "api"
+  ]
+}
