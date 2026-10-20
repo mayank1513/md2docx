@@ -1,4 +1,4 @@
-import { exec, execSync } from "node:child_process";
+import { execFile, execSync } from "node:child_process";
 import {
   chmodSync,
   existsSync,
@@ -11,7 +11,7 @@ import { promisify } from "node:util";
 import { CACHE_DIR } from "./forge.const.ts";
 import { readJson } from "./utils.ts";
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 type Pkg = {
   name: string;
@@ -21,6 +21,8 @@ type Pkg = {
 const ROOT = process.cwd();
 const PKG_CONFIG = path.join(ROOT, `${CACHE_DIR}/packages.json`);
 const token = process.env.CODECOV_TOKEN;
+const CODECOV_VERSION = "v11.3.1"; // Pinned version for reproducible, reliable CI
+const MAX_CONCURRENCY = 4; // Prevent rate-limiting / overwhelming upload endpoint
 
 if (!token) {
   console.log(
@@ -28,6 +30,26 @@ if (!token) {
   );
   process.exit(0);
 }
+
+// Lightweight concurrency limiter
+const createLimiter = (concurrency: number) => {
+  let active = 0;
+  const queue: (() => void)[] = [];
+  return async <T>(fn: () => Promise<T>): Promise<T> => {
+    while (active >= concurrency) {
+      await new Promise<void>((resolve) => queue.push(resolve));
+    }
+    active++;
+    try {
+      return await fn();
+    } finally {
+      active--;
+      queue.shift()?.();
+    }
+  };
+};
+
+const limit = createLimiter(MAX_CONCURRENCY);
 
 const getCodecovBinary = async () => {
   const isWindows = process.platform === "win32";
@@ -37,20 +59,21 @@ const getCodecovBinary = async () => {
   const binPath = path.join(binDir, binaryName);
 
   if (existsSync(binPath)) return binPath;
-  if (existsSync(path.join(ROOT, binaryName)))
-    return path.join(ROOT, binaryName);
 
   const platform = isWindows
     ? "windows/codecov.exe"
     : isMac
       ? "macos/codecov"
       : "linux/codecov";
-  const url = `https://cli.codecov.io/latest/${platform}`;
-  console.log(`Downloading Codecov CLI from ${url}...`);
+  const url = `https://cli.codecov.io/${CODECOV_VERSION}/${platform}`;
+  console.log(`Downloading Codecov CLI (${CODECOV_VERSION}) from ${url}...`);
 
   const res = await fetch(url);
-  if (!res.ok)
-    throw new Error(`Failed to download Codecov binary: ${res.statusText}`);
+  if (!res.ok) {
+    throw new Error(
+      `Failed to download Codecov binary from ${url}: ${res.status} ${res.statusText}`,
+    );
+  }
   const buf = Buffer.from(await res.arrayBuffer());
 
   mkdirSync(binDir, { recursive: true });
@@ -67,7 +90,7 @@ const packages = await readJson<Pkg[]>(PKG_CONFIG);
 const isCI = process.env.GITHUB_ACTIONS === "true";
 const slug = process.env.GITHUB_REPOSITORY || "md2docx/md2docx";
 
-// Determine commit SHA and PR context
+// Determine commit SHA and PR number without shell execution
 let commitSha = "";
 let prNumber = "";
 
@@ -99,49 +122,119 @@ if (isCI) {
   }
 }
 
-const uploadTasks = (packages ?? []).map(async (pkg) => {
+const activePackages = (packages ?? []).filter((pkg) => {
   const pkgBasename = path.basename(pkg.dir);
   const lcovFile = path.join(ROOT, "coverage", `${pkgBasename}.lcov`);
-
-  if (!existsSync(lcovFile)) {
-    console.log(`⊘ Skipping ${pkg.name}: no coverage file at ${lcovFile}`);
-    return;
-  }
-
-  console.log(`🚀 Starting upload: ${pkg.name} (${pkgBasename}.lcov)...`);
-
-  let cmd = `"${binary}" do-upload --token "${token}" --file "${lcovFile}" --flag "${pkg.name}" --name "${pkg.name}" --disable-search -r "${slug}"`;
-
-  if (commitSha) {
-    cmd += ` -C ${commitSha}`;
-  }
-  if (prNumber) {
-    cmd += ` -P ${prNumber}`;
-  }
-
-  try {
-    const { stdout, stderr } = await execAsync(cmd);
-    const combinedOutput = `${stdout || ""}\n${stderr || ""}`.trim();
-
-    // Extract Codecov dashboard URL if present
-    const urlMatch = combinedOutput.match(
-      /https:\/\/app\.codecov\.io\/[^\s)]+/,
-    );
-    const reportUrl = urlMatch ? urlMatch[0] : "";
-
-    if (reportUrl) {
-      console.log(`✓ [${pkg.name}] Uploaded! Dashboard: ${reportUrl}`);
-    } else {
-      console.log(`✓ [${pkg.name}] Upload completed successfully.`);
-    }
-  } catch (err: unknown) {
-    const error = err as { message?: string; stdout?: string; stderr?: string };
-    console.error(
-      `✗ [${pkg.name}] Upload failed: ${error.message || ""}\n${error.stderr || error.stdout || ""}`,
-    );
-  }
+  return existsSync(lcovFile);
 });
 
-// Upload all package coverage reports in parallel
-await Promise.allSettled(uploadTasks);
-console.log("All coverage uploads completed.");
+console.log(
+  `Found ${activePackages.length} package coverage files to upload in parallel (concurrency limit: ${MAX_CONCURRENCY}).`,
+);
+
+// 1. Initialize commit metadata in Codecov
+const commitArgs = ["create-commit", "-t", token, "-r", slug, "-Z"];
+if (commitSha) commitArgs.push("-C", commitSha);
+if (prNumber) commitArgs.push("-P", prNumber);
+if (process.env.GITHUB_REF_NAME) {
+  commitArgs.push("-B", process.env.GITHUB_REF_NAME);
+}
+
+try {
+  console.log("Registering commit with Codecov...");
+  await execFileAsync(binary, commitArgs);
+  console.log("✓ Codecov commit registered.");
+} catch (err: unknown) {
+  const error = err as { message?: string; stdout?: string; stderr?: string };
+  console.warn(
+    `Warning: create-commit notification failed: ${error.message || ""}`,
+  );
+}
+
+// 2. Initialize report in Codecov
+const reportArgs = ["create-report", "-t", token, "-r", slug, "-Z"];
+if (commitSha) reportArgs.push("-C", commitSha);
+if (prNumber) reportArgs.push("-P", prNumber);
+
+try {
+  console.log("Initializing coverage report on Codecov...");
+  await execFileAsync(binary, reportArgs);
+  console.log("✓ Codecov report initialized.");
+} catch (err: unknown) {
+  const error = err as { message?: string; stdout?: string; stderr?: string };
+  console.warn(
+    `Warning: create-report notification failed: ${error.message || ""}`,
+  );
+}
+
+const uploadTasks = activePackages.map((pkg) =>
+  limit(async () => {
+    const pkgBasename = path.basename(pkg.dir);
+    const lcovFile = path.join(ROOT, "coverage", `${pkgBasename}.lcov`);
+
+    console.log(`🚀 Uploading: ${pkg.name} (${pkgBasename}.lcov)...`);
+
+    // Use argument array with execFile to avoid any shell interpolation/injection
+    const args = [
+      "do-upload",
+      "--token",
+      token,
+      "--file",
+      lcovFile,
+      "--flag",
+      pkg.name,
+      "--name",
+      pkg.name,
+      "--disable-search",
+      "-r",
+      slug,
+      "-Z", // Fail on error
+    ];
+
+    if (commitSha) {
+      args.push("-C", commitSha);
+    }
+    if (prNumber) {
+      args.push("-P", prNumber);
+    }
+
+    try {
+      const { stdout, stderr } = await execFileAsync(binary, args);
+      const output = `${stdout || ""}\n${stderr || ""}`.trim();
+      const urlMatch = output.match(/https:\/\/app\.codecov\.io\/[^\s)]+/);
+      const reportUrl = urlMatch ? urlMatch[0] : "";
+
+      if (reportUrl) {
+        console.log(`✓ [${pkg.name}] Done -> ${reportUrl}`);
+      } else {
+        console.log(`✓ [${pkg.name}] Upload completed.`);
+      }
+      return { pkg: pkg.name, success: true };
+    } catch (err: unknown) {
+      const error = err as {
+        message?: string;
+        stdout?: string;
+        stderr?: string;
+      };
+      console.error(
+        `✗ [${pkg.name}] Upload failed: ${error.message || ""}\n${error.stderr || error.stdout || ""}`,
+      );
+      throw new Error(`Upload failed for ${pkg.name}`);
+    }
+  }),
+);
+
+const results = await Promise.allSettled(uploadTasks);
+
+const failures = results.filter((r) => r.status === "rejected");
+
+if (failures.length > 0) {
+  console.error(
+    `\n❌ ${failures.length} of ${results.length} package coverage uploads failed.`,
+  );
+  process.exit(1); // Propagate failure to CI
+}
+
+console.log(
+  `\n🎉 All ${results.length} package coverage uploads completed successfully.`,
+);

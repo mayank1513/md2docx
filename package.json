@@ -2,7 +2,9 @@
   "name": "md2docx",
   "private": true,
   "scripts": {
-    "build": "turbo build",
+    "build": "turbo build --filter=!@app/web",
+    "build:all": "turbo build",
+    "build:web": "turbo build --filter=@app/web",
     "build:diff": "turbo run build --filter=[...origin/main]",
     "clean": "turbo clean",
     "dev": "turbo dev",
