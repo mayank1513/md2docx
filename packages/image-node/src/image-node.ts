@@ -102,13 +102,14 @@ const parseDataUrl = (
 };
 
 /**
- * Processes base64 or encoded data URLs via sharp.
+ * Processes an image Buffer using sharp, determining dimensions and converting
+ * unsupported formats to the fallback raster format.
  */
-const handleDataUrls: NodeImageResolver = async (
-  src: string,
+const processSharpBuffer = async (
+  buffer: Buffer,
   options?: INodeImagePluginOptions,
-) => {
-  const { buffer, mimeType } = parseDataUrl(src);
+  mimeTypeHint?: string,
+): Promise<IImageOptions> => {
   const sharpImg = sharp(buffer);
   const metadata = await sharpImg.metadata();
   const rawW = metadata.width || 200;
@@ -118,7 +119,7 @@ const handleDataUrls: NodeImageResolver = async (
   const fallback = options?.fallbackImageType ?? "png";
   const rawFormat = (
     metadata.format ??
-    mimeType.split("/")[1] ??
+    mimeTypeHint?.split("/")[1] ??
     fallback
   ).toLowerCase();
   const docxType = (
@@ -145,6 +146,17 @@ const handleDataUrls: NodeImageResolver = async (
 };
 
 /**
+ * Processes base64 or encoded data URLs via sharp.
+ */
+const handleDataUrls: NodeImageResolver = async (
+  src: string,
+  options?: INodeImagePluginOptions,
+) => {
+  const { buffer, mimeType } = parseDataUrl(src);
+  return processSharpBuffer(buffer, options, mimeType);
+};
+
+/**
  * Fetches an external URL or reads a local file path via sharp.
  */
 const handleNonDataUrls: NodeImageResolver = async (
@@ -167,34 +179,7 @@ const handleNonDataUrls: NodeImageResolver = async (
     buffer = await fs.readFile(filePath);
   }
 
-  const sharpImg = sharp(buffer);
-  const metadata = await sharpImg.metadata();
-  const rawW = metadata.width || 200;
-  const rawH = metadata.height || 200;
-  const transformation = calculateDimensions(rawW, rawH, options);
-
-  const fallback = options?.fallbackImageType ?? "png";
-  const rawFormat = (metadata.format ?? fallback).toLowerCase();
-  const docxType = (
-    rawFormat === "jpeg" ? "jpg" : rawFormat
-  ) as SupportedImageType;
-
-  if (SUPPORTED_IMAGE_TYPES.includes(docxType)) {
-    return {
-      type: docxType,
-      data: buffer,
-      transformation,
-    };
-  }
-
-  const convertedBuffer = await sharpImg
-    .toFormat(toSharpFormat(fallback))
-    .toBuffer();
-  return {
-    type: fallback,
-    data: convertedBuffer,
-    transformation,
-  };
+  return processSharpBuffer(buffer, options);
 };
 
 /**
@@ -267,6 +252,40 @@ export const defaultNodeImageResolver: NodeImageResolver = async (
 };
 
 /**
+ * Recursively traverses the AST to resolve all image and SVG nodes.
+ */
+const collectImagePromises = (
+  node: Root | RootContent | PhrasingContent,
+  promises: Promise<void>[],
+  definitions: Definitions,
+  resolver: NodeImageResolver,
+  options?: INodeImagePluginOptions,
+): void => {
+  (node as Parent).children?.forEach((child) => {
+    collectImagePromises(child, promises, definitions, resolver, options);
+  });
+  if (/^(image|svg)/.test(node.type)) {
+    promises.push(
+      (async () => {
+        const url =
+          (node as AstImage).url ??
+          definitions[(node as ImageReference).identifier?.toUpperCase()] ??
+          "";
+        const alt =
+          (node as AstImage).alt ??
+          (url.startsWith("data:") ? "" : url.split("/").pop());
+
+        node.data = {
+          ...(await resolver(url, options, node as AstImage | SVG)),
+          altText: { description: alt, name: alt, title: alt },
+          ...(node as AstImage).data,
+        };
+      })(),
+    );
+  }
+};
+
+/**
  * Node.js image plugin for @m2d/core.
  * Processes image and SVG nodes on the server using sharp.
  */
@@ -277,31 +296,7 @@ export const nodeImagePlugin: (options?: INodeImagePluginOptions) => IPlugin = (
 
   const preprocess = async (root: Root, definitions: Definitions) => {
     const promises: Promise<void>[] = [];
-
-    const preprocessInternal = (node: Root | RootContent | PhrasingContent) => {
-      (node as Parent).children?.forEach(preprocessInternal);
-      if (/^(image|svg)/.test(node.type)) {
-        promises.push(
-          (async () => {
-            const url =
-              (node as AstImage).url ??
-              definitions[(node as ImageReference).identifier?.toUpperCase()] ??
-              "";
-            const alt =
-              (node as AstImage).alt ??
-              (url.startsWith("data:") ? "" : url.split("/").pop());
-
-            node.data = {
-              ...(await resolver(url, options, node as AstImage | SVG)),
-              altText: { description: alt, name: alt, title: alt },
-              ...(node as AstImage).data,
-            };
-          })(),
-        );
-      }
-    };
-
-    preprocessInternal(root);
+    collectImagePromises(root, promises, definitions, resolver, options);
     await Promise.all(promises);
   };
 
