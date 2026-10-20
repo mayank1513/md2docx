@@ -1,0 +1,65 @@
+---
+title: Node Lifecycle & EmptyNode Pattern
+description: State tracking, node consumption, and type utilities across the @m2d pipeline.
+---
+
+# Node Lifecycle & EmptyNode Pattern
+
+During document compilation, an AST tree is traversed by multiple plugins. To ensure each node is handled exactly once without duplicate processing or recursion loops, `@m2d` establishes the `EmptyNode` pattern.
+
+---
+
+## The `EmptyNode` Pattern
+
+When a plugin consumes a node (for example, `@m2d/mermaid` converting a `code` block into an `svg` node, or `@m2d/table` rendering a `table` node into a `docx.Table`), it blanks the node's `type` and records the original type in `_type`:
+
+```typescript
+export interface EmptyNode {
+  type: "";
+  /** Original type of the node prior to consumption */
+  _type: string;
+  [key: string]: unknown;
+}
+```
+
+### How Plugins Consume Nodes
+
+```typescript
+// Plugin handler example
+if (node.type === "myCustomNode") {
+  (node as unknown as EmptyNode)._type = node.type;
+  node.type = ""; // Acts like event.stopPropagation()
+
+  return [new docx.Paragraph({ text: "Processed Content" })];
+}
+```
+
+Setting `type = ""` prevents subsequent plugins or default fallback handlers from processing the same node a second time.
+
+---
+
+## Utility Types
+
+`@m2d/mdast` provides fundamental TypeScript utility types used across the entire monorepo:
+
+### `Optional<T>`
+Recursively makes all properties of an interface optional, while properly preserving function signatures:
+
+```typescript
+type Optional<T> = {
+  [K in keyof T]?: T[K] extends object
+    ? T[K] extends AnyFunction
+      ? T[K]
+      : Optional<T[K]>
+    : T[K];
+};
+```
+
+### `Mutable<T>` & `Immutable<T>`
+Recursively strips or applies `readonly` modifiers across deeply nested configuration interfaces.
+
+---
+
+## Hypertext AST (`HAST`) Definitions
+
+In addition to Markdown nodes, `@m2d/mdast` exports full HAST type definitions (`Element`, `Properties`, `ElementContent`) in `@m2d/mdast/hast`, powering HTML AST parsing in `@m2d/html` and `@m2d/react-markdown`.

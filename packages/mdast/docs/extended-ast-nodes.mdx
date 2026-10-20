@@ -1,0 +1,75 @@
+---
+title: Extended AST Node Specifications
+description: Extensions to standard unist and MDAST specifications tailored for Word OpenXML generation.
+---
+
+# Extended AST Node Specifications
+
+The standard Markdown Abstract Syntax Tree (MDAST) specified by `syntax-tree/mdast` was originally designed for HTML serialization. Because Microsoft Word OpenXML enforces richer document models (drawingml, tables with block children, vector drawings, checkboxes), `@m2d/mdast` augments the standard node definitions.
+
+---
+
+## Specialized Node Types
+
+### 1. `SVG` (`type: "svg"`)
+
+Represents vector graphics, diagrams, or charts awaiting rasterization or conversion into OpenXML drawings:
+
+```typescript
+export interface SVGData extends Data {
+  /** Original Mermaid diagram source code for fallback rendering */
+  mermaid?: string;
+}
+
+export interface SVG extends Node {
+  type: "svg";
+  value: string | Promise<RenderResult | undefined>;
+  data?: SVGData;
+}
+```
+
+### 2. `Checkbox` (`type: "checkbox"`)
+
+Represents interactive or rendered task checkboxes derived from GFM task lists (`- [x]`) or HTML `<input type="checkbox">` elements:
+
+```typescript
+export interface Checkbox extends Node {
+  type: "checkbox";
+  checked?: boolean;
+}
+```
+
+### 3. `Fragment` (`type: "fragment"`)
+
+Represents a grouping container that holds multiple block or phrasing nodes without generating extraneous wrapper paragraphs in the target document:
+
+```typescript
+export interface Fragment extends Parent {
+  type: "fragment";
+  children: (RootContent | PhrasingContent)[];
+}
+```
+
+---
+
+## Augmented Standard Nodes
+
+### Block Content in Table Cells (`TableCell`)
+
+In standard MDAST, `TableCell.children` only permits `PhrasingContent[]` (inline text). To accommodate advanced HTML tables and multi-paragraph cells, `@m2d/mdast` widens the cell model:
+
+```typescript
+export interface TableCell extends Parent {
+  type: "tableCell";
+  /** Allows rich block nodes (paragraphs, lists, code, quotes) inside cells */
+  children: RootContent[];
+  data?: TableCellData;
+}
+```
+
+### Word Formatting Payloads in `node.data`
+
+Plugins attach Microsoft Word styling properties directly to `node.data`:
+- Paragraph-level properties (`alignment`, `spacing`, `indent`, `borders`)
+- Run-level properties (`font`, `size`, `color`, `bold`, `italics`, `highlight`)
+- Image layout options (`width`, `height`, `floating`, `wrap`)
