@@ -24,7 +24,7 @@ export interface INodeImageErrorOptions {
   mermaidFallback?: MermaidFallbackMode;
   /**
    * Fallback strategy for failed non-Mermaid SVGs.
-   * - "warn": Emits styled muted text badge [Image: {alt || "SVG unavailable"}].
+   * - "warn": Emits styled muted text badge `[Image: <alt or 'SVG unavailable'>]`.
    * - "code": Renders the raw SVG XML markup in a standard DOCX code block (`lang: "xml"`).
    * - "silent": Drops the node completely.
    * @default "warn"
