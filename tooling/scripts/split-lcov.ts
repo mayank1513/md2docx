@@ -57,10 +57,11 @@ for (let record of records) {
 }
 
 for (const [pkgDir, recs] of byPackage.entries()) {
-  const out = path.join(OUT_DIR, `${pkgDir}.lcov`);
+  const pkgBasename = path.basename(pkgDir);
+  const out = path.join(OUT_DIR, `${pkgBasename}.lcov`);
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, recs.join(""), "utf8");
-  console.log(`✓ ${pkgDir}: ${recs.length} records`);
+  console.log(`✓ ${pkgBasename}: ${recs.length} records -> ${out}`);
 }
 
 if (byPackage.size === 0) {
