@@ -9,7 +9,7 @@ import {
   mathPlugin,
   mermaidPlugin,
   tablePlugin,
-} from "mdast2docx/dist/plugins";
+} from "mdast2docx/plugins";
 import { DEFAULT_SECTION_PROPS } from "mdast2docx/utils";
 import type { Plugin } from "unified";
 
