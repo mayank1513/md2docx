@@ -22,11 +22,12 @@ import {
   createFallbackRuns,
   type ImageErrorMode,
   type MermaidFallbackMode,
+  type SvgFallbackMode,
 } from "./fallback";
 import { fixGeneratedSvg, handleSvg } from "./svg-utils";
 import { getImageMimeType } from "./utils";
 
-export type { ImageErrorMode, MermaidFallbackMode };
+export type { ImageErrorMode, MermaidFallbackMode, SvgFallbackMode };
 
 /**
  * List of supported image MIME types that can be embedded directly in DOCX.
@@ -103,6 +104,24 @@ export interface IDefaultImagePluginOptions {
    * @default "code" (or inherits "silent" if errorMode is "silent")
    */
   mermaidFallback?: MermaidFallbackMode;
+
+  /**
+   * Fallback strategy for failed non-Mermaid SVGs.
+   * - "warn": Emits styled muted text badge [Image: {alt || "SVG unavailable"}].
+   * - "code": Renders the raw SVG XML markup in a standard DOCX code block (`lang: "xml"`).
+   * - "silent": Drops the node completely.
+   * @default "warn"
+   */
+  svgFallback?: SvgFallbackMode;
+
+  /**
+   * Optional heading added above fallback code blocks (H6 level, maps to Heading 5 in Word).
+   * - `false`: No heading is inserted (only the code block).
+   * - `true`: Inserts an H6 heading (`###### ⚠️ Diagram Source (Render Fallback)`).
+   * - `string`: Inserts custom heading text at H6 level.
+   * @default true
+   */
+  collapsibleHeading?: boolean | string;
 
   /**
    * In-memory cache object, useful for cache sharing across plugins/tabs.
@@ -348,6 +367,8 @@ const defaultOptions: IDefaultImagePluginOptions = {
   dpi: 96,
   errorMode: "warn",
   mermaidFallback: "code",
+  svgFallback: "warn",
+  collapsibleHeading: true,
   cacheConfig: {
     cacheMode: "both",
     ignoreKeys: ["dpi", "cacheConfig", "type", "alt"],
@@ -409,8 +430,14 @@ export const imagePlugin: (options?: IImagePluginOptions) => IPlugin = (
   const preprocess = async (root: Root, definitions: Definitions) => {
     const promises: Promise<void>[] = [];
 
-    const preprocessInternal = (node: Root | RootContent | PhrasingContent) => {
-      (node as Parent).children?.forEach(preprocessInternal);
+    const preprocessInternal = (
+      node: Root | RootContent | PhrasingContent,
+      parent?: Parent,
+      grandparent?: Parent,
+    ) => {
+      (node as Parent).children?.forEach((child) => {
+        preprocessInternal(child, node as Parent, parent);
+      });
 
       if (/^(image|svg)/.test(node.type)) {
         promises.push(
@@ -450,6 +477,104 @@ export const imagePlugin: (options?: IImagePluginOptions) => IPlugin = (
                 title: alt,
               },
             };
+
+            const isError = Boolean(
+              (resolved as { isError?: boolean })?.isError,
+            );
+            if (isError && parent && grandparent?.children) {
+              const isMermaid = Boolean(
+                (existingData as { mermaid?: string } | undefined)?.mermaid ||
+                  (node as SVG).data?.mermaid,
+              );
+              const mermaidFallback =
+                options?.mermaidFallback ??
+                (options?.errorMode === "silent" ? "silent" : "code");
+              const svgFallback = options?.svgFallback ?? "warn";
+              const isSoloParagraph =
+                parent.type === "paragraph" && parent.children?.length === 1;
+
+              if (isMermaid && isSoloParagraph) {
+                const mermaidCode = String(
+                  (existingData as { mermaid?: string } | undefined)?.mermaid ??
+                    (node as SVG).data?.mermaid ??
+                    "",
+                );
+                if (mermaidFallback === "code") {
+                  const replacement: RootContent[] = [];
+                  if (options?.collapsibleHeading !== false) {
+                    const headingText =
+                      typeof options?.collapsibleHeading === "string"
+                        ? options.collapsibleHeading
+                        : "⚠️ Mermaid Diagram Source (Render Fallback)";
+                    replacement.push({
+                      type: "heading",
+                      depth: 6,
+                      children: [{ type: "text", value: headingText }],
+                    });
+                  }
+                  replacement.push({
+                    type: "code",
+                    lang: "mermaid",
+                    value: mermaidCode,
+                  });
+                  const idx = grandparent.children.indexOf(
+                    parent as RootContent,
+                  );
+                  if (idx !== -1) {
+                    grandparent.children.splice(idx, 1, ...replacement);
+                  }
+                } else if (mermaidFallback === "silent") {
+                  const idx = grandparent.children.indexOf(
+                    parent as RootContent,
+                  );
+                  if (idx !== -1) {
+                    grandparent.children.splice(idx, 1);
+                  }
+                }
+              } else if (node.type === "svg" && !isMermaid && isSoloParagraph) {
+                if (svgFallback === "code") {
+                  const svgVal =
+                    typeof (node as SVG).value === "string"
+                      ? (node as SVG).value
+                      : "";
+                  const replacement: RootContent[] = [];
+                  if (options?.collapsibleHeading !== false) {
+                    const headingText =
+                      typeof options?.collapsibleHeading === "string"
+                        ? options.collapsibleHeading
+                        : "⚠️ SVG Source (Render Fallback)";
+                    replacement.push({
+                      type: "heading",
+                      depth: 6,
+                      children: [{ type: "text", value: headingText }],
+                    });
+                  }
+                  replacement.push({
+                    type: "code",
+                    lang: "xml",
+                    value: svgVal as string,
+                  });
+                  const idx = grandparent.children.indexOf(
+                    parent as RootContent,
+                  );
+                  if (idx !== -1) {
+                    grandparent.children.splice(idx, 1, ...replacement);
+                  }
+                } else if (svgFallback === "silent") {
+                  const idx = grandparent.children.indexOf(
+                    parent as RootContent,
+                  );
+                  if (idx !== -1) {
+                    grandparent.children.splice(idx, 1);
+                  }
+                }
+              } else if (options?.errorMode === "silent" && isSoloParagraph) {
+                const idx = grandparent.children.indexOf(parent as RootContent);
+                if (idx !== -1) {
+                  grandparent.children.splice(idx, 1);
+                }
+              }
+            }
           })(),
         );
       }

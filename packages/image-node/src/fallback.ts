@@ -2,6 +2,7 @@ import type * as docx from "docx";
 
 export type ImageErrorMode = "warn" | "silent" | "throw" | "placeholder";
 export type MermaidFallbackMode = "code" | "warn" | "silent";
+export type SvgFallbackMode = "warn" | "code" | "silent";
 
 export interface INodeImageErrorOptions {
   /**
@@ -21,6 +22,22 @@ export interface INodeImageErrorOptions {
    * @default "code" (or inherits "silent" if errorMode is "silent")
    */
   mermaidFallback?: MermaidFallbackMode;
+  /**
+   * Fallback strategy for failed non-Mermaid SVGs.
+   * - "warn": Emits styled muted text badge [Image: {alt || "SVG unavailable"}].
+   * - "code": Renders the raw SVG XML markup in a standard DOCX code block (`lang: "xml"`).
+   * - "silent": Drops the node completely.
+   * @default "warn"
+   */
+  svgFallback?: SvgFallbackMode;
+  /**
+   * Optional heading added above fallback code blocks (H6 level, maps to Heading 5 in Word).
+   * - `false`: No heading is inserted (only the code block).
+   * - `true`: Inserts an H6 heading (`###### ⚠️ Diagram Source (Render Fallback)`).
+   * - `string`: Inserts custom heading text at H6 level.
+   * @default true
+   */
+  collapsibleHeading?: boolean | string;
   /** Custom placeholder image source (path, URL, or data URL) */
   placeholder?: string;
 }
