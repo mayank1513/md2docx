@@ -18,31 +18,34 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    template: "%s | PromptShield",
-    default: "PromptShield - Adversarial Prompt Security Layer",
+    template: "%s | mdast2docx",
+    default: "mdast2docx - Markdown to DOCX Converter",
   },
   description:
-    "Protect your LLMs from invisible Unicode characters, BIDI overrides (Trojan Source), homoglyph attacks, and prompt smuggling.",
+    "A powerful, modular, and extensible Markdown to DOCX converter for Node.js and browsers.",
   keywords: [
-    "prompt security",
-    "prompt injection defense",
-    "Unicode attack detection",
-    "invisible character detection",
-    "homoglyph attack prevention",
-    "LLM input validation",
-    "Trojan Source",
+    "markdown",
+    "docx",
+    "mdast",
+    "unified",
+    "remark",
+    "word",
+    "office",
+    "document generation",
   ],
   openGraph: {
     type: "website",
-    siteName: "PromptShield",
+    siteName: "mdast2docx",
     locale: "en_US",
-    title: "PromptShield - Adversarial Prompt Security Layer",
-    description: "Detect and sanitize adversarial prompts robustly.",
+    title: "mdast2docx - Markdown to DOCX Converter",
+    description:
+      "A powerful, modular, and extensible Markdown to DOCX converter for Node.js and browsers.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "PromptShield - Adversarial Prompt Security Layer",
-    description: "Detect and sanitize adversarial prompts robustly.",
+    title: "mdast2docx - Markdown to DOCX Converter",
+    description:
+      "A powerful, modular, and extensible Markdown to DOCX converter for Node.js and browsers.",
   },
 };
 
