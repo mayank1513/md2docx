@@ -1,5 +1,11 @@
 import { exec, execSync } from "node:child_process";
-import { chmodSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
 import { CACHE_DIR } from "./forge.const.ts";
@@ -58,8 +64,40 @@ const getCodecovBinary = async () => {
 const binary = await getCodecovBinary();
 const packages = await readJson<Pkg[]>(PKG_CONFIG);
 
-const commitSha =
-  process.env.GITHUB_SHA || execSync("git rev-parse HEAD").toString().trim();
+const isCI = process.env.GITHUB_ACTIONS === "true";
+const slug = process.env.GITHUB_REPOSITORY || "md2docx/md2docx";
+
+// Determine commit SHA and PR context
+let commitSha = "";
+let prNumber = "";
+
+if (isCI) {
+  if (
+    process.env.GITHUB_EVENT_PATH &&
+    existsSync(process.env.GITHUB_EVENT_PATH)
+  ) {
+    try {
+      const eventData = JSON.parse(
+        readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"),
+      );
+      if (eventData.pull_request) {
+        commitSha = eventData.pull_request.head?.sha || "";
+        prNumber = String(eventData.pull_request.number || "");
+      }
+    } catch {
+      // fallback
+    }
+  }
+  if (!commitSha) {
+    commitSha = process.env.GITHUB_SHA || "";
+  }
+} else {
+  try {
+    commitSha = execSync("git rev-parse HEAD").toString().trim();
+  } catch {
+    // fallback
+  }
+}
 
 const uploadTasks = (packages ?? []).map(async (pkg) => {
   const pkgBasename = path.basename(pkg.dir);
@@ -71,15 +109,36 @@ const uploadTasks = (packages ?? []).map(async (pkg) => {
   }
 
   console.log(`🚀 Starting upload: ${pkg.name} (${pkgBasename}.lcov)...`);
-  const cmd = `"${binary}" do-upload --token "${token}" --file "${lcovFile}" --flag "${pkg.name}" --name "${pkg.name}" --disable-search -r md2docx/md2docx -C ${commitSha}`;
+
+  let cmd = `"${binary}" do-upload --token "${token}" --file "${lcovFile}" --flag "${pkg.name}" --name "${pkg.name}" --disable-search -r "${slug}"`;
+
+  if (commitSha) {
+    cmd += ` -C ${commitSha}`;
+  }
+  if (prNumber) {
+    cmd += ` -P ${prNumber}`;
+  }
 
   try {
     const { stdout, stderr } = await execAsync(cmd);
-    if (stdout) console.log(`✓ [${pkg.name}] Done`);
-    if (stderr && !stderr.includes("warning"))
-      console.warn(`[${pkg.name} stderr]:`, stderr);
-  } catch (err: any) {
-    console.warn(`✗ Failed to upload ${pkg.name}: ${err.message}`);
+    const combinedOutput = `${stdout || ""}\n${stderr || ""}`.trim();
+
+    // Extract Codecov dashboard URL if present
+    const urlMatch = combinedOutput.match(
+      /https:\/\/app\.codecov\.io\/[^\s)]+/,
+    );
+    const reportUrl = urlMatch ? urlMatch[0] : "";
+
+    if (reportUrl) {
+      console.log(`✓ [${pkg.name}] Uploaded! Dashboard: ${reportUrl}`);
+    } else {
+      console.log(`✓ [${pkg.name}] Upload completed successfully.`);
+    }
+  } catch (err: unknown) {
+    const error = err as { message?: string; stdout?: string; stderr?: string };
+    console.error(
+      `✗ [${pkg.name}] Upload failed: ${error.message || ""}\n${error.stderr || error.stdout || ""}`,
+    );
   }
 });
 
