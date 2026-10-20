@@ -36,7 +36,6 @@ export default defineConfig({
     coverage: {
       include: ["packages/**/src/**"],
       exclude: [
-        "packages/**/index.ts", // comment this line if your project does not use barrel files
         "packages/**/types.ts",
         "packages/**/*.test.*",
         "packages/**/declaration.d.ts",

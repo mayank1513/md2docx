@@ -44,11 +44,11 @@ for (let record of records) {
   if (!pkg) continue;
 
   const idx = filePath.indexOf(pkg.dir);
-  const relative = filePath.slice(idx + pkg.dir.length);
-  if (!relative) continue;
+  if (idx === -1) continue;
+  const repoRelative = filePath.slice(idx);
 
-  // Rewrite SF path to package-local
-  lines[sfIndex] = `SF:${relative}`;
+  // Preserve repo-relative path (e.g. packages/list/src/index.ts) with forward slashes so Codecov matches git tree
+  lines[sfIndex] = `SF:${repoRelative}`;
 
   record = `${lines.join("\n")}\n`;
 
