@@ -1,0 +1,9 @@
+{
+  "title": "@m2d/table",
+  "pages": [
+    "overview",
+    "table-styling-and-layout",
+    "cell-formatting-and-alignment",
+    "api"
+  ]
+}

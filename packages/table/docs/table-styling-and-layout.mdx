@@ -1,0 +1,93 @@
+---
+title: Table Styling & Layout
+description: Customizing table borders, widths, margins, and multi-page repeating headers.
+---
+
+# Table Styling & Layout
+
+`@m2d/table` transforms standard Markdown tables (via MDAST) into native Microsoft Word `docx.Table` elements with fine-grained layout, margin, and border controls.
+
+---
+
+## Default Table Configuration
+
+By default, `@m2d/table` applies clean, professional document defaults:
+
+- **Width**: `100%` across the printable page area.
+- **Cell Padding**: `2mm` top/bottom, `4mm` left/right margins.
+- **Borders**: Thin single borders (`BorderStyle.SINGLE`, size 1) across all exterior edges and interior grid lines.
+- **Repeating Header**: The first row automatically repeats across page breaks (`tableHeader: true`).
+- **Header Shading**: Solid fill with golden-bronze accent (`#b79c2f`) and bold text.
+
+---
+
+## Customizing Table Layout & Width
+
+Table properties are configured via `tableProps`, which maps directly to the underlying `docx.ITableOptions`:
+
+```typescript
+import { tablePlugin } from "@m2d/table";
+import { AlignmentType, WidthType, convertMillimetersToTwip } from "docx";
+
+const plugin = tablePlugin({
+  tableProps: {
+    // 90% page width or fixed TWIP width
+    width: { size: 90, type: WidthType.PERCENTAGE },
+    alignment: AlignmentType.CENTER,
+    margins: {
+      top: convertMillimetersToTwip(3),
+      bottom: convertMillimetersToTwip(3),
+      left: convertMillimetersToTwip(5),
+      right: convertMillimetersToTwip(5),
+    },
+  },
+});
+```
+
+---
+
+## Border Customization
+
+You can fully control exterior and interior borders or eliminate borders entirely for borderless grid presentations:
+
+```typescript
+import { tablePlugin } from "@m2d/table";
+import { BorderStyle } from "docx";
+
+const customBorder = {
+  style: BorderStyle.DASHED,
+  size: 2,
+  color: "666666",
+};
+
+const plugin = tablePlugin({
+  tableProps: {
+    borders: {
+      top: customBorder,
+      bottom: customBorder,
+      left: { style: BorderStyle.NONE },
+      right: { style: BorderStyle.NONE },
+      insideHorizontal: { style: BorderStyle.DOTTED, size: 1, color: "CCCCCC" },
+      insideVertical: { style: BorderStyle.NONE },
+    },
+  },
+});
+```
+
+---
+
+## Multi-Page Header Repetition
+
+In long documents, tables often span across page splits. Word supports automatically repeating the header row at the top of each page when `firstRowProps.tableHeader` is `true` (enabled by default):
+
+```typescript
+const plugin = tablePlugin({
+  firstRowProps: {
+    tableHeader: true, // Word repeats this row when table splits across pages
+    cantSplit: true,   // Prevents row height from breaking across a page line
+  },
+  rowProps: {
+    cantSplit: true,   // Prevents individual data rows from splitting awkwardly
+  },
+});
+```
