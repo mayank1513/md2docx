@@ -209,6 +209,31 @@ const ACTIVE_PLUGINS = [
   { name: "@m2d/html", icon: Globe, desc: "HTML Tags" },
 ];
 
+/**
+ * Triggers a client-side file download from a Blob.
+ */
+const downloadBlob = (blob: Blob, filename: string): void => {
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
+/**
+ * Generates standard filename for demo preset downloads.
+ */
+const getPresetDocxFilename = (
+  preset: string,
+  mode: "client" | "server",
+): string =>
+  preset === "full"
+    ? `full-sample-${mode}.docx`
+    : `md2docx-${preset}-${mode}.docx`;
+
 export const DocxDemo = () => {
   const [selectedPreset, setSelectedPreset] = useState<PresetId>("all");
   const [markdown, setMarkdown] = useState(ALL_PLUGINS_SAMPLE);
@@ -297,17 +322,7 @@ export const DocxDemo = () => {
       const sizeKb = Number((docxBlob.size / 1024).toFixed(1));
 
       // Trigger instant download
-      const url = window.URL.createObjectURL(docxBlob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download =
-        selectedPreset === "full"
-          ? "full-sample-client.docx"
-          : `md2docx-${selectedPreset}-client.docx`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      downloadBlob(docxBlob, getPresetDocxFilename(selectedPreset, "client"));
 
       const targetLabel =
         PRESETS.find((p) => p.id === selectedPreset)?.label || "Custom Doc";
@@ -364,17 +379,7 @@ export const DocxDemo = () => {
       const sizeKb = Number((blob.size / 1024).toFixed(1));
 
       // Trigger download
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download =
-        selectedPreset === "full"
-          ? "full-sample-server.docx"
-          : `md2docx-${selectedPreset}-server.docx`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      downloadBlob(blob, getPresetDocxFilename(selectedPreset, "server"));
 
       const targetLabel =
         PRESETS.find((p) => p.id === selectedPreset)?.label || "Custom Doc";
