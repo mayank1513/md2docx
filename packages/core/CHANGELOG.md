@@ -1,5 +1,23 @@
 # @m2d/core
 
+## 1.8.0
+
+### Minor Changes
+
+- [`c0a19a9`](https://github.com/md2docx/md2docx/commit/c0a19a95bff499fbfd9275df0d3f9efac99abf80) Thanks [@mayank1513](https://github.com/mayank1513)! - Include `namespace` in `generateCacheKey` and `createPersistentCache` to ensure cross-plugin cache key isolation in shared persistent storage.
+
+- [`eafade1`](https://github.com/md2docx/md2docx/commit/eafade19075419aeb9a01a9d95d636e800a77e03) Thanks [@mayank1513](https://github.com/mayank1513)! - Add `shouldCache` predicate to `createPersistentCache` to allow consumers to prevent caching invalid, empty, or placeholder results.
+
+### Patch Changes
+
+- [`98b766d`](https://github.com/md2docx/md2docx/commit/98b766de14a9150bdd4524c0bd18c3b849347187) Thanks [@mayank1513](https://github.com/mayank1513)! - feat: add `warnOnce` utility to deduplicate unsupported AST node type warnings
+
+- [`e5858a2`](https://github.com/md2docx/md2docx/commit/e5858a235b61ffc8e5b9d3b375115373633cf3e7) Thanks [@mayank1513](https://github.com/mayank1513)! - Preserve array element ordering in `stableSerialize` during cache key generation instead of sorting.
+
+- [`325ee92`](https://github.com/md2docx/md2docx/commit/325ee92ee600c29340898b52a70bb78a3b08a3cb) Thanks [@mayank1513](https://github.com/mayank1513)! - Prevent in-place mutation of `defaultSectionProps.plugins` array when merging section plugins.
+
+- [`bcac5c4`](https://github.com/md2docx/md2docx/commit/bcac5c463cb3b44116cbf4a553162dd08197ad5a) Thanks [@mayank1513](https://github.com/mayank1513)! - Reuse singleton `xxhash-wasm` instance to avoid redundant WebAssembly re-initialization during cache key generation.
+
 ## 1.7.1
 
 ### Patch Changes

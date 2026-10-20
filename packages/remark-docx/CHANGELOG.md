@@ -1,5 +1,13 @@
 # @m2d/remark-docx
 
+## 1.2.3
+
+### Patch Changes
+
+- [`d2954cd`](https://github.com/md2docx/md2docx/commit/d2954cda0cf0a86cbbf466124cf038ebdd385d93) Thanks [@mayank1513](https://github.com/mayank1513)! - Import default plugins from the clean subpath export `mdast2docx/plugins` instead of internal `mdast2docx/dist/plugins`.
+- Updated dependencies [[`8456f9d`](https://github.com/md2docx/md2docx/commit/8456f9d12d822c457030c0c009cb9c45168460fc), [`f84b3eb`](https://github.com/md2docx/md2docx/commit/f84b3eb912c6d162ab3fd8775fb64be21a86edf5)]:
+  - mdast2docx@1.6.2
+
 ## 1.2.2
 
 ### Patch Changes

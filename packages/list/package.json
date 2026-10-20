@@ -2,7 +2,7 @@
   "name": "@m2d/list",
   "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
   "private": false,
-  "version": "0.0.9",
+  "version": "0.0.10",
   "publishConfig": {
     "access": "public",
     "provenance": true

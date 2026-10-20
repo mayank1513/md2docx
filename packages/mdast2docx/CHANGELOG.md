@@ -1,5 +1,23 @@
 # mdast2docx
 
+## 1.6.2
+
+### Patch Changes
+
+- [`8456f9d`](https://github.com/md2docx/md2docx/commit/8456f9d12d822c457030c0c009cb9c45168460fc) Thanks [@mayank1513](https://github.com/mayank1513)! - Add `@m2d/image-node` as a dedicated server-side image rasterization plugin using `sharp` for fast local/remote image and SVG rendering, and re-export `nodeImagePlugin` from `mdast2docx`.
+
+- [`f84b3eb`](https://github.com/md2docx/md2docx/commit/f84b3eb912c6d162ab3fd8775fb64be21a86edf5) Thanks [@mayank1513](https://github.com/mayank1513)! - Add `@m2d/mermaid-node` package using `beautiful-mermaid` for server-side Mermaid diagram rendering with zero DOM dependencies.
+- Updated dependencies [[`98b766d`](https://github.com/md2docx/md2docx/commit/98b766de14a9150bdd4524c0bd18c3b849347187), [`c0a19a9`](https://github.com/md2docx/md2docx/commit/c0a19a95bff499fbfd9275df0d3f9efac99abf80), [`eafade1`](https://github.com/md2docx/md2docx/commit/eafade19075419aeb9a01a9d95d636e800a77e03), [`8456f9d`](https://github.com/md2docx/md2docx/commit/8456f9d12d822c457030c0c009cb9c45168460fc), [`1dab971`](https://github.com/md2docx/md2docx/commit/1dab971b8f05d71ef87de9f8a93f89af9b7f2a37), [`f84b3eb`](https://github.com/md2docx/md2docx/commit/f84b3eb912c6d162ab3fd8775fb64be21a86edf5), [`e5858a2`](https://github.com/md2docx/md2docx/commit/e5858a235b61ffc8e5b9d3b375115373633cf3e7), [`325ee92`](https://github.com/md2docx/md2docx/commit/325ee92ee600c29340898b52a70bb78a3b08a3cb), [`c58d49e`](https://github.com/md2docx/md2docx/commit/c58d49e284c1b87c4dbb78921d52ec20fb248f39), [`9318c34`](https://github.com/md2docx/md2docx/commit/9318c34ee45a974c09390ef103607b9204aa6b61), [`8456f9d`](https://github.com/md2docx/md2docx/commit/8456f9d12d822c457030c0c009cb9c45168460fc), [`8456f9d`](https://github.com/md2docx/md2docx/commit/8456f9d12d822c457030c0c009cb9c45168460fc), [`3440941`](https://github.com/md2docx/md2docx/commit/34409418fb76ce9d9e74daf82356489f3d62fe78), [`041e825`](https://github.com/md2docx/md2docx/commit/041e825d170832d27dfdeddc816b4d791533f8db), [`934e973`](https://github.com/md2docx/md2docx/commit/934e973a49abdbf8ff478f1a40b366515a42ca59), [`ca6042c`](https://github.com/md2docx/md2docx/commit/ca6042cdf028029bf886e47874c664c41f250b9a), [`c9acf5a`](https://github.com/md2docx/md2docx/commit/c9acf5adcb174184bc08be400eac424057ed109f), [`c145283`](https://github.com/md2docx/md2docx/commit/c1452834d617640a36915cb32087c7dfd70b5918), [`bcac5c4`](https://github.com/md2docx/md2docx/commit/bcac5c463cb3b44116cbf4a553162dd08197ad5a), [`aee6baf`](https://github.com/md2docx/md2docx/commit/aee6baf3da46e1dc4b5428e5c4469719d90b51cf)]:
+  - @m2d/core@1.8.0
+  - @m2d/image@1.5.0
+  - @m2d/mermaid@1.3.0
+  - @m2d/image-node@0.1.0
+  - @m2d/mermaid-node@0.1.0
+  - @m2d/html@1.1.12
+  - @m2d/math@0.1.0
+  - @m2d/list@0.0.10
+  - @m2d/table@0.1.2
+
 ## 1.6.1
 
 ### Patch Changes

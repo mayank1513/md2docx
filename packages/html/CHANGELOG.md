@@ -1,5 +1,13 @@
 # @m2d/html
 
+## 1.1.12
+
+### Patch Changes
+
+- [`c58d49e`](https://github.com/md2docx/md2docx/commit/c58d49e284c1b87c4dbb78921d52ec20fb248f39) Thanks [@mayank1513](https://github.com/mayank1513)! - Fix CSS border width parsing radix to base 10 (`parseInt(width, 10)` instead of binary base 2).
+- Updated dependencies [[`98b766d`](https://github.com/md2docx/md2docx/commit/98b766de14a9150bdd4524c0bd18c3b849347187), [`c0a19a9`](https://github.com/md2docx/md2docx/commit/c0a19a95bff499fbfd9275df0d3f9efac99abf80), [`eafade1`](https://github.com/md2docx/md2docx/commit/eafade19075419aeb9a01a9d95d636e800a77e03), [`e5858a2`](https://github.com/md2docx/md2docx/commit/e5858a235b61ffc8e5b9d3b375115373633cf3e7), [`325ee92`](https://github.com/md2docx/md2docx/commit/325ee92ee600c29340898b52a70bb78a3b08a3cb), [`bcac5c4`](https://github.com/md2docx/md2docx/commit/bcac5c463cb3b44116cbf4a553162dd08197ad5a)]:
+  - @m2d/core@1.8.0
+
 ## 1.1.11
 
 ### Patch Changes
