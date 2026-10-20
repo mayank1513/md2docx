@@ -1,0 +1,62 @@
+---
+title: Ordered Lists & Hierarchical Numbering
+description: Configuring multi-level numbering schemas, hierarchical decimals, and indentation.
+---
+
+# Ordered Lists & Hierarchical Numbering
+
+In Microsoft Word, numbered lists are defined through document-level abstract numbering schemes. `@m2d/list` connects Markdown ordered lists (`ol`) to Word OpenXML numbering configurations, providing clean hierarchical numbering out of the box.
+
+---
+
+## Default Hierarchical Decimal Numbering
+
+By default, `@m2d/list` structures nested ordered lists into hierarchical legal/technical style numbers:
+
+1. Level 1: `1.`
+   1. Level 2: `1.1.`
+      1. Level 3: `1.1.1.`
+         1. Level 4: `1.1.1.1.`
+            1. Level 5: `A.`
+            2. Level 6: `a.`
+            3. Level 7: `i.`
+            4. Level 8: `I.`
+
+This prevents nested lists in complex reports from resetting ambiguously to `1.` at every sub-level.
+
+---
+
+## Custom Numbering Schemes with `createLevels`
+
+You can customize the numbering formats, base indentation, and indentation increments per level using the exported `createLevels` helper:
+
+```typescript
+import { createLevels, listPlugin } from "@m2d/list";
+import { LevelFormat } from "docx";
+
+// Define a custom outline numbering hierarchy: A. -> 1. -> a. -> i.
+const customLevels = createLevels(
+  [
+    LevelFormat.UPPER_LETTER, // Level 1: A.
+    LevelFormat.DECIMAL,      // Level 2: 1.
+    LevelFormat.LOWER_LETTER, // Level 3: a.
+    LevelFormat.LOWER_ROMAN,  // Level 4: i.
+  ],
+  0.5,  // Base indentation for first level in inches (default: 0.4)
+  0.3   // Additional indentation added per level in inches (default: 0.25)
+);
+
+const plugin = listPlugin({
+  levels: customLevels,
+});
+```
+
+---
+
+## How Word OpenXML Numbering Works
+
+When compiling to DOCX:
+1. `listPlugin` generates a unique UUID-based numbering reference (`numReference`).
+2. In the `root` lifecycle hook, it registers this numbering definition in `docProps.numbering.config`.
+3. In the `block` hook, each list item paragraph receives the matching `numbering` property with its computed depth `level`.
+4. This ensures that Microsoft Word renders native list numbers that update dynamically if items are added or rearranged by Word users.

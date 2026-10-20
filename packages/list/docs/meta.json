@@ -1,0 +1,9 @@
+{
+  "title": "@m2d/list",
+  "pages": [
+    "overview",
+    "ordered-lists-and-numbering",
+    "bullet-styles-and-nesting",
+    "api"
+  ]
+}
