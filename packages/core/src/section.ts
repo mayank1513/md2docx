@@ -23,7 +23,7 @@ import type {
   IPlugin,
   ISectionProps,
 } from "./utils";
-import { DEFAULT_SECTION_PROPS, getTextContent } from "./utils";
+import { DEFAULT_SECTION_PROPS, getTextContent, warnOnce } from "./utils";
 
 /**
  * Creates an inline content processor that converts MDAST inline elements to DOCX-compatible runs.
@@ -149,7 +149,10 @@ const createInlineProcessor = (
           case "":
             return [...docxNodes];
           default:
-            console.warn(`Unsupported inline node type: ${node.type}`);
+            warnOnce(
+              `inline:${node.type}`,
+              `Unsupported inline node type: ${node.type}`,
+            );
             return [...docxNodes];
         }
       }) ?? []
@@ -287,7 +290,8 @@ export const toSection = async (
             newParaProps.bullet = {
               level: (newParaProps.bullet?.level ?? -1) + 1,
             };
-            console.warn(
+            warnOnce(
+              "ordered-list-numbering",
               "Please add numbering plugin to support ordered lists. For now, we use only bullets for both the ordered and the unordered list.",
             );
           } else {
@@ -332,7 +336,7 @@ export const toSection = async (
         case "footnoteDefinition":
           return docxNodes;
         case "table":
-          console.warn("Please add table plugin to support tables.");
+          warnOnce("table", "Please add table plugin to support tables.");
           return docxNodes;
         case "fragment":
           return [
@@ -345,11 +349,16 @@ export const toSection = async (
         case "html":
           return docxNodes;
         default:
-          console.warn(`May be an unsupported node type: ${node.type}`, node);
+          warnOnce(
+            `block:${node.type}`,
+            `May be an unsupported node type: ${node.type}`,
+            node,
+          );
           return docxNodes;
       }
     });
 
+  warnOnce.reset();
   return {
     ...sectionProps,
     children: processBlockNodeChildren(node, props?.footnoteProps || {}),

@@ -281,3 +281,29 @@ export function mergeOptions<T>(
 
   return result as T;
 }
+
+const warnedSet = new Set<string>();
+
+/**
+ * Emits a warning to console.warn only once per unique key.
+ *
+ * @param key - Unique identifier for deduplication (e.g. `inline:${type}`)
+ * @param message - The warning message
+ * @param args - Additional contextual arguments
+ */
+export const warnOnce = (
+  key: string,
+  message: string,
+  ...args: unknown[]
+): void => {
+  if (warnedSet.has(key)) return;
+  warnedSet.add(key);
+  console.warn(`[m2d] ${message}`, ...args);
+};
+
+/**
+ * Resets the deduplication cache (useful for testing).
+ */
+warnOnce.reset = (): void => {
+  warnedSet.clear();
+};

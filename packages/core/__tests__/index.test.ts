@@ -6,8 +6,9 @@ import { listPlugin } from "@m2d/list";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { toDocx } from "../src"; // Adjust path based on your setup
+import { warnOnce } from "../src/utils";
 
 const markdown = fs.readFileSync(
   path.resolve(__dirname, "../../../sample.md"),
@@ -108,5 +109,42 @@ describe("toDocx", () => {
     );
 
     expect(defaultPlugins).toHaveLength(0);
+  });
+
+  it("warnOnce emits a warning only once per unique key", () => {
+    warnOnce.reset();
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    warnOnce("test-key", "Test warning 1");
+    warnOnce("test-key", "Test warning 2");
+    warnOnce("another-key", "Another warning");
+
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledWith("[m2d] Test warning 1");
+    expect(spy).toHaveBeenCalledWith("[m2d] Another warning");
+
+    spy.mockRestore();
+  });
+
+  it("warns only once for repeated unsupported node types during toDocx", async () => {
+    warnOnce.reset();
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    await toDocx(
+      {
+        type: "root",
+        // @ts-expect-error -- testing repeated unknown types
+        children: [{ type: "customNode" }, { type: "customNode" }],
+      },
+      {},
+      { plugins: [] },
+    );
+
+    const customNodeWarnings = spy.mock.calls.filter((call) =>
+      call[0]?.includes("customNode"),
+    );
+    expect(customNodeWarnings).toHaveLength(1);
+
+    spy.mockRestore();
   });
 });
