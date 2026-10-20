@@ -248,7 +248,7 @@ export const mermaidPlugin: (options?: IMermaidPluginOptions) => IPlugin = (
           ...cacheConfig,
           shouldCache: (res) => Boolean(res?.svg?.length),
         })(value, finalConfig),
-        data: { mermaid: value }, // Preserve original source
+        data: { ...node.data, mermaid: value }, // Preserve original source
       };
 
       Object.assign(node, {

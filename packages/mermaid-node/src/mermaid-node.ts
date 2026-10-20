@@ -115,6 +115,10 @@ const walkAndTransform = (
     const svgNode: SVG = {
       type: "svg",
       value: renderFn(code),
+      data: {
+        ...node.data,
+        mermaid: code,
+      },
     };
     Object.assign(node, svgNode);
   }
