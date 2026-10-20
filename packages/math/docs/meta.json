@@ -1,0 +1,9 @@
+{
+  "title": "@m2d/math",
+  "pages": [
+    "overview",
+    "latex-syntax-and-symbols",
+    "resiliency-and-error-modes",
+    "api"
+  ]
+}
