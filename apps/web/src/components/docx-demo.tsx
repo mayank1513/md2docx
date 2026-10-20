@@ -407,7 +407,7 @@ export const DocxDemo = () => {
   };
 
   return (
-    <section className="py-20 border-y border-border/40 bg-muted/20">
+    <section id="demo" className="py-20 border-y border-border/40 bg-muted/20">
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-8">

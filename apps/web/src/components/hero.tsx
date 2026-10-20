@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 
@@ -26,32 +26,47 @@ export const Hero = () => {
     <section className="relative overflow-hidden bg-background pt-24 pb-32">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
       <div className="container relative z-10 mx-auto px-4 text-center">
-        <div className="inline-flex items-center rounded-full border border-border bg-muted/50 px-3 py-1 text-sm text-muted-foreground mb-8">
-          <span className="flex h-2 w-2 rounded-full bg-primary mr-2"></span>
-          Universal Markdown to Word Engine
+        <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-sm font-medium text-primary mb-8 shadow-sm">
+          <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
+          🚀 Md2Docx — Universal Markdown to Word Engine
         </div>
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-6">
           Markdown to Word <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-400 to-neutral-800 dark:from-neutral-300 dark:to-neutral-600">
-            Made Effortless
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 dark:from-blue-400 dark:via-indigo-400 dark:to-cyan-300">
+            Native, Modular, Effortless
           </span>
         </h1>
-        <p className="mx-auto max-w-2xl text-lg md:text-xl text-muted-foreground mb-10">
-          Convert standard Markdown, GFM tables, math, and diagrams into native
-          Microsoft Word (.docx) documents — with zero-server client execution
-          and robust Node.js backend streaming.
+        <p className="mx-auto max-w-2xl text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed">
+          Convert standard Markdown, GFM tables, LaTeX formulas, and Mermaid
+          diagrams into native, editable Microsoft Word (.docx) documents — with
+          100% in-browser client privacy or robust Node.js backend streaming.
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-          <Button size="lg" className="w-full sm:w-auto font-semibold" asChild>
-            <Link href="/docs">
-              Get Started
-              <ArrowRight className="ml-2 h-4 w-4" />
+          <Button
+            size="lg"
+            className="w-full sm:w-auto font-semibold shadow-md"
+            asChild
+          >
+            <Link href="#demo">
+              <Play className="mr-2 h-4 w-4 fill-current" />
+              Try Live Playground
             </Link>
           </Button>
           <Button
             size="lg"
             variant="outline"
             className="w-full sm:w-auto font-semibold"
+            asChild
+          >
+            <Link href="/docs">
+              Documentation
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            size="lg"
+            variant="ghost"
+            className="w-full sm:w-auto font-semibold text-muted-foreground hover:text-foreground"
             asChild
           >
             <Link
