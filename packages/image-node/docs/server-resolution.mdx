@@ -1,0 +1,35 @@
+---
+title: Server-Side Resolution
+description: Headless image and SVG resolution using sharp in Node.js environments.
+---
+
+# Server-Side Image Resolution (`@m2d/image-node`)
+
+`@m2d/image-node` is designed specifically for backend and server-side environments where browser APIs like `document.createElement("canvas")` or `Image()` are unavailable.
+
+---
+
+## Supported Source Formats
+
+1. **Local Filesystem Paths**:
+   Relative or absolute paths on the server. Configure `pathPrefix` to anchor relative image paths to your static assets or `public/` directory:
+   ```typescript
+   nodeImagePlugin({
+     pathPrefix: "./public",
+   });
+   ```
+2. **Remote HTTPS/HTTP URLs**:
+   Fetched directly using Node's native `fetch` and streamed into memory buffers.
+3. **Data URLs**:
+   Base64-encoded images (`data:image/png;base64,...`) are decoded into raw Buffers.
+4. **SVG AST Nodes**:
+   SVGs emitted by diagram plugins (such as `@m2d/mermaid-node`) are rasterized directly into high-resolution PNGs via `sharp` and `librsvg`.
+
+---
+
+## Sharp Rasterization Pipeline
+
+Images are processed through `sharp`:
+- Metadata inspection determines native pixel dimensions without fully decoding the entire image upfront.
+- `calculateDimensions` scales images proportionally to ensure they do not exceed `maxW` (default: 6 inches) or `maxH` (default: 8 inches) based on the target document `dpi` (default: 96).
+- Unsupported formats (WEBP, AVIF, TIFF, SVG) are automatically converted into Word-compatible PNG or JPEG raster buffers.

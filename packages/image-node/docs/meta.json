@@ -1,0 +1,4 @@
+{
+  "title": "@m2d/image-node",
+  "pages": ["overview", "server-resolution", "fallbacks-and-error-modes", "api"]
+}
