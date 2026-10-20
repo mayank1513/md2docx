@@ -19,6 +19,7 @@
     "@m2d/math",
     "@m2d/mdast",
     "@m2d/mermaid",
+    "@m2d/mermaid-node",
     "@m2d/react-markdown",
     "@m2d/remark-docx",
     "@m2d/table",

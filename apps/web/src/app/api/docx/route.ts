@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { toDocx } from "mdast2docx";
 import { listPlugin, mathPlugin, tablePlugin } from "mdast2docx/plugins";
-import { nodeImagePlugin } from "mdast2docx/plugins/node";
+import { mermaidNodePlugin, nodeImagePlugin } from "mdast2docx/plugins/node";
 import { type NextRequest, NextResponse } from "next/server";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
@@ -20,6 +20,7 @@ const getServerPlugins = () => [
   listPlugin(),
   tablePlugin(),
   mathPlugin(),
+  mermaidNodePlugin(),
   nodeImagePlugin(),
 ];
 

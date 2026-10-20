@@ -15,6 +15,10 @@
       "@m2d/math": ["./packages/math/src", "./packages/math/dist"],
       "@m2d/mdast": ["./packages/mdast/src", "./packages/mdast/dist"],
       "@m2d/mermaid": ["./packages/mermaid/src", "./packages/mermaid/dist"],
+      "@m2d/mermaid-node": [
+        "./packages/mermaid-node/src",
+        "./packages/mermaid-node/dist"
+      ],
       "@m2d/react-markdown": [
         "./packages/react-markdown/src",
         "./packages/react-markdown/dist"

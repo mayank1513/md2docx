@@ -160,6 +160,7 @@
     "@m2d/list": "workspace:*",
     "@m2d/math": "workspace:*",
     "@m2d/mermaid": "workspace:*",
+    "@m2d/mermaid-node": "workspace:*",
     "@m2d/table": "workspace:*",
     "docx": "^9.12.0"
   },
