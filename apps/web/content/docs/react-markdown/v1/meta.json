@@ -1,0 +1,4 @@
+{
+  "title": "Version 1.0.1",
+  "description": "A modern, SSR-friendly React Markdown renderer that preserves the MDAST tree for reuse (e.g., mdast2docx), supports full JSX children, unified plugins, and component overrides."
+}

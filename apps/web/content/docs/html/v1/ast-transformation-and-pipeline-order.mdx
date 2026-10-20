@@ -1,0 +1,54 @@
+---
+title: AST Transformation & Pipeline Ordering
+description: How raw HTML strings are transformed into extended MDAST nodes and why early plugin execution is critical.
+---
+
+# AST Transformation & Pipeline Ordering
+
+Markdown parsers like `remark-parse` do not parse embedded HTML tags into rich syntax trees; instead, they emit raw string literals as `{ type: "html", value: "..." }` nodes. `@m2d/html` bridges this gap by preprocessing the Markdown Abstract Syntax Tree (MDAST) and transforming raw HTML into semantic MDAST nodes before DOCX generation begins.
+
+---
+
+## The Tag-Matching Stack Architecture
+
+In Markdown, inline HTML tags frequently wrap Markdown elements across disparate sibling nodes:
+
+```markdown
+<span style="color: red">**Bold alert text** and regular text</span>
+```
+
+In the raw MDAST, this produces three separate nodes:
+1. `html` node (`<span style="color: red">`)
+2. `strong` node (`**Bold alert text**`)
+3. `text` node (`and regular text`)
+4. `html` node (`</span>`)
+
+`@m2d/html` implements a stack-based preprocessor during the `preprocess` plugin lifecycle hook:
+1. It maintains an `htmlNodeStack` to track open tags.
+2. Sibling markdown nodes appearing between an opening and closing tag are collected as children of an extended MDAST container.
+3. Upon encountering the closing tag, the plugin inspects the DOM element, extracts CSS attributes (colors, alignments, weights), and applies them directly to the node's `data` payload.
+
+---
+
+## Pipeline Execution Order: Register Early
+
+Because `@m2d/html` executes during the `preprocess` hook, it operates before block-level and inline-level processors:
+
+```typescript
+import { toDocx } from "@m2d/core";
+import { htmlPlugin } from "@m2d/html";
+import { imagePlugin } from "@m2d/image";
+import { tablePlugin } from "@m2d/table";
+import { listPlugin } from "@m2d/list";
+
+const docxBlob = await toDocx(mdast, {}, {
+  plugins: [
+    htmlPlugin(),  // 1. MUST BE FIRST: Converts raw HTML to semantic MDAST nodes
+    imagePlugin(), // 2. Resolves and rasterizes <img> nodes created by htmlPlugin
+    tablePlugin(), // 3. Formats <table> nodes created by htmlPlugin
+    listPlugin(),  // 4. Formats <ul>/<ol> nodes created by htmlPlugin
+  ],
+});
+```
+
+> ⚠️ **Important**: If `htmlPlugin()` is registered after `imagePlugin()` or `tablePlugin()`, HTML image tags (`<img src="...">`) or HTML tables (`<table>...</table>`) will remain raw, unprocessed string literals and will be omitted from the output Word document.

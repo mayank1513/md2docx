@@ -1,0 +1,12 @@
+{
+  "title": "@m2d/list",
+  "description": "MDAST List Conversion Plugin",
+  "tagLine": "Plugin to convert ordered and unordered lists from Markdown (MDAST) to DOCX. Supports nesting, custom bullets, and numbering styles.",
+  "lastModified": "2026-10-20T10:14:11.729Z",
+  "version": "0.0.10",
+  "root": true,
+  "icon": "ListOrdered",
+  "pages": [
+    "v0"
+  ]
+}

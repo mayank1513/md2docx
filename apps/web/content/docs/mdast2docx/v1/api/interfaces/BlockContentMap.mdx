@@ -1,0 +1,101 @@
+[**mdast2docx**](../index.md)
+
+***
+
+[mdast2docx](../index.md) / BlockContentMap
+
+# Interface: BlockContentMap
+
+Defined in: [packages/mdast/src/index.ts:241](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L241)
+
+Registry of all mdast nodes that can occur where [BlockContent](../type-aliases/BlockContent.md) is
+expected.
+
+This interface can be augmented to register custom node types:
+
+```ts
+declare module 'mdast' {
+  interface BlockContentMap {
+    // Allow using MDX ESM nodes defined by `remark-mdx`.
+    mdxjsEsm: MdxjsEsm;
+  }
+}
+```
+
+For a union of all block content, see [RootContent](../type-aliases/RootContent.md).
+
+## Extended by
+
+- [`RootContentMap`](RootContentMap.md)
+
+## Properties
+
+### blockquote
+
+> **blockquote**: [`Blockquote`](Blockquote.md)
+
+Defined in: [packages/mdast/src/index.ts:242](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L242)
+
+***
+
+### code
+
+> **code**: [`Code`](Code.md)
+
+Defined in: [packages/mdast/src/index.ts:243](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L243)
+
+***
+
+### fragment
+
+> **fragment**: [`Fragment`](Fragment.md)
+
+Defined in: [packages/mdast/src/index.ts:250](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L250)
+
+***
+
+### heading
+
+> **heading**: [`Heading`](Heading.md)
+
+Defined in: [packages/mdast/src/index.ts:244](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L244)
+
+***
+
+### html
+
+> **html**: [`Html`](Html.md)
+
+Defined in: [packages/mdast/src/index.ts:245](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L245)
+
+***
+
+### list
+
+> **list**: [`List`](List.md)
+
+Defined in: [packages/mdast/src/index.ts:246](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L246)
+
+***
+
+### paragraph
+
+> **paragraph**: [`Paragraph`](Paragraph.md)
+
+Defined in: [packages/mdast/src/index.ts:247](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L247)
+
+***
+
+### table
+
+> **table**: [`Table`](Table.md)
+
+Defined in: [packages/mdast/src/index.ts:248](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L248)
+
+***
+
+### thematicBreak
+
+> **thematicBreak**: [`ThematicBreak`](ThematicBreak.md)
+
+Defined in: [packages/mdast/src/index.ts:249](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L249)

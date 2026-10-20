@@ -1,0 +1,32 @@
+[**@m2d/mdast**](../index.md)
+
+***
+
+[@m2d/mdast](../index.md) / RowContentMap
+
+# Interface: RowContentMap
+
+Defined in: [packages/mdast/src/index.ts:450](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L450)
+
+Registry of all mdast nodes that can occur where [RowContent](../type-aliases/RowContent.md)
+is expected.
+
+This interface can be augmented to register custom node types:
+
+```ts
+declare module 'mdast' {
+  interface RowContentMap {
+    custom: Custom;
+  }
+}
+```
+
+For a union of all row content, see [RootContent](../type-aliases/RootContent.md).
+
+## Properties
+
+### tableCell
+
+> **tableCell**: [`TableCell`](TableCell.md)
+
+Defined in: [packages/mdast/src/index.ts:451](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L451)

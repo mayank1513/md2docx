@@ -1,0 +1,35 @@
+[**@m2d/mermaid**](../index.md)
+
+***
+
+[@m2d/mermaid](../index.md) / defaultMermaidFixer
+
+# Function: defaultMermaidFixer()
+
+> **defaultMermaidFixer**(`value`, `_error?`): `string`
+
+Defined in: [index.ts:97](https://github.com/md2docx/md2docx/blob/main/packages/mermaid/src/index.ts#L97)
+
+Best-effort auto-fixer for Mermaid diagrams.
+
+Quotes unquoted flowchart node labels and connection texts containing special characters.
+
+## Parameters
+
+### value
+
+`string`
+
+Original Mermaid diagram source code.
+
+### \_error?
+
+`Error`
+
+Optional parse error from Mermaid.
+
+## Returns
+
+`string`
+
+Repaired Mermaid source code.

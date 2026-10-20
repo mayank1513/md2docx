@@ -1,0 +1,103 @@
+[**@m2d/mermaid**](../index.md)
+
+***
+
+[@m2d/mermaid](../index.md) / IMermaidPluginOptions
+
+# Interface: IMermaidPluginOptions
+
+Defined in: [index.ts:16](https://github.com/md2docx/md2docx/blob/main/packages/mermaid/src/index.ts#L16)
+
+## Properties
+
+### autoFix?
+
+> `optional` **autoFix?**: `boolean`
+
+Defined in: [index.ts:36](https://github.com/md2docx/md2docx/blob/main/packages/mermaid/src/index.ts#L36)
+
+Whether to automatically attempt best-effort repair of common Mermaid syntax errors
+(e.g. unquoted labels containing special characters like @, :, /, parentheses).
+
+#### Default
+
+```ts
+true
+```
+
+***
+
+### cache?
+
+> `optional` **cache?**: `Record`\<`string`, `Promise`\<`unknown`\>\>
+
+Defined in: [index.ts:41](https://github.com/md2docx/md2docx/blob/main/packages/mermaid/src/index.ts#L41)
+
+In-memory cache object, useful for cache sharing across plugins/tabs.
+
+***
+
+### cacheConfig?
+
+> `optional` **cacheConfig?**: `CacheConfigType`\<`RenderResult` \| `undefined`\>
+
+Defined in: [index.ts:44](https://github.com/md2docx/md2docx/blob/main/packages/mermaid/src/index.ts#L44)
+
+Configure caching
+
+***
+
+### fixMermaid?
+
+> `optional` **fixMermaid?**: (`mermaidCode`, `error`) => `string`
+
+Defined in: [index.ts:29](https://github.com/md2docx/md2docx/blob/main/packages/mermaid/src/index.ts#L29)
+
+Optional fixer function to repair invalid Mermaid code before retrying render.
+
+#### Parameters
+
+##### mermaidCode
+
+`string`
+
+##### error
+
+`Error`
+
+#### Returns
+
+`string`
+
+***
+
+### maxAgeMinutes?
+
+> `optional` **maxAgeMinutes?**: `number`
+
+Defined in: [index.ts:47](https://github.com/md2docx/md2docx/blob/main/packages/mermaid/src/index.ts#L47)
+
+Clean up the entries that are not used for following minutes.
+
+#### Default
+
+```ts
+30 * 24 * 60 -- that is 30 days
+```
+
+***
+
+### mermaidConfig?
+
+> `optional` **mermaidConfig?**: `MermaidConfig`
+
+Defined in: [index.ts:24](https://github.com/md2docx/md2docx/blob/main/packages/mermaid/src/index.ts#L24)
+
+Options for configuring Mermaid rendering.
+
+Pass a partial MermaidConfig object to customize behavior.
+Refer to the Mermaid documentation for full configuration options:
+
+#### See
+
+https://mermaid.js.org/configuration.html

@@ -1,0 +1,59 @@
+---
+title: Themes & Theming
+description: Built-in editor themes and custom color palettes in @m2d/mermaid-node.
+---
+
+# Themes & Custom Palettes
+
+`@m2d/mermaid-node` ships with 15 carefully curated themes matching popular IDE palettes.
+
+---
+
+## Built-In Themes
+
+Select any built-in theme via the `theme` option:
+
+```typescript
+import { mermaidNodePlugin } from "@m2d/mermaid-node";
+
+// Light themes: "zinc-light", "github-light", "tokyo-night-light", "catppuccin-latte", "nord-light", "solarized-light"
+// Dark themes: "zinc-dark", "github-dark", "tokyo-night", "tokyo-night-storm", "catppuccin-mocha", "nord", "dracula", "solarized-dark", "one-dark"
+const plugin = mermaidNodePlugin({
+  theme: "github-light",
+});
+```
+
+---
+
+## Custom Themes (Two-Color Mono Mode)
+
+Every diagram can be derived from just two colors: `bg` (background) and `fg` (foreground text/lines):
+
+```typescript
+const customMonoPlugin = mermaidNodePlugin({
+  theme: {
+    bg: "#ffffff",
+    fg: "#1e293b",
+  },
+});
+```
+
+---
+
+## Enriched Custom Themes
+
+You can optionally override individual semantic roles:
+
+```typescript
+const customEnrichedPlugin = mermaidNodePlugin({
+  theme: {
+    bg: "#ffffff",
+    fg: "#0f172a",
+    line: "#3b82f6",     // Connector lines
+    accent: "#2563eb",   // Arrow heads, highlights
+    muted: "#64748b",    // Edge labels, secondary text
+    surface: "#f8fafc",  // Node fill tint
+    border: "#cbd5e1",   // Node borders
+  },
+});
+```

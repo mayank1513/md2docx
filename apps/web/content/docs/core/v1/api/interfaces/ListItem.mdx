@@ -1,0 +1,98 @@
+[**@m2d/core**](../index.md)
+
+***
+
+[@m2d/core](../index.md) / ListItem
+
+# Interface: ListItem
+
+Defined in: [packages/mdast/src/index.ts:964](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L964)
+
+Markdown list item.
+
+## Extends
+
+- [`Parent`](Parent.md)
+
+## Properties
+
+### checked?
+
+> `optional` **checked?**: `boolean` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:975](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L975)
+
+Whether the item is a tasklist item (when `boolean`).
+
+When `true`, the item is complete.
+When `false`, the item is incomplete.
+
+***
+
+### children
+
+> **children**: ([`BlockContent`](../type-aliases/BlockContent.md) \| [`DefinitionContent`](../type-aliases/DefinitionContent.md))[]
+
+Defined in: [packages/mdast/src/index.ts:984](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L984)
+
+Children of list item.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`children`](Parent.md#children)
+
+***
+
+### data?
+
+> `optional` **data?**: [`ListItemData`](ListItemData.md)
+
+Defined in: [packages/mdast/src/index.ts:988](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L988)
+
+Data associated with the mdast list item.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`data`](Parent.md#data)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Parent`](Parent.md).[`position`](Parent.md#position)
+
+***
+
+### spread?
+
+> `optional` **spread?**: `boolean` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:980](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L980)
+
+Whether one or more of the children are separated with a blank line from
+its siblings (when `true`), or not (when `false` or not present).
+
+***
+
+### type
+
+> **type**: `"listItem"`
+
+Defined in: [packages/mdast/src/index.ts:968](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L968)
+
+Node type of mdast list item.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`type`](Parent.md#type)

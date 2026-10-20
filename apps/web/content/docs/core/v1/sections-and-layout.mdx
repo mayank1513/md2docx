@@ -1,0 +1,70 @@
+---
+title: Sections & Layout
+description: Guide to multi-section documents, page orientation, headers, and footers.
+---
+
+# Sections, Layouts & Heading Hierarchy
+
+`@m2d/core` allows full control over page layout, multi-section documents, page numbering, headers, and footers.
+
+---
+
+## Heading Level Adaptation (`useTitle`)
+
+By default, `@m2d/core` enables `useTitle: true`:
+- Top-level Markdown headings (`# Title`, depth 1) map to Word's **Title** style.
+- Second-level headings (`## Heading`, depth 2) map to Word's **Heading 1** style.
+- Third-level headings (`### Heading`, depth 3) map to Word's **Heading 2** style, and so on.
+
+If you prefer standard 1:1 mapping (where `# Heading` maps directly to Word's **Heading 1**), set:
+
+```typescript
+await toDocx(mdast, {}, {
+  useTitle: false,
+});
+```
+
+---
+
+## Multi-Section Documents
+
+To define multi-section documents (e.g. landscape appendix, cover page with different margins, multi-chapter books), pass an array of AST section descriptors to `toDocx`:
+
+```typescript
+import { toDocx } from "@m2d/core";
+import { PageOrientation } from "docx";
+
+const document = await toDocx([
+  {
+    ast: coverPageAst,
+    props: {
+      page: {
+        margin: { top: 720, bottom: 720, left: 720, right: 720 },
+      },
+    },
+  },
+  {
+    ast: bodyContentAst,
+    props: {
+      useTitle: true,
+      plugins: [imagePlugin()],
+    },
+  },
+  {
+    ast: appendixTableAst,
+    props: {
+      page: {
+        size: {
+          orientation: PageOrientation.LANDSCAPE,
+        },
+      },
+    },
+  },
+]);
+```
+
+Each section supports the full range of `docx` `ISectionOptions` properties, including:
+- Page margins and paper sizes (A4, Letter, Custom)
+- Header and footer definitions
+- Page numbering restarts and formats
+- Column layouts

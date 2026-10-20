@@ -1,0 +1,33 @@
+[**@m2d/mdast**](../index.md)
+
+***
+
+[@m2d/mdast](../index.md) / FrontmatterContentMap
+
+# Interface: FrontmatterContentMap
+
+Defined in: [packages/mdast/src/index.ts:311](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L311)
+
+Registry of all mdast nodes that can occur where [FrontmatterContent](../type-aliases/FrontmatterContent.md)
+is expected.
+
+This interface can be augmented to register custom node types:
+
+```ts
+declare module 'mdast' {
+  interface FrontmatterContentMap {
+    // Allow using toml nodes defined by `remark-frontmatter`.
+    toml: TOML;
+  }
+}
+```
+
+For a union of all frontmatter content, see [RootContent](../type-aliases/RootContent.md).
+
+## Properties
+
+### yaml
+
+> **yaml**: [`Yaml`](Yaml.md)
+
+Defined in: [packages/mdast/src/index.ts:312](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L312)

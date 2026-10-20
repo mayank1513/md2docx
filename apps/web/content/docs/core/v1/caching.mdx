@@ -1,0 +1,71 @@
+---
+title: Caching Architecture
+description: Multi-tiered caching engine with timestamped TTL and lock-free concurrency.
+---
+
+# Caching Architecture (`@m2d/core/cache`)
+
+`@m2d/core` includes a persistent, multi-tiered caching engine designed for document generation pipelines. It is accessible via the subpath import:
+
+```typescript
+import { createPersistentCache, simpleCleanup } from "@m2d/core/cache";
+```
+
+---
+
+## Architecture Overview
+
+In document compilation, operations like rasterizing SVG diagrams, rendering LaTeX formulas, or fetching remote images are computationally heavy and I/O-intensive.
+
+The caching engine provides:
+1. **In-Memory Tier (L1)**: Instant lookups during single-document compilation and active runs.
+2. **Persistent IndexedDB Tier (L2)**: Browser session persistence across page reloads and multiple document exports.
+3. **Promise-Level In-Flight Deduplication**: Concurrent requests for the same asset share a single in-flight Promise, preventing duplicate work.
+
+---
+
+## Why Time-To-Live (TTL) Instead of Write-on-Read LRU?
+
+In traditional caching, Least-Recently-Used (LRU) updates the "last accessed" timestamp whenever an item is read. In browser-based document generation, we **deliberately avoid write-on-read LRU** in favor of timestamped expiration:
+
+### 1. Eliminating Write Amplification
+Document assets (high-resolution PNGs, complex Mermaid SVGs, math bitmaps) often range from tens of kilobytes to several megabytes. IndexedDB does not support partial field updates. Updating an access timestamp requires reading the entire binary payload, modifying the metadata, and rewriting the entire multi-megabyte record back to disk.
+
+### 2. Lock-Free Concurrency
+`readonly` IndexedDB transactions run fully in parallel across asynchronous operations and browser tabs. Forcing a timestamp update on every read requires a `readwrite` transaction, which serializes database access and creates severe lock contention when a document contains dozens of images or diagrams.
+
+### 3. Pure Read Operations
+Read operations are completely side-effect free. They cannot trigger unexpected quota errors or unhandled background write rejections during read-only rendering tasks.
+
+Records are timestamped upon creation and purged periodically via `simpleCleanup(maxAgeMinutes, namespace)`.
+
+---
+
+## Consumer Validation via `shouldCache`
+
+`@m2d/core` maintains strict domain independence. The core cache engine does not inspect the contents of stored objects. Instead, consumer plugins decide whether a generated result is valid to persist using the `shouldCache` predicate:
+
+```typescript
+const cache = createPersistentCache({
+  cache: inMemoryMap,
+  cacheConfig: {
+    cacheMode: "both",
+    // Do not cache failed results, empty buffers, or error placeholders
+    shouldCache: (result) => {
+      if (!result) return false;
+      if (result.isError) return false;
+      if (result.data && result.data.length === 0) return false;
+      return true;
+    },
+  },
+});
+```
+
+---
+
+## Deterministic Cache Keys
+
+Cache keys are generated using a singleton WebAssembly-accelerated xxHash (`xxhash-wasm`) instance over normalized, deterministically serialized inputs:
+- **Namespace Isolation**: Each plugin specifies a unique namespace (e.g. `img`, `mmd`, `katex`) to eliminate key collisions across different plugins and data schemas.
+- **Stable Array & Object Serialization**: Object keys are sorted alphabetically, while array elements preserve their exact sequence order.
+- **Function/Undefined Pruning**: Non-serializable properties (functions, symbols) are pruned deterministically.

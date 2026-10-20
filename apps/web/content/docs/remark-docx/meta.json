@@ -1,0 +1,12 @@
+{
+  "title": "@m2d/remark-docx",
+  "description": "Remark DOCX Compiler Plugin",
+  "tagLine": "A unified plugin to prepare MDAST trees for DOCX conversion using mdast2docx.",
+  "lastModified": "2026-10-20T10:14:46.180Z",
+  "version": "1.2.3",
+  "root": true,
+  "icon": "FileCheck",
+  "pages": [
+    "v1"
+  ]
+}

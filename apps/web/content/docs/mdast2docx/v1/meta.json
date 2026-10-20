@@ -1,0 +1,4 @@
+{
+  "title": "Version 1.6.2",
+  "description": "Convert Markdown Abstract Syntax Tree (MDAST) to DOCX seamlessly. Supports footnotes, images, links, and customizable document properties."
+}

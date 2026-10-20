@@ -1,0 +1,17 @@
+[**@m2d/core**](../index.md)
+
+***
+
+[@m2d/core](../index.md) / Immutable
+
+# Type Alias: Immutable\<T\>
+
+> **Immutable**\<`T`\> = `{ readonly [K in keyof T]: T[K] extends object ? T[K] extends AnyFunction ? T[K] : Immutable<T[K]> : T[K] }`
+
+Defined in: [packages/mdast/src/utils.ts:31](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/utils.ts#L31)
+
+## Type Parameters
+
+### T
+
+`T`

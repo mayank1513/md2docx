@@ -1,0 +1,106 @@
+[**@m2d/core**](../index.md)
+
+***
+
+[@m2d/core](../index.md) / Image
+
+# Interface: Image
+
+Defined in: [packages/mdast/src/index.ts:820](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L820)
+
+Markdown image.
+
+## Extends
+
+- [`Alternative`](Alternative.md)
+- [`Node`](Node.md)
+- [`Resource`](Resource.md)
+
+## Properties
+
+### alt?
+
+> `optional` **alt?**: `string` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:94](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L94)
+
+Equivalent content for environments that cannot represent the node as
+intended.
+
+#### Inherited from
+
+[`Alternative`](Alternative.md).[`alt`](Alternative.md#alt)
+
+***
+
+### data?
+
+> `optional` **data?**: [`ImageData`](../type-aliases/ImageData.md)
+
+Defined in: [packages/mdast/src/index.ts:828](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L828)
+
+Data associated with the mdast image.
+
+#### Overrides
+
+[`Node`](Node.md).[`data`](Node.md#data)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Node`](Node.md).[`position`](Node.md#position)
+
+***
+
+### title?
+
+> `optional` **title?**: `string` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:156](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L156)
+
+Advisory information for the resource, such as would be appropriate for
+a tooltip.
+
+#### Inherited from
+
+[`Resource`](Resource.md).[`title`](Resource.md#title)
+
+***
+
+### type
+
+> **type**: `"image"`
+
+Defined in: [packages/mdast/src/index.ts:824](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L824)
+
+Node type of mdast image.
+
+#### Overrides
+
+[`Node`](Node.md).[`type`](Node.md#type)
+
+***
+
+### url
+
+> **url**: `string`
+
+Defined in: [packages/mdast/src/index.ts:151](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L151)
+
+URL to the referenced resource.
+
+#### Inherited from
+
+[`Resource`](Resource.md).[`url`](Resource.md#url)

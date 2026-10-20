@@ -1,0 +1,78 @@
+[**@m2d/mdast**](../index.md)
+
+***
+
+[@m2d/mdast](../index.md) / Checkbox
+
+# Interface: Checkbox
+
+Defined in: [packages/mdast/src/index.ts:35](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L35)
+
+Abstract mdast node.
+
+This interface is supposed to be extended.
+If you can use [Literal](Literal.md) or [Parent](Parent.md), you should.
+But for example in markdown, a thematic break (`***`) is neither literal nor
+parent, but still a node.
+
+To register custom mdast nodes, add them to [RootContentMap](RootContentMap.md) and other
+places where relevant (such as ElementContentMap).
+
+For a union of all registered mdast nodes, see [Nodes](../type-aliases/Nodes.md).
+
+## Extends
+
+- [`Node`](Node.md)
+
+## Properties
+
+### checked?
+
+> `optional` **checked?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:37](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L37)
+
+***
+
+### data?
+
+> `optional` **data?**: [`Data`](Data.md)
+
+Defined in: [packages/mdast/src/index.ts:564](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L564)
+
+Info from the ecosystem.
+
+#### Inherited from
+
+[`Node`](Node.md).[`data`](Node.md#data)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Node`](Node.md).[`position`](Node.md#position)
+
+***
+
+### type
+
+> **type**: `"checkbox"`
+
+Defined in: [packages/mdast/src/index.ts:36](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L36)
+
+Node type.
+
+#### Overrides
+
+[`Node`](Node.md).[`type`](Node.md#type)

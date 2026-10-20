@@ -1,0 +1,75 @@
+---
+title: AST Capture & DOCX Export
+description: Capturing parsed MDAST trees via astRef and coupling with mdast2docx for instant document export.
+---
+
+# AST Capture & DOCX Export
+
+A unique advantage of `@m2d/react-markdown` is its ability to retain and expose the underlying Abstract Syntax Tree (MDAST and HAST) without duplicate parsing passes.
+
+---
+
+## The `astRef` Mechanism
+
+When rendering Markdown in React, the parser already analyzes the syntax tree. Instead of re-parsing the document from scratch when the user clicks "Export to Word", you can pass an `astRef` to capture the resulting trees:
+
+```tsx
+"use client";
+
+import { useRef } from "react";
+import { Md } from "@m2d/react-markdown/client";
+import { toDocx } from "mdast2docx";
+
+export function ArticleViewer({ markdown }: { markdown: string }) {
+  // astRef stores an array of { mdast, hast } objects
+  const astRef = useRef<{ mdast: any; hast: any }[]>([]);
+
+  const handleExport = async () => {
+    if (!astRef.current[0]?.mdast) return;
+
+    // Convert existing MDAST directly to DOCX
+    const blob = await toDocx(astRef.current[0].mdast);
+
+    const url = URL.createObjectURL(blob as Blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "article.docx";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div>
+      <div className="toolbar">
+        <button onClick={handleExport}>Download Word Document</button>
+      </div>
+
+      <div className="preview">
+        <Md astRef={astRef}>{markdown}</Md>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## Server-Side AST Capture
+
+On the server (or in React Server Components), you can capture the AST without React hooks by using a simple mutable object ref:
+
+```tsx
+import { Md } from "@m2d/react-markdown";
+
+export default async function Page() {
+  const astContainer = { current: [] };
+
+  return (
+    <>
+      <Md astRef={astContainer as any}>
+        {"# Server Rendered Markdown\n\nPreserves AST for backend workflows."}
+      </Md>
+    </>
+  );
+}
+```

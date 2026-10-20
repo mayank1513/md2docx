@@ -1,0 +1,36 @@
+[**@m2d/remark-docx**](../index.md)
+
+***
+
+[@m2d/remark-docx](../index.md) / remarkDocx
+
+# Variable: remarkDocx
+
+> `const` **remarkDocx**: `Plugin`\<\[`outputType?`: `OutputType`, `docxProps?`: `IDocxProps`, `sectionProps?`: `ISectionProps`, `pluginProps?`: [`Mdast2DocxPluginProps`](../interfaces/Mdast2DocxPluginProps.md)\], `Root`\>
+
+Defined in: [index.ts:33](https://github.com/md2docx/md2docx/blob/main/packages/remark-docx/src/index.ts#L33)
+
+A unified compiler plugin to convert MDAST to DOCX output using `mdast2docx`.
+
+## Param
+
+**outputType**
+
+The output type for DOCX generation (e.g. "blob", "buffer", "base64").
+                    Defaults to `"blob"`.
+
+## Param
+
+**docxProps**
+
+Global DOCX document properties passed to `toDocx`. Optional.
+
+## Param
+
+**sectionProps**
+
+Section-level props including plugin overrides. Optional.
+
+## Returns
+
+A unified plugin that injects a DOCX compiler.

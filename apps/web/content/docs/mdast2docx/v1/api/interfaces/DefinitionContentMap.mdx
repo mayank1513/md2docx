@@ -1,0 +1,40 @@
+[**mdast2docx**](../index.md)
+
+***
+
+[mdast2docx](../index.md) / DefinitionContentMap
+
+# Interface: DefinitionContentMap
+
+Defined in: [packages/mdast/src/index.ts:279](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L279)
+
+Registry of all mdast nodes that can occur where [DefinitionContent](../type-aliases/DefinitionContent.md)
+is expected.
+
+This interface can be augmented to register custom node types:
+
+```ts
+declare module 'mdast' {
+  interface DefinitionContentMap {
+    custom: Custom;
+  }
+}
+```
+
+For a union of all definition content, see [RootContent](../type-aliases/RootContent.md).
+
+## Properties
+
+### definition
+
+> **definition**: [`Definition`](Definition.md)
+
+Defined in: [packages/mdast/src/index.ts:280](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L280)
+
+***
+
+### footnoteDefinition
+
+> **footnoteDefinition**: [`FootnoteDefinition`](FootnoteDefinition.md)
+
+Defined in: [packages/mdast/src/index.ts:281](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L281)

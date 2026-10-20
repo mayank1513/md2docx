@@ -1,0 +1,17 @@
+[**@m2d/core**](../index.md)
+
+***
+
+[@m2d/core](../index.md) / Required
+
+# Type Alias: Required\<T\>
+
+> **Required**\<`T`\> = `{ [K in keyof T]-?: T[K] extends object ? T[K] extends AnyFunction ? T[K] : Required<T[K]> : T[K] }`
+
+Defined in: [packages/mdast/src/utils.ts:13](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/utils.ts#L13)
+
+## Type Parameters
+
+### T
+
+`T`

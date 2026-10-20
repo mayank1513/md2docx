@@ -1,0 +1,88 @@
+---
+title: Umbrella Architecture & Package Structure
+description: Why mdast2docx acts as the all-in-one distribution bundle and how to choose between umbrella vs scoped packages.
+---
+
+# Umbrella Architecture & Package Structure
+
+`mdast2docx` serves as the primary all-in-one umbrella distribution for the entire MD2DOCX ecosystem. It bundles `@m2d/core` along with the complete collection of official plugins, utilities, and section management tools into a single convenient package.
+
+---
+
+## Umbrella Subpath Exports
+
+By installing `mdast2docx`, you receive instant access to all core converters, plugins, and utilities via structured subpaths:
+
+```typescript
+// 1. Core compiler and section utilities
+import { toDocx, type IDocxProps } from "mdast2docx";
+
+// 2. Section and multi-page layout models
+import { Section, type ISectionProps } from "mdast2docx/section";
+
+// 3. Official plugins bundled in a single subpath
+import {
+  emojiPlugin,
+  htmlPlugin,
+  imagePlugin,
+  listPlugin,
+  mathPlugin,
+  mermaidPlugin,
+  tablePlugin,
+} from "mdast2docx/plugins";
+
+// 4. Low-level style and Twip conversion helpers
+import { convertMillimetersToTwip, mergeOptions } from "mdast2docx/utils";
+```
+
+---
+
+## Umbrella vs Scoped Packages (`@m2d/*`)
+
+The MD2DOCX ecosystem offers two distinct installation strategies:
+
+| Strategy | When to Choose | Advantages | Example |
+| :--- | :--- | :--- | :--- |
+| **Umbrella (`mdast2docx`)** | Standard applications, full-featured document pipelines, rapid prototyping | Single package dependency; all plugins available via `mdast2docx/plugins` | `pnpm add mdast2docx` |
+| **Scoped (`@m2d/*`)** | Microservices, AWS Lambda, bundle-critical browser web apps | Minimal install footprint; zero unneeded dependencies | `pnpm add @m2d/core @m2d/table` |
+
+---
+
+## Standard Full-Featured Pipeline
+
+Here is how all plugins work together in harmony using `mdast2docx`:
+
+```typescript
+import { toDocx } from "mdast2docx";
+import {
+  htmlPlugin,
+  tablePlugin,
+  listPlugin,
+  mathPlugin,
+  mermaidPlugin,
+  imagePlugin,
+} from "mdast2docx/plugins";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import { unified } from "unified";
+
+const markdown = `...`;
+
+const mdast = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath)
+  .parse(markdown);
+
+const docxBlob = await toDocx(mdast, {}, {
+  plugins: [
+    htmlPlugin(),     // 1. Preprocesses raw HTML into semantic MDAST nodes
+    mermaidPlugin(),  // 2. Compiles mermaid blocks into SVG nodes
+    imagePlugin(),    // 3. Rasterizes SVG and image URLs into Word drawings
+    tablePlugin(),    // 4. Formats tables with borders and repeating headers
+    listPlugin(),     // 5. Applies multi-level hierarchical decimal numbering
+    mathPlugin(),     // 6. Transforms LaTeX math into native Word MathML
+  ],
+});
+```

@@ -1,0 +1,105 @@
+[**@m2d/mdast**](../index.md)
+
+***
+
+[@m2d/mdast](../index.md) / FootnoteReference
+
+# Interface: FootnoteReference
+
+Defined in: [packages/mdast/src/index.ts:745](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L745)
+
+Markdown GFM footnote reference.
+
+## Extends
+
+- [`Association`](Association.md)
+- [`Node`](Node.md)
+
+## Properties
+
+### data?
+
+> `optional` **data?**: [`FootnoteReferenceData`](FootnoteReferenceData.md)
+
+Defined in: [packages/mdast/src/index.ts:753](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L753)
+
+Data associated with the mdast GFM footnote reference.
+
+#### Overrides
+
+[`Node`](Node.md).[`data`](Node.md#data)
+
+***
+
+### identifier
+
+> **identifier**: `string`
+
+Defined in: [packages/mdast/src/index.ts:120](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L120)
+
+Relation of association.
+
+`identifier` is a source value: character escapes and character
+references are not parsed.
+
+It can match another node.
+
+Its value must be normalized.
+To normalize a value, collapse markdown whitespace (`[\t\n\r ]+`) to a space,
+trim the optional initial and/or final space, and perform Unicode-aware
+case-folding.
+
+#### Inherited from
+
+[`Association`](Association.md).[`identifier`](Association.md#identifier)
+
+***
+
+### label?
+
+> `optional` **label?**: `string` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:131](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L131)
+
+Relation of association, in parsed form.
+
+`label` is a `string` value: it works just like `title` on [Link](Link.md)
+or a `lang` on [Code](Code.md): character escapes and character references
+are parsed.
+
+It can match another node.
+
+#### Inherited from
+
+[`Association`](Association.md).[`label`](Association.md#label)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Node`](Node.md).[`position`](Node.md#position)
+
+***
+
+### type
+
+> **type**: `"footnoteReference"`
+
+Defined in: [packages/mdast/src/index.ts:749](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L749)
+
+Node type of mdast GFM footnote reference.
+
+#### Overrides
+
+[`Node`](Node.md).[`type`](Node.md#type)

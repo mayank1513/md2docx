@@ -1,0 +1,87 @@
+---
+title: Unified Pipeline Integration
+description: Direct Markdown to Word compilation using Unified, Remark, and mdast2docx.
+---
+
+# Unified Pipeline Integration
+
+`@m2d/remark-docx` acts as a compiler plugin for the [`unified`](https://unifiedjs.com/) and [`remark`](https://github.com/remarkjs/remark) ecosystems. Rather than converting Markdown to HTML, it bridges your AST pipeline directly to Microsoft Word OpenXML generation.
+
+---
+
+## The Unified Compiler Flow
+
+In the standard Unified lifecycle:
+1. **Parser (`remark-parse`)**: Reads raw Markdown text and generates an initial MDAST tree.
+2. **Transformers (`remark-gfm`, `remark-math`, etc.)**: Enrich the MDAST with table structures, footnotes, task lists, and math nodes.
+3. **Compiler (`@m2d/remark-docx`)**: Consumes the final MDAST and produces an OpenXML document payload.
+
+```typescript
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import { remarkDocx } from "@m2d/remark-docx";
+
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath)
+  .use(remarkDocx, "blob"); // Injects the docx compiler
+```
+
+---
+
+## Automatic Plugin Injection
+
+To save you from configuring a dozen individual `@m2d` plugins manually, `remarkDocx` auto-injects standard document plugins when none are explicitly provided:
+
+- `mermaidPlugin`: Renders flowchart and sequence diagrams.
+- `htmlPlugin`: Preprocesses embedded HTML into native Markdown nodes.
+- `listPlugin`: Multi-tier hierarchical numbering and bullet lists.
+- `mathPlugin`: LaTeX formulas converted into native Word Math.
+- `tablePlugin`: Rich table borders, alignments, and cell fills.
+- `emojiPlugin`: Shortcode emoji translation.
+- `imagePlugin`: Image resolution and layout.
+
+### Fine-Tuning Default Plugins with `pluginProps`
+
+You can pass configuration options directly to the underlying plugins through the fourth parameter:
+
+```typescript
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkDocx, "blob", {}, {}, {
+    table: {
+      alignments: { preferMdData: true },
+    },
+    list: {
+      defaultBullets: true,
+    },
+    mermaid: {
+      mermaidConfig: { theme: "neutral" },
+    },
+  });
+```
+
+---
+
+## Overriding Plugins Manually
+
+If you need complete control over the plugin pipeline (for example, substituting `@m2d/mermaid-node` for server-side rendering), provide your own `plugins` array in `sectionProps`:
+
+```typescript
+import { mermaidNodePlugin } from "@m2d/mermaid-node";
+import { imageNodePlugin } from "@m2d/image-node";
+import { tablePlugin } from "@m2d/table";
+
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkDocx, "buffer", {}, {
+    plugins: [
+      mermaidNodePlugin(),
+      imageNodePlugin(),
+      tablePlugin(),
+    ],
+  });
+```

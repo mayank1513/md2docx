@@ -1,0 +1,76 @@
+[**mdast2docx**](../index.md)
+
+***
+
+[mdast2docx](../index.md) / Root
+
+# Interface: Root
+
+Defined in: [packages/mdast/src/index.ts:1024](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L1024)
+
+Document fragment or a whole document.
+
+Should be used as the root of a tree and must not be used as a child.
+
+## Extends
+
+- [`Parent`](Parent.md)
+
+## Properties
+
+### children
+
+> **children**: [`RootContent`](../type-aliases/RootContent.md)[]
+
+Defined in: [packages/mdast/src/index.ts:578](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L578)
+
+List of children.
+
+#### Inherited from
+
+[`Parent`](Parent.md).[`children`](Parent.md#children)
+
+***
+
+### data?
+
+> `optional` **data?**: [`RootData`](RootData.md)
+
+Defined in: [packages/mdast/src/index.ts:1032](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L1032)
+
+Data associated with the mdast root.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`data`](Parent.md#data)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Parent`](Parent.md).[`position`](Parent.md#position)
+
+***
+
+### type
+
+> **type**: `"root"`
+
+Defined in: [packages/mdast/src/index.ts:1028](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L1028)
+
+Node type of mdast root.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`type`](Parent.md#type)

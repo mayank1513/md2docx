@@ -1,0 +1,84 @@
+[**@m2d/core**](../index.md)
+
+***
+
+[@m2d/core](../index.md) / Table
+
+# Interface: Table
+
+Defined in: [packages/mdast/src/index.ts:1066](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L1066)
+
+Markdown GFM table.
+
+## Extends
+
+- [`Parent`](Parent.md)
+
+## Properties
+
+### align?
+
+> `optional` **align?**: [`AlignType`](../type-aliases/AlignType.md)[] \| `null`
+
+Defined in: [packages/mdast/src/index.ts:1074](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L1074)
+
+How cells in columns are aligned.
+
+***
+
+### children
+
+> **children**: [`TableRow`](TableRow.md)[]
+
+Defined in: [packages/mdast/src/index.ts:1078](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L1078)
+
+Children of GFM table.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`children`](Parent.md#children)
+
+***
+
+### data?
+
+> `optional` **data?**: [`TableData`](TableData.md)
+
+Defined in: [packages/mdast/src/index.ts:1082](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L1082)
+
+Data associated with the mdast GFM table.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`data`](Parent.md#data)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Parent`](Parent.md).[`position`](Parent.md#position)
+
+***
+
+### type
+
+> **type**: `"table"`
+
+Defined in: [packages/mdast/src/index.ts:1070](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L1070)
+
+Node type of mdast GFM table.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`type`](Parent.md#type)

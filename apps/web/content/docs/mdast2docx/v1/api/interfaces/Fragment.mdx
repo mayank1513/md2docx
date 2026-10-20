@@ -1,0 +1,78 @@
+[**mdast2docx**](../index.md)
+
+***
+
+[mdast2docx](../index.md) / Fragment
+
+# Interface: Fragment
+
+Defined in: [packages/mdast/src/index.ts:30](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L30)
+
+Abstract mdast node that contains other mdast nodes (*children*).
+
+This interface is supposed to be extended if you make custom mdast nodes.
+
+For a union of all registered mdast parents, see [Parents](../type-aliases/Parents.md).
+
+## Extends
+
+- [`Parent`](Parent.md)
+
+## Properties
+
+### children
+
+> **children**: ([`EmptyNode`](EmptyNode.md) \| `Fragment` \| [`Definition`](Definition.md) \| [`FootnoteDefinition`](FootnoteDefinition.md) \| [`ListItem`](ListItem.md) \| [`TableCell`](TableCell.md) \| [`TableRow`](TableRow.md) \| [`Yaml`](Yaml.md) \| [`Break`](Break.md) \| [`Delete`](Delete.md) \| [`Emphasis`](Emphasis.md) \| [`FootnoteReference`](FootnoteReference.md) \| [`Html`](Html.md) \| [`Image`](Image.md) \| [`ImageReference`](ImageReference.md) \| [`InlineCode`](InlineCode.md) \| [`Link`](Link.md) \| [`LinkReference`](LinkReference.md) \| [`Strong`](Strong.md) \| [`Text`](Text.md) \| [`Checkbox`](Checkbox.md) \| [`SVG`](SVG.md) \| [`Blockquote`](Blockquote.md) \| [`Code`](Code.md) \| [`Heading`](Heading.md) \| [`List`](List.md) \| [`Paragraph`](Paragraph.md) \| [`Table`](Table.md) \| [`ThematicBreak`](ThematicBreak.md))[]
+
+Defined in: [packages/mdast/src/index.ts:32](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L32)
+
+List of children.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`children`](Parent.md#children)
+
+***
+
+### data?
+
+> `optional` **data?**: [`Data`](Data.md)
+
+Defined in: [packages/mdast/src/index.ts:564](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L564)
+
+Info from the ecosystem.
+
+#### Inherited from
+
+[`Parent`](Parent.md).[`data`](Parent.md#data)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Parent`](Parent.md).[`position`](Parent.md#position)
+
+***
+
+### type
+
+> **type**: `"fragment"`
+
+Defined in: [packages/mdast/src/index.ts:31](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L31)
+
+Node type.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`type`](Parent.md#type)

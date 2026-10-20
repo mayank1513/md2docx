@@ -1,0 +1,16 @@
+[**mdast2docx**](../index.md)
+
+***
+
+[mdast2docx](../index.md) / IInputMDAST
+
+# Type Alias: IInputMDAST
+
+> **IInputMDAST** = `Root` \| `object`[]
+
+Defined in: [packages/core/src/index.ts:19](https://github.com/md2docx/md2docx/blob/main/packages/core/src/index.ts#L19)
+
+Represents the input Markdown AST tree(s) for conversion.
+Supports either:
+- A single `Root` node (direct conversion)
+- An array of objects `{ ast: Root, props?: ISectionProps }` for fine-grained section-level control.

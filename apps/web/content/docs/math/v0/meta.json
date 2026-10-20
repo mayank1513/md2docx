@@ -1,0 +1,4 @@
+{
+  "title": "Version 0.1.0",
+  "description": "Plugin to convert mathematical expressions in Markdown (MDAST) to DOCX using LaTeX-style syntax. Integrates seamlessly with mdast2docx."
+}

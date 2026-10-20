@@ -1,0 +1,86 @@
+[**@m2d/mdast**](../index.md)
+
+***
+
+[@m2d/mdast](../index.md) / Heading
+
+# Interface: Heading
+
+Defined in: [packages/mdast/src/index.ts:764](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L764)
+
+Markdown heading.
+
+## Extends
+
+- [`Parent`](Parent.md)
+
+## Properties
+
+### children
+
+> **children**: [`PhrasingContent`](../type-aliases/PhrasingContent.md)[]
+
+Defined in: [packages/mdast/src/index.ts:778](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L778)
+
+Children of heading.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`children`](Parent.md#children)
+
+***
+
+### data?
+
+> `optional` **data?**: [`HeadingData`](HeadingData.md)
+
+Defined in: [packages/mdast/src/index.ts:782](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L782)
+
+Data associated with the mdast heading.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`data`](Parent.md#data)
+
+***
+
+### depth
+
+> **depth**: `1` \| `2` \| `3` \| `4` \| `5` \| `6`
+
+Defined in: [packages/mdast/src/index.ts:774](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L774)
+
+Heading rank.
+
+A value of `1` is said to be the highest rank and `6` the lowest.
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Parent`](Parent.md).[`position`](Parent.md#position)
+
+***
+
+### type
+
+> **type**: `"heading"`
+
+Defined in: [packages/mdast/src/index.ts:768](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L768)
+
+Node type of mdast heading.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`type`](Parent.md#type)

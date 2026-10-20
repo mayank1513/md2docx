@@ -1,0 +1,4 @@
+{
+  "title": "Version 0.0.10",
+  "description": "Plugin to convert ordered and unordered lists from Markdown (MDAST) to DOCX. Supports nesting, custom bullets, and numbering styles."
+}

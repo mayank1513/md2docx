@@ -1,0 +1,93 @@
+---
+title: Bullet Styles & Nesting
+description: Customizing bullet glyph hierarchies, indentation, and Word default bullet modes.
+---
+
+# Bullet Styles & Nesting
+
+Unordered Markdown lists (`ul`) are converted by `@m2d/list` into multi-level Word bulleted paragraphs, with distinct glyphs assigned to each nesting tier.
+
+---
+
+## Default Bullet Glyph Hierarchy
+
+When nesting unordered lists in Markdown:
+
+```markdown
+- Level 0 Item
+  - Level 1 Item
+    - Level 2 Item
+      - Level 3 Item
+```
+
+`@m2d/list` assigns a distinct bullet character to each indentation level:
+
+| Level | Glyph | Character Name |
+| :---: | :---: | :--- |
+| 0 | `●` | Black Circle |
+| 1 | `○` | White Circle |
+| 2 | `■` | Black Square |
+| 3 | `◆` | Black Diamond |
+| 4 | `▶` | Black Right-Pointing Triangle |
+| 5 | `◉` | Fisheye |
+| 6 | `⬤` | Large Black Circle |
+| 7 | `♦` | Black Diamond Suit |
+| 8 | `◦` | White Bullet |
+| 9 | `▪` | Black Small Square |
+
+---
+
+## Customizing Bullet Characters
+
+You can supply your own array of bullet glyphs:
+
+```typescript
+import { listPlugin } from "@m2d/list";
+
+const plugin = listPlugin({
+  bullets: ["—", "•", "›", "·"],
+});
+```
+
+---
+
+## Using Word's Built-In Bullet Styles (`defaultBullets`)
+
+If your target document template relies on Microsoft Word's own default bullet formatting rather than custom OpenXML numbering definitions, set `defaultBullets: true`:
+
+```typescript
+import { listPlugin } from "@m2d/list";
+
+const plugin = listPlugin({
+  defaultBullets: true,
+});
+```
+
+When enabled, `@m2d/list` delegates bullet rendering to Word's native paragraph bullet presets without embedding custom numbering definitions.
+
+---
+
+## Deep Customization with `bulletLevels`
+
+For corporate brand templates requiring exact indentations, custom fonts (e.g. Wingdings, Symbol), or specific hanging indents for bullets, provide an explicit `bulletLevels` array conforming to `docx.ILevelsOptions[]`:
+
+```typescript
+import { listPlugin } from "@m2d/list";
+import { AlignmentType, LevelFormat, convertInchesToTwip } from "docx";
+
+const plugin = listPlugin({
+  bulletLevels: [
+    {
+      level: 0,
+      format: LevelFormat.BULLET,
+      text: "❖",
+      alignment: AlignmentType.START,
+      style: {
+        paragraph: {
+          indent: { left: convertInchesToTwip(0.35) },
+        },
+      },
+    },
+  ],
+});
+```

@@ -1,0 +1,67 @@
+---
+title: Custom Resolvers & Caching
+description: Implementing custom image loaders, authentication headers, and multi-tier caching.
+---
+
+# Custom Resolvers & Caching
+
+By default, `@m2d/image` resolves images using browser APIs (`fetch` for URLs, `Image` element decoding for Base64 and canvas rasterization for SVGs). You can customize how images are fetched and cached for private networks or authenticated environments.
+
+---
+
+## Authoring an `imageResolver`
+
+A custom resolver intercepts image sources and returns a `docx.IImageOptions` object containing the binary data buffer and dimensions:
+
+```typescript
+import { imagePlugin, type ImageResolver } from "@m2d/image";
+
+const authenticatedResolver: ImageResolver = async (src, options, node) => {
+  // Custom fetch with authentication headers
+  const response = await fetch(src, {
+    headers: {
+      Authorization: `Bearer ${process.env.API_SECRET_TOKEN}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch image: ${response.statusText}`);
+  }
+
+  const arrayBuffer = await response.arrayBuffer();
+
+  return {
+    type: "png",
+    data: arrayBuffer,
+    transformation: {
+      width: 400,
+      height: 300,
+    },
+  };
+};
+
+const plugin = imagePlugin({
+  imageResolver: authenticatedResolver,
+});
+```
+
+---
+
+## Caching Architecture
+
+`@m2d/image` integrates with `@m2d/core/cache` to eliminate redundant network requests and expensive canvas conversions:
+
+1. **L1 In-Memory Cache**: Reuses in-flight Promises during simultaneous conversions.
+2. **L2 IndexedDB Persistence**: Stores converted binary image buffers in browser IndexedDB under the `img` namespace.
+3. **Lock-Free TTL Purging**: Stale cache records expire automatically after `maxAgeMinutes` (default: 7 days) without write-amplification on cache hits.
+
+To share a cache across multiple plugin instances:
+
+```typescript
+const sharedCache = {};
+
+const plugin = imagePlugin({
+  cache: sharedCache,
+  maxAgeMinutes: 1440, // 24 hours
+});
+```

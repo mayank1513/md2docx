@@ -1,0 +1,51 @@
+[**@m2d/core**](../index.md)
+
+***
+
+[@m2d/core](../index.md) / toDocx
+
+# Function: toDocx()
+
+> **toDocx**(`astInputs`, `docxProps?`, `defaultSectionProps?`, `outputType?`): `Promise`\<`string` \| readonly `number`[] \| `ArrayBuffer` \| `Uint8Array`\<`ArrayBufferLike`\> \| `Blob` \| `Buffer`\<`ArrayBufferLike`\>\>
+
+Defined in: [packages/core/src/index.ts:29](https://github.com/md2docx/md2docx/blob/main/packages/core/src/index.ts#L29)
+
+Converts an MDAST (Markdown Abstract Syntax Tree) into a DOCX document.
+
+## Parameters
+
+### astInputs
+
+[`IInputMDAST`](../type-aliases/IInputMDAST.md)
+
+A single or multiple MDAST trees with optional section properties.
+
+### docxProps?
+
+[`IDocxProps`](../type-aliases/IDocxProps.md) = `{}`
+
+General document properties.
+
+### defaultSectionProps?
+
+[`ISectionProps`](../type-aliases/ISectionProps.md) = `DEFAULT_SECTION_PROPS`
+
+Default properties for each document section.
+
+### outputType?
+
+keyof `OutputByType` = `"blob"`
+
+The desired output format (default: `"blob"`).
+
+## Returns
+
+`Promise`\<`string` \| readonly `number`[] \| `ArrayBuffer` \| `Uint8Array`\<`ArrayBufferLike`\> \| `Blob` \| `Buffer`\<`ArrayBufferLike`\>\>
+
+A DOCX document in the specified format.
+
+## See
+
+ - https://docx.js.org/#/usage/document
+ - https://docx.js.org/#/usage/sections
+ - https://docx.js.org/#/usage/packers

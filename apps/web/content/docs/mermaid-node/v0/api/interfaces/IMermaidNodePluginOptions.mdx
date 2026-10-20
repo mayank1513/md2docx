@@ -1,0 +1,79 @@
+[**@m2d/mermaid-node**](../index.md)
+
+***
+
+[@m2d/mermaid-node](../index.md) / IMermaidNodePluginOptions
+
+# Interface: IMermaidNodePluginOptions
+
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:20](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L20)
+
+## Properties
+
+### cache?
+
+> `optional` **cache?**: `Record`\<`string`, `Promise`\<`unknown`\>\>
+
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:40](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L40)
+
+In-memory cache object, useful for cache sharing across plugins.
+
+***
+
+### cacheConfig?
+
+> `optional` **cacheConfig?**: `CacheConfigType`\<[`RenderResultLike`](RenderResultLike.md) \| `undefined`\>
+
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:43](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L43)
+
+Configure caching
+
+***
+
+### fixMermaid?
+
+> `optional` **fixMermaid?**: (`mermaidCode`, `error`) => `string`
+
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:35](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L35)
+
+Optional fixer function to repair invalid Mermaid code before retrying render.
+
+#### Parameters
+
+##### mermaidCode
+
+`string`
+
+##### error
+
+`Error`
+
+#### Returns
+
+`string`
+
+***
+
+### renderOptions?
+
+> `optional` **renderOptions?**: `Record`\<`string`, `unknown`\>
+
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:30](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L30)
+
+Additional render options passed to beautiful-mermaid.
+
+***
+
+### theme?
+
+> `optional` **theme?**: [`MermaidTheme`](../type-aliases/MermaidTheme.md)
+
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:25](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L25)
+
+Built-in theme name (e.g. 'zinc-light', 'github-light', 'dracula') or custom theme object.
+
+#### Default
+
+```ts
+'zinc-light'
+```

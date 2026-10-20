@@ -1,0 +1,4 @@
+{
+  "title": "Version 1.8.0",
+  "description": "Core engine to convert extended MDAST to DOCX. Supports plugins for footnotes, images, lists, tables, and more. Designed for seamless Markdown-to-DOCX conversion."
+}

@@ -1,0 +1,23 @@
+[**@m2d/html**](../index.md)
+
+***
+
+[@m2d/html](../index.md) / htmlPlugin
+
+# Variable: htmlPlugin
+
+> `const` **htmlPlugin**: () => `IPlugin`
+
+Defined in: [index.ts:602](https://github.com/md2docx/md2docx/blob/main/packages/html/src/index.ts#L602)
+
+HTML plugin for MDAST-to-DOCX conversion.
+Converts inline and block-level HTML content within markdown into structured MDAST nodes.
+
+Supports `<br>`, `<img>`, `<strong>`, `<em>`, `<table>`, `<ul>`, `<input>`, and other inline tags.
+Should be used before `image`, `table`, or other content plugins in the pipeline.
+
+## Returns
+
+`IPlugin`
+
+Configured HTML plugin for MDAST parsing.

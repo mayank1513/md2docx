@@ -1,0 +1,135 @@
+[**@m2d/core**](../index.md)
+
+***
+
+[@m2d/core](../index.md) / ImageReference
+
+# Interface: ImageReference
+
+Defined in: [packages/mdast/src/index.ts:843](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L843)
+
+Markdown image reference.
+
+## Extends
+
+- [`Alternative`](Alternative.md)
+- [`Node`](Node.md)
+- [`Reference`](Reference.md)
+
+## Properties
+
+### alt?
+
+> `optional` **alt?**: `string` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:94](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L94)
+
+Equivalent content for environments that cannot represent the node as
+intended.
+
+#### Inherited from
+
+[`Alternative`](Alternative.md).[`alt`](Alternative.md#alt)
+
+***
+
+### data?
+
+> `optional` **data?**: [`ImageReferenceData`](ImageReferenceData.md)
+
+Defined in: [packages/mdast/src/index.ts:851](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L851)
+
+Data associated with the mdast image reference.
+
+#### Overrides
+
+[`Node`](Node.md).[`data`](Node.md#data)
+
+***
+
+### identifier
+
+> **identifier**: `string`
+
+Defined in: [packages/mdast/src/index.ts:120](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L120)
+
+Relation of association.
+
+`identifier` is a source value: character escapes and character
+references are not parsed.
+
+It can match another node.
+
+Its value must be normalized.
+To normalize a value, collapse markdown whitespace (`[\t\n\r ]+`) to a space,
+trim the optional initial and/or final space, and perform Unicode-aware
+case-folding.
+
+#### Inherited from
+
+[`Reference`](Reference.md).[`identifier`](Reference.md#identifier)
+
+***
+
+### label?
+
+> `optional` **label?**: `string` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:131](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L131)
+
+Relation of association, in parsed form.
+
+`label` is a `string` value: it works just like `title` on [Link](Link.md)
+or a `lang` on [Code](Code.md): character escapes and character references
+are parsed.
+
+It can match another node.
+
+#### Inherited from
+
+[`Reference`](Reference.md).[`label`](Reference.md#label)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Node`](Node.md).[`position`](Node.md#position)
+
+***
+
+### referenceType
+
+> **referenceType**: [`ReferenceType`](../type-aliases/ReferenceType.md)
+
+Defined in: [packages/mdast/src/index.ts:141](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L141)
+
+Explicitness of the reference.
+
+#### Inherited from
+
+[`Reference`](Reference.md).[`referenceType`](Reference.md#referencetype)
+
+***
+
+### type
+
+> **type**: `"imageReference"`
+
+Defined in: [packages/mdast/src/index.ts:847](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L847)
+
+Node type of mdast image reference.
+
+#### Overrides
+
+[`Node`](Node.md).[`type`](Node.md#type)

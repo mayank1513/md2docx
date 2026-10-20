@@ -1,0 +1,135 @@
+[**@m2d/mdast**](../index.md)
+
+***
+
+[@m2d/mdast](../index.md) / Definition
+
+# Interface: Definition
+
+Defined in: [packages/mdast/src/index.ts:657](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L657)
+
+Markdown definition.
+
+## Extends
+
+- [`Node`](Node.md)
+- [`Association`](Association.md)
+- [`Resource`](Resource.md)
+
+## Properties
+
+### data?
+
+> `optional` **data?**: [`DefinitionData`](DefinitionData.md)
+
+Defined in: [packages/mdast/src/index.ts:665](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L665)
+
+Data associated with the mdast definition.
+
+#### Overrides
+
+[`Node`](Node.md).[`data`](Node.md#data)
+
+***
+
+### identifier
+
+> **identifier**: `string`
+
+Defined in: [packages/mdast/src/index.ts:120](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L120)
+
+Relation of association.
+
+`identifier` is a source value: character escapes and character
+references are not parsed.
+
+It can match another node.
+
+Its value must be normalized.
+To normalize a value, collapse markdown whitespace (`[\t\n\r ]+`) to a space,
+trim the optional initial and/or final space, and perform Unicode-aware
+case-folding.
+
+#### Inherited from
+
+[`Association`](Association.md).[`identifier`](Association.md#identifier)
+
+***
+
+### label?
+
+> `optional` **label?**: `string` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:131](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L131)
+
+Relation of association, in parsed form.
+
+`label` is a `string` value: it works just like `title` on [Link](Link.md)
+or a `lang` on [Code](Code.md): character escapes and character references
+are parsed.
+
+It can match another node.
+
+#### Inherited from
+
+[`Association`](Association.md).[`label`](Association.md#label)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Node`](Node.md).[`position`](Node.md#position)
+
+***
+
+### title?
+
+> `optional` **title?**: `string` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:156](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L156)
+
+Advisory information for the resource, such as would be appropriate for
+a tooltip.
+
+#### Inherited from
+
+[`Resource`](Resource.md).[`title`](Resource.md#title)
+
+***
+
+### type
+
+> **type**: `"definition"`
+
+Defined in: [packages/mdast/src/index.ts:661](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L661)
+
+Node type of mdast definition.
+
+#### Overrides
+
+[`Node`](Node.md).[`type`](Node.md#type)
+
+***
+
+### url
+
+> **url**: `string`
+
+Defined in: [packages/mdast/src/index.ts:151](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L151)
+
+URL to the referenced resource.
+
+#### Inherited from
+
+[`Resource`](Resource.md).[`url`](Resource.md#url)

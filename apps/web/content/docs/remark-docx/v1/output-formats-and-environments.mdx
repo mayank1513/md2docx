@@ -1,0 +1,84 @@
+---
+title: Output Formats & Environments
+description: Browser and Node.js compilation, output types (Blob, Buffer, Base64), and execution modes.
+---
+
+# Output Formats & Environments
+
+`@m2d/remark-docx` supports both browser and Node.js runtimes, generating suitable output payloads for file downloads, HTTP responses, or direct disk persistence.
+
+---
+
+## Output Types
+
+The first argument to `remarkDocx` specifies the desired document format:
+
+| Output Type | Return Type | Best For |
+| :--- | :--- | :--- |
+| `"blob"` (Default) | `Promise<Blob>` | Web browsers, client-side downloads |
+| `"buffer"` | `Promise<Buffer>` | Node.js servers, CLI tools, writing to disk |
+| `"base64"` | `Promise<string>` | Serverless functions, JSON APIs, data URIs |
+| `"uint8array"` | `Promise<Uint8Array>` | Cross-platform binary streaming (Cloudflare Workers, Deno) |
+
+---
+
+## Browser Client-Side Downloads
+
+In the browser, use `"blob"` to trigger direct user downloads without server roundtrips:
+
+```typescript
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import { remarkDocx } from "@m2d/remark-docx";
+
+const processor = unified().use(remarkParse).use(remarkDocx, "blob");
+
+async function exportMarkdownToWord(markdown: string) {
+  const file = await processor.process(markdown);
+  const blob = (await file.result) as Blob;
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "document.docx";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+```
+
+---
+
+## Server-Side File Generation in Node.js
+
+In Node.js, pass `"buffer"` to receive a Node `Buffer` ready to write to disk:
+
+```typescript
+import fs from "node:fs/promises";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import { remarkDocx } from "@m2d/remark-docx";
+
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkDocx, "buffer");
+
+async function generateReport(markdown: string, outputPath: string) {
+  const file = await processor.process(markdown);
+  const buffer = (await file.result) as Buffer;
+
+  await fs.writeFile(outputPath, buffer);
+}
+```
+
+---
+
+## Sync Pipeline with Async Result (`processSync`)
+
+Unified's synchronous method `.processSync()` can be used when building reactive pipelines; the resulting document is still returned as a Promise via `file.result`:
+
+```typescript
+const file = processor.processSync(markdown);
+const blob = await (file.result as Promise<Blob>);
+```

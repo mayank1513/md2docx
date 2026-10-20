@@ -1,0 +1,32 @@
+[**@m2d/core**](../index.md)
+
+***
+
+[@m2d/core](../index.md) / TableContentMap
+
+# Interface: TableContentMap
+
+Defined in: [packages/mdast/src/index.ts:479](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L479)
+
+Registry of all mdast nodes that can occur where [TableContent](../type-aliases/TableContent.md)
+is expected.
+
+This interface can be augmented to register custom node types:
+
+```ts
+declare module 'mdast' {
+  interface TableContentMap {
+    custom: Custom;
+  }
+}
+```
+
+For a union of all table content, see [RootContent](../type-aliases/RootContent.md).
+
+## Properties
+
+### tableRow
+
+> **tableRow**: [`TableRow`](TableRow.md)
+
+Defined in: [packages/mdast/src/index.ts:480](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L480)

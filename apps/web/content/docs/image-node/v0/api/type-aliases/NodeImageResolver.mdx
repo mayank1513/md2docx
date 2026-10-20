@@ -1,0 +1,31 @@
+[**@m2d/image-node**](../index.md)
+
+***
+
+[@m2d/image-node](../index.md) / NodeImageResolver
+
+# Type Alias: NodeImageResolver
+
+> **NodeImageResolver** = (`src`, `options?`, `node?`) => `Promise`\<`IImageOptions` \| [`NodeImageErrorData`](../interfaces/NodeImageErrorData.md)\>
+
+Defined in: [image-node.ts:47](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L47)
+
+Resolves an image source URL or buffer into docx IImageOptions.
+
+## Parameters
+
+### src
+
+`string`
+
+### options?
+
+[`INodeImagePluginOptions`](../interfaces/INodeImagePluginOptions.md)
+
+### node?
+
+`AstImage` \| `SVG`
+
+## Returns
+
+`Promise`\<`IImageOptions` \| [`NodeImageErrorData`](../interfaces/NodeImageErrorData.md)\>

@@ -1,0 +1,251 @@
+[**@m2d/image**](../index.md)
+
+***
+
+[@m2d/image](../index.md) / IDefaultImagePluginOptions
+
+# Interface: IDefaultImagePluginOptions
+
+Defined in: [index.ts:67](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L67)
+
+Full configuration for the image plugin including defaulted and required options.
+
+## Properties
+
+### cache?
+
+> `optional` **cache?**: `Record`\<`string`, `Promise`\<`unknown`\>\>
+
+Defined in: [index.ts:129](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L129)
+
+In-memory cache object, useful for cache sharing across plugins/tabs.
+
+***
+
+### cacheConfig?
+
+> `optional` **cacheConfig?**: `CacheConfigType`\<`IImageOptions`\>
+
+Defined in: [index.ts:132](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L132)
+
+Configure caching
+
+***
+
+### collapsibleHeading?
+
+> `optional` **collapsibleHeading?**: `string` \| `boolean`
+
+Defined in: [index.ts:124](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L124)
+
+Optional heading added above fallback code blocks (H6 level, maps to Heading 5 in Word).
+- `false`: No heading is inserted (only the code block).
+- `true`: Inserts an H6 heading (`###### ⚠️ Diagram Source (Render Fallback)`).
+- `string`: Inserts custom heading text at H6 level.
+
+#### Default
+
+```ts
+true
+```
+
+***
+
+### dpi
+
+> **dpi**: `number`
+
+Defined in: [index.ts:140](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L140)
+
+Target resolution in DPI for calculating physical dimensions
+
+***
+
+### errorMode?
+
+> `optional` **errorMode?**: [`ImageErrorMode`](../type-aliases/ImageErrorMode.md)
+
+Defined in: [index.ts:97](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L97)
+
+General image error behavior.
+- "warn": Emits a styled, muted text run with alt text.
+- "silent": Drops the node completely (0 relationships, 0 XML overhead).
+- "throw": Rejects the toDocx conversion promise with the underlying Error.
+- "placeholder": Uses custom options.placeholder image. If placeholder is omitted, emits a warning badge.
+
+#### Default
+
+```ts
+"warn"
+```
+
+***
+
+### fallbackImageType
+
+> **fallbackImageType**: `"jpg"` \| `"png"`
+
+Defined in: [index.ts:72](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L72)
+
+Fallback format to convert unsupported image types.
+
+#### Default
+
+```ts
+"png"
+```
+
+***
+
+### fixGeneratedSvg
+
+> **fixGeneratedSvg**: (`svg`, `metadata`) => `string`
+
+Defined in: [index.ts:155](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L155)
+
+Applies generic fixes to known SVG rendering issues (e.g., Mermaid pie chart title alignment).
+Designed to be overridden to handle tool-specific quirks in generated SVGs.
+
+#### Parameters
+
+##### svg
+
+`string`
+
+Raw SVG string to transform.
+
+##### metadata
+
+`any`
+
+Optional metadata such as diagram type or render info.
+
+#### Returns
+
+`string`
+
+Modified SVG string.
+
+***
+
+### imageResolver
+
+> **imageResolver**: [`ImageResolver`](../type-aliases/ImageResolver.md)
+
+Defined in: [index.ts:78](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L78)
+
+Image resolution function used to convert URL/base64/SVG to image options
+
+***
+
+### maxAgeMinutes
+
+> **maxAgeMinutes**: `number`
+
+Defined in: [index.ts:143](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L143)
+
+Duration in minutes after which cached records are removed as stale. Default: 7 days (10080 minutes).
+
+***
+
+### maxH
+
+> **maxH**: `number`
+
+Defined in: [index.ts:84](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L84)
+
+Max image height (in inches) for inserted image
+
+***
+
+### maxW
+
+> **maxW**: `number`
+
+Defined in: [index.ts:81](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L81)
+
+Max image width (in inches) for inserted image
+
+***
+
+### mermaidFallback?
+
+> `optional` **mermaidFallback?**: [`MermaidFallbackMode`](../type-aliases/MermaidFallbackMode.md)
+
+Defined in: [index.ts:106](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L106)
+
+Fallback strategy specifically for failed Mermaid diagrams (when data.mermaid is present).
+- "code": Renders the raw Mermaid diagram definition as a formatted monospace code block.
+- "warn": Emits a warning badge [Mermaid Diagram Error: ...].
+- "silent": Drops the node completely.
+
+#### Default
+
+```ts
+"code" (or inherits "silent" if errorMode is "silent")
+```
+
+***
+
+### placeholder?
+
+> `optional` **placeholder?**: `string`
+
+Defined in: [index.ts:87](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L87)
+
+Optional placeholder image (base64 or URL) used on errors
+
+***
+
+### quality
+
+> **quality**: `number`
+
+Defined in: [index.ts:75](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L75)
+
+Quality factor (0–1). Applies only to lossy formats (`jpeg`/`webp`/`avif`). Default: `0.92`.
+
+***
+
+### salt?
+
+> `optional` **salt?**: `string`
+
+Defined in: [index.ts:137](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L137)
+
+Optional salt string used to differentiate cache keys for similar images (e.g., dark/light theme).
+
+***
+
+### scale
+
+> **scale**: `number`
+
+Defined in: [index.ts:69](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L69)
+
+Scale factor for base64 (data URL) images.
+
+#### Default
+
+```ts
+3
+```
+
+***
+
+### svgFallback?
+
+> `optional` **svgFallback?**: [`SvgFallbackMode`](../type-aliases/SvgFallbackMode.md)
+
+Defined in: [index.ts:115](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L115)
+
+Fallback strategy for failed non-Mermaid SVGs.
+- "warn": Emits styled muted text badge `[Image: <alt or 'SVG unavailable'>]`.
+- "code": Renders the raw SVG XML markup in a standard DOCX code block (`lang: "xml"`).
+- "silent": Drops the node completely.
+
+#### Default
+
+```ts
+"warn"
+```

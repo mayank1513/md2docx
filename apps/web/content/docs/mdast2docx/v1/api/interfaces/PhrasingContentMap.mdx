@@ -1,0 +1,157 @@
+[**mdast2docx**](../index.md)
+
+***
+
+[mdast2docx](../index.md) / PhrasingContentMap
+
+# Interface: PhrasingContentMap
+
+Defined in: [packages/mdast/src/index.ts:370](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L370)
+
+Registry of all mdast nodes that can occur where [PhrasingContent](../type-aliases/PhrasingContent.md)
+is expected.
+
+This interface can be augmented to register custom node types:
+
+```ts
+declare module 'mdast' {
+  interface PhrasingContentMap {
+    // Allow using MDX JSX (text) nodes defined by `remark-mdx`.
+    mdxJsxTextElement: MDXJSXTextElement;
+  }
+}
+```
+
+For a union of all phrasing content, see [RootContent](../type-aliases/RootContent.md).
+
+## Extended by
+
+- [`RootContentMap`](RootContentMap.md)
+
+## Properties
+
+### break
+
+> **break**: [`Break`](Break.md)
+
+Defined in: [packages/mdast/src/index.ts:371](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L371)
+
+***
+
+### checkbox
+
+> **checkbox**: [`Checkbox`](Checkbox.md)
+
+Defined in: [packages/mdast/src/index.ts:385](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L385)
+
+***
+
+### delete
+
+> **delete**: [`Delete`](Delete.md)
+
+Defined in: [packages/mdast/src/index.ts:372](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L372)
+
+***
+
+### emphasis
+
+> **emphasis**: [`Emphasis`](Emphasis.md)
+
+Defined in: [packages/mdast/src/index.ts:373](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L373)
+
+***
+
+### empty
+
+> **empty**: [`EmptyNode`](EmptyNode.md)
+
+Defined in: [packages/mdast/src/index.ts:383](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L383)
+
+***
+
+### footnoteReference
+
+> **footnoteReference**: [`FootnoteReference`](FootnoteReference.md)
+
+Defined in: [packages/mdast/src/index.ts:374](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L374)
+
+***
+
+### fragment
+
+> **fragment**: [`Fragment`](Fragment.md)
+
+Defined in: [packages/mdast/src/index.ts:384](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L384)
+
+***
+
+### html
+
+> **html**: [`Html`](Html.md)
+
+Defined in: [packages/mdast/src/index.ts:375](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L375)
+
+***
+
+### image
+
+> **image**: [`Image`](Image.md)
+
+Defined in: [packages/mdast/src/index.ts:376](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L376)
+
+***
+
+### imageReference
+
+> **imageReference**: [`ImageReference`](ImageReference.md)
+
+Defined in: [packages/mdast/src/index.ts:377](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L377)
+
+***
+
+### inlineCode
+
+> **inlineCode**: [`InlineCode`](InlineCode.md)
+
+Defined in: [packages/mdast/src/index.ts:378](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L378)
+
+***
+
+### link
+
+> **link**: [`Link`](Link.md)
+
+Defined in: [packages/mdast/src/index.ts:379](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L379)
+
+***
+
+### linkReference
+
+> **linkReference**: [`LinkReference`](LinkReference.md)
+
+Defined in: [packages/mdast/src/index.ts:380](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L380)
+
+***
+
+### strong
+
+> **strong**: [`Strong`](Strong.md)
+
+Defined in: [packages/mdast/src/index.ts:381](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L381)
+
+***
+
+### svg
+
+> **svg**: [`SVG`](SVG.md)
+
+Defined in: [packages/mdast/src/index.ts:386](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L386)
+
+***
+
+### text
+
+> **text**: [`Text`](Text.md)
+
+Defined in: [packages/mdast/src/index.ts:382](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L382)

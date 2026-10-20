@@ -1,0 +1,45 @@
+[**@m2d/math**](../index.md)
+
+***
+
+[@m2d/math](../index.md) / IMathPluginOptions
+
+# Interface: IMathPluginOptions
+
+Defined in: [index.ts:428](https://github.com/md2docx/md2docx/blob/main/packages/math/src/index.ts#L428)
+
+## Properties
+
+### errorMode?
+
+> `optional` **errorMode?**: [`MathErrorMode`](../type-aliases/MathErrorMode.md)
+
+Defined in: [index.ts:436](https://github.com/md2docx/md2docx/blob/main/packages/math/src/index.ts#L436)
+
+Error handling strategy when LaTeX parsing fails or runaway syntax is detected.
+- "warn": Emits a styled warning text badge: `⚠️ [Math Syntax Error: ...]`
+- "raw": Emits the raw formula string as monospace code text
+- "throw": Re-throws the underlying parse error
+
+#### Default
+
+```ts
+"warn"
+```
+
+***
+
+### maxInlineLength?
+
+> `optional` **maxInlineLength?**: `number`
+
+Defined in: [index.ts:442](https://github.com/md2docx/md2docx/blob/main/packages/math/src/index.ts#L442)
+
+Maximum character length allowed for inline equations.
+Prevents runaway AST nodes when unclosed dollar signs occur.
+
+#### Default
+
+```ts
+1000
+```

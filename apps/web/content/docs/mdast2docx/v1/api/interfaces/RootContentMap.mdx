@@ -1,0 +1,356 @@
+[**mdast2docx**](../index.md)
+
+***
+
+[mdast2docx](../index.md) / RootContentMap
+
+# Interface: RootContentMap
+
+Defined in: [packages/mdast/src/index.ts:416](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L416)
+
+Registry of all mdast nodes that can occur as children of [Root](Root.md).
+
+> **Note**: [Root](Root.md) does not need to be an entire document.
+> it can also be a fragment.
+
+This interface can be augmented to register custom node types:
+
+```ts
+declare module 'mdast' {
+  interface RootContentMap {
+    // Allow using toml nodes defined by `remark-frontmatter`.
+    toml: TOML;
+  }
+}
+```
+
+For a union of all [Root](Root.md) children, see [RootContent](../type-aliases/RootContent.md).
+
+## Extends
+
+- [`PhrasingContentMap`](PhrasingContentMap.md)
+- [`BlockContentMap`](BlockContentMap.md)
+
+## Properties
+
+### blockquote
+
+> **blockquote**: [`Blockquote`](Blockquote.md)
+
+Defined in: [packages/mdast/src/index.ts:242](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L242)
+
+#### Inherited from
+
+[`BlockContentMap`](BlockContentMap.md).[`blockquote`](BlockContentMap.md#blockquote)
+
+***
+
+### break
+
+> **break**: [`Break`](Break.md)
+
+Defined in: [packages/mdast/src/index.ts:371](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L371)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`break`](PhrasingContentMap.md#break)
+
+***
+
+### checkbox
+
+> **checkbox**: [`Checkbox`](Checkbox.md)
+
+Defined in: [packages/mdast/src/index.ts:385](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L385)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`checkbox`](PhrasingContentMap.md#checkbox)
+
+***
+
+### code
+
+> **code**: [`Code`](Code.md)
+
+Defined in: [packages/mdast/src/index.ts:243](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L243)
+
+#### Inherited from
+
+[`BlockContentMap`](BlockContentMap.md).[`code`](BlockContentMap.md#code)
+
+***
+
+### definition
+
+> **definition**: [`Definition`](Definition.md)
+
+Defined in: [packages/mdast/src/index.ts:417](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L417)
+
+***
+
+### delete
+
+> **delete**: [`Delete`](Delete.md)
+
+Defined in: [packages/mdast/src/index.ts:372](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L372)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`delete`](PhrasingContentMap.md#delete)
+
+***
+
+### emphasis
+
+> **emphasis**: [`Emphasis`](Emphasis.md)
+
+Defined in: [packages/mdast/src/index.ts:373](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L373)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`emphasis`](PhrasingContentMap.md#emphasis)
+
+***
+
+### empty
+
+> **empty**: [`EmptyNode`](EmptyNode.md)
+
+Defined in: [packages/mdast/src/index.ts:383](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L383)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`empty`](PhrasingContentMap.md#empty)
+
+***
+
+### footnoteDefinition
+
+> **footnoteDefinition**: [`FootnoteDefinition`](FootnoteDefinition.md)
+
+Defined in: [packages/mdast/src/index.ts:418](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L418)
+
+***
+
+### footnoteReference
+
+> **footnoteReference**: [`FootnoteReference`](FootnoteReference.md)
+
+Defined in: [packages/mdast/src/index.ts:374](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L374)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`footnoteReference`](PhrasingContentMap.md#footnotereference)
+
+***
+
+### fragment
+
+> **fragment**: [`Fragment`](Fragment.md)
+
+Defined in: [packages/mdast/src/index.ts:384](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L384)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`fragment`](PhrasingContentMap.md#fragment)
+
+***
+
+### heading
+
+> **heading**: [`Heading`](Heading.md)
+
+Defined in: [packages/mdast/src/index.ts:244](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L244)
+
+#### Inherited from
+
+[`BlockContentMap`](BlockContentMap.md).[`heading`](BlockContentMap.md#heading)
+
+***
+
+### html
+
+> **html**: [`Html`](Html.md)
+
+Defined in: [packages/mdast/src/index.ts:375](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L375)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`html`](PhrasingContentMap.md#html)
+
+***
+
+### image
+
+> **image**: [`Image`](Image.md)
+
+Defined in: [packages/mdast/src/index.ts:376](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L376)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`image`](PhrasingContentMap.md#image)
+
+***
+
+### imageReference
+
+> **imageReference**: [`ImageReference`](ImageReference.md)
+
+Defined in: [packages/mdast/src/index.ts:377](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L377)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`imageReference`](PhrasingContentMap.md#imagereference)
+
+***
+
+### inlineCode
+
+> **inlineCode**: [`InlineCode`](InlineCode.md)
+
+Defined in: [packages/mdast/src/index.ts:378](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L378)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`inlineCode`](PhrasingContentMap.md#inlinecode)
+
+***
+
+### link
+
+> **link**: [`Link`](Link.md)
+
+Defined in: [packages/mdast/src/index.ts:379](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L379)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`link`](PhrasingContentMap.md#link)
+
+***
+
+### linkReference
+
+> **linkReference**: [`LinkReference`](LinkReference.md)
+
+Defined in: [packages/mdast/src/index.ts:380](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L380)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`linkReference`](PhrasingContentMap.md#linkreference)
+
+***
+
+### list
+
+> **list**: [`List`](List.md)
+
+Defined in: [packages/mdast/src/index.ts:246](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L246)
+
+#### Inherited from
+
+[`BlockContentMap`](BlockContentMap.md).[`list`](BlockContentMap.md#list)
+
+***
+
+### listItem
+
+> **listItem**: [`ListItem`](ListItem.md)
+
+Defined in: [packages/mdast/src/index.ts:419](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L419)
+
+***
+
+### paragraph
+
+> **paragraph**: [`Paragraph`](Paragraph.md)
+
+Defined in: [packages/mdast/src/index.ts:247](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L247)
+
+#### Inherited from
+
+[`BlockContentMap`](BlockContentMap.md).[`paragraph`](BlockContentMap.md#paragraph)
+
+***
+
+### strong
+
+> **strong**: [`Strong`](Strong.md)
+
+Defined in: [packages/mdast/src/index.ts:381](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L381)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`strong`](PhrasingContentMap.md#strong)
+
+***
+
+### svg
+
+> **svg**: [`SVG`](SVG.md)
+
+Defined in: [packages/mdast/src/index.ts:386](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L386)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`svg`](PhrasingContentMap.md#svg)
+
+***
+
+### table
+
+> **table**: [`Table`](Table.md)
+
+Defined in: [packages/mdast/src/index.ts:248](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L248)
+
+#### Inherited from
+
+[`BlockContentMap`](BlockContentMap.md).[`table`](BlockContentMap.md#table)
+
+***
+
+### tableCell
+
+> **tableCell**: [`TableCell`](TableCell.md)
+
+Defined in: [packages/mdast/src/index.ts:420](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L420)
+
+***
+
+### tableRow
+
+> **tableRow**: [`TableRow`](TableRow.md)
+
+Defined in: [packages/mdast/src/index.ts:421](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L421)
+
+***
+
+### text
+
+> **text**: [`Text`](Text.md)
+
+Defined in: [packages/mdast/src/index.ts:382](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L382)
+
+#### Inherited from
+
+[`PhrasingContentMap`](PhrasingContentMap.md).[`text`](PhrasingContentMap.md#text)
+
+***
+
+### thematicBreak
+
+> **thematicBreak**: [`ThematicBreak`](ThematicBreak.md)
+
+Defined in: [packages/mdast/src/index.ts:249](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L249)
+
+#### Inherited from
+
+[`BlockContentMap`](BlockContentMap.md).[`thematicBreak`](BlockContentMap.md#thematicbreak)
+
+***
+
+### yaml
+
+> **yaml**: [`Yaml`](Yaml.md)
+
+Defined in: [packages/mdast/src/index.ts:422](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L422)

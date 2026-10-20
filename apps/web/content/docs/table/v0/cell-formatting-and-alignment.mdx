@@ -1,0 +1,89 @@
+---
+title: Cell Formatting & Alignment
+description: Column alignments, header background shading, typography, and block content in cells.
+---
+
+# Cell Formatting & Alignment
+
+`@m2d/table` offers full styling flexibility for table cells, combining Markdown alignment syntax, vertical cell alignments, background fills, and comprehensive text typography.
+
+---
+
+## Column Alignment Resolution
+
+Markdown allows columns to declare horizontal alignments via delimiter syntax:
+
+```markdown
+| Left Aligned | Centered | Right Aligned |
+| :----------- | :------: | ------------: |
+| Item A       |   100    |        $25.00 |
+| Item B       |   250    |       $150.00 |
+```
+
+`@m2d/table` resolves cell alignment using the following precedence:
+
+1. **Header Row Override**: If `firstRowCellProps.data.alignment` is specified, it governs the header cells.
+2. **Markdown Alignment**: If `alignments.preferMdData` is `true` (default), column alignments defined in Markdown (`left`, `center`, `right`) are respected.
+3. **Default Alignment Fallback**: If Markdown does not specify an alignment for a column, `alignments.defaultHorizontalAlign` (default: `AlignmentType.CENTER`) is applied.
+
+```typescript
+import { tablePlugin } from "@m2d/table";
+import { AlignmentType, VerticalAlignTable } from "docx";
+
+const plugin = tablePlugin({
+  alignments: {
+    preferMdData: true,
+    defaultHorizontalAlign: AlignmentType.LEFT,
+    defaultVerticalAlign: VerticalAlignTable.CENTER,
+  },
+});
+```
+
+---
+
+## Styling Headers & Data Cells with `data`
+
+The `data` object combines `docx.IRunOptions` and `docx.IParagraphOptions`, giving you direct control over fonts, colors, font sizes, line spacing, and margins inside cells:
+
+```typescript
+import { tablePlugin } from "@m2d/table";
+import { AlignmentType, ShadingType } from "docx";
+
+const plugin = tablePlugin({
+  // Header row formatting
+  firstRowCellProps: {
+    shading: {
+      type: ShadingType.SOLID,
+      fill: "1E293B", // Slate dark header fill
+    },
+    data: {
+      bold: true,
+      color: "FFFFFF",
+      font: "Segoe UI",
+      size: 22, // 11pt (22 half-points)
+      alignment: AlignmentType.CENTER,
+    },
+  },
+
+  // Body data cells formatting
+  cellProps: {
+    data: {
+      font: "Segoe UI",
+      size: 20, // 10pt (20 half-points)
+      color: "334155",
+      spacing: {
+        line: 240, // Single line spacing
+        after: 40,
+      },
+    },
+  },
+});
+```
+
+---
+
+## Block Content Support Inside Cells
+
+While standard CommonMark tables only hold phrasing text, extended Markdown or HTML tables (e.g., converted via `@m2d/html`) frequently embed block structures like paragraphs, code snippets, or bulleted lists inside table cells.
+
+`@m2d/table` automatically detects block-level children (`paragraph`, `heading`, `code`, `list`, `blockquote`, `fragment`) within a cell and nests them cleanly into the cell's children array without generating invalid Word OpenXML structures.

@@ -1,0 +1,93 @@
+[**@m2d/mdast**](../index.md)
+
+***
+
+[@m2d/mdast](../index.md) / Parent
+
+# Interface: Parent
+
+Defined in: [packages/mdast/src/index.ts:574](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L574)
+
+Abstract mdast node that contains other mdast nodes (*children*).
+
+This interface is supposed to be extended if you make custom mdast nodes.
+
+For a union of all registered mdast parents, see [Parents](../type-aliases/Parents.md).
+
+## Extends
+
+- [`Node`](Node.md)
+
+## Extended by
+
+- [`Fragment`](Fragment.md)
+- [`Blockquote`](Blockquote.md)
+- [`Delete`](Delete.md)
+- [`Emphasis`](Emphasis.md)
+- [`FootnoteDefinition`](FootnoteDefinition.md)
+- [`Heading`](Heading.md)
+- [`Link`](Link.md)
+- [`LinkReference`](LinkReference.md)
+- [`List`](List.md)
+- [`ListItem`](ListItem.md)
+- [`Paragraph`](Paragraph.md)
+- [`Root`](Root.md)
+- [`Strong`](Strong.md)
+- [`Table`](Table.md)
+- [`TableRow`](TableRow.md)
+- [`TableCell`](TableCell.md)
+
+## Properties
+
+### children
+
+> **children**: [`RootContent`](../type-aliases/RootContent.md)[]
+
+Defined in: [packages/mdast/src/index.ts:578](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L578)
+
+List of children.
+
+***
+
+### data?
+
+> `optional` **data?**: [`Data`](Data.md)
+
+Defined in: [packages/mdast/src/index.ts:564](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L564)
+
+Info from the ecosystem.
+
+#### Inherited from
+
+[`Node`](Node.md).[`data`](Node.md#data)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Node`](Node.md).[`position`](Node.md#position)
+
+***
+
+### type
+
+> **type**: `string`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:90
+
+Node type.
+
+#### Inherited from
+
+[`Node`](Node.md).[`type`](Node.md#type)

@@ -1,0 +1,76 @@
+---
+title: LaTeX Syntax & Symbols
+description: Supported LaTeX mathematical expressions, macros, and native Word MathML conversion.
+---
+
+# LaTeX Syntax & Symbols
+
+`@m2d/math` transforms LaTeX mathematical equations directly into native Microsoft Word OpenXML equations (`docx.Math`). Rather than rasterizing formulas into static images, equations are encoded as native Word Math structures (`MathRun`, `MathFraction`, `MathRadical`, `MathSuperScript`, `MathSubScript`), making them crisp, scalable, and editable in Microsoft Word.
+
+---
+
+## Inline vs Block Equations
+
+The plugin expects math AST nodes to be parsed by `remark-math`:
+
+- **Inline Math (`$ ... $`)**: Renders inline within paragraph text without line breaks.
+- **Block Math (`$$ ... $$`)**: Renders as a dedicated, centered mathematical equation block paragraph.
+
+```markdown
+Euler's identity is given by $e^{i\pi} + 1 = 0$.
+
+$$
+\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
+```
+
+---
+
+## Supported LaTeX Constructs
+
+### Fractions & Radicals
+
+- **Fractions (`\frac{a}{b}`)**: Converted to native Word `docx.MathFraction`.
+- **Square Roots (`\sqrt{x}`)**: Converted to `docx.MathRadical`.
+- **N-th Roots (`\sqrt[n]{x}`)**: Converted to degree-based `docx.MathRadical`.
+
+### Superscripts & Subscripts
+
+- **Superscript (`x^2`, `x^{n+1}`)**: Emits `docx.MathSuperScript`.
+- **Subscript (`a_i`, `a_{i,j}`)**: Emits `docx.MathSubScript`.
+- **Combined (`x_i^2`, `x^{2}_i`)**: Word displays nested superscript and subscript runs seamlessly.
+
+### Operators & Summations
+
+- **Summation (`\sum`)**: Converts to summation symbol with optional upper and lower limits.
+- **Integrals (`\int`)**: Integrals with bounds.
+- **Products (`\prod`)**: Capital product operator.
+
+### Greek Letters
+
+Common uppercase and lowercase Greek characters are automatically resolved to their Unicode equivalents:
+
+- Lowercase: `\alpha`, `\beta`, `\gamma`, `\delta`, `\epsilon`, `\theta`, `\lambda`, `\mu`, `\pi`, `\sigma`, `\omega`, `\phi`, `\psi`, etc.
+- Uppercase: `\Gamma`, `\Delta`, `\Theta`, `\Lambda`, `\Xi`, `\Pi`, `\Sigma`, `\Phi`, `\Psi`, `\Omega`.
+
+### Mathematical Relations & Symbols
+
+- **Comparisons**: `\leq` ($\le$), `\geq` ($\ge$), `\neq` ($\ne$), `\approx` ($\approx$), `\equiv` ($\equiv$), `\ll` ($\ll$), `\gg` ($\gg$).
+- **Arithmetic**: `\times` ($\times$), `\div` ($\div$), `\pm` ($\pm$), `\mp` ($\mp$), `\cdot` ($\cdot$).
+- **Set Theory**: `\in` ($\in$), `\notin` ($\notin$), `\subset` ($\subset$), `\supset` ($\supset$), `\subseteq` ($\subseteq$), `\cup` ($\cup$), `\cap` ($\cap$), `\emptyset` ($\emptyset$).
+- **Calculus & Analysis**: `\partial` ($\partial$), `\infty` ($\infty$).
+
+---
+
+## Ignored & Transparent Macros
+
+Standard LaTeX formatting commands that do not map to distinct Word OpenXML nodes are handled transparently:
+- `\left`, `\right`: Stripped cleanly to prevent parse failures while preserving inner delimiters like parentheses or brackets.
+- Standard spacing commands: Handled without breaking AST traversal.
+
+---
+
+## Known Limitations
+
+- **Complex Environments**: Full LaTeX matrix or alignment environments (e.g., `\begin{matrix}`, `\begin{align}`) are not supported by the lightweight math parser.
+- **Color Styling**: LaTeX color commands like `\textcolor` are not mapped to Word equation styles.

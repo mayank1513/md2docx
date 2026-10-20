@@ -1,0 +1,106 @@
+[**@m2d/core**](../index.md)
+
+***
+
+[@m2d/core](../index.md) / List
+
+# Interface: List
+
+Defined in: [packages/mdast/src/index.ts:927](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L927)
+
+Markdown list.
+
+## Extends
+
+- [`Parent`](Parent.md)
+
+## Properties
+
+### children
+
+> **children**: [`ListItem`](ListItem.md)[]
+
+Defined in: [packages/mdast/src/index.ts:949](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L949)
+
+Children of list.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`children`](Parent.md#children)
+
+***
+
+### data?
+
+> `optional` **data?**: [`ListData`](ListData.md)
+
+Defined in: [packages/mdast/src/index.ts:953](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L953)
+
+Data associated with the mdast list.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`data`](Parent.md#data)
+
+***
+
+### ordered?
+
+> `optional` **ordered?**: `boolean` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:936](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L936)
+
+Whether the items have been intentionally ordered (when `true`), or that
+the order of items is not important (when `false` or not present).
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Parent`](Parent.md).[`position`](Parent.md#position)
+
+***
+
+### spread?
+
+> `optional` **spread?**: `boolean` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:945](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L945)
+
+Whether one or more of the children are separated with a blank line from
+its siblings (when `true`), or not (when `false` or not present).
+
+***
+
+### start?
+
+> `optional` **start?**: `number` \| `null`
+
+Defined in: [packages/mdast/src/index.ts:940](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L940)
+
+The starting number of the list, when the `ordered` field is `true`.
+
+***
+
+### type
+
+> **type**: `"list"`
+
+Defined in: [packages/mdast/src/index.ts:931](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L931)
+
+Node type of mdast list.
+
+#### Overrides
+
+[`Parent`](Parent.md).[`type`](Parent.md#type)

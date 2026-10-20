@@ -1,0 +1,26 @@
+---
+title: Fallbacks & Error Modes
+description: Error policies, diagram code block fallbacks, and collapsible headings in Word.
+---
+
+# Fallbacks & Error Policies
+
+`@m2d/image-node` provides resilient error-handling options so server-side document generation jobs never fail unexpectedly due to a missing asset.
+
+---
+
+## Error Modes (`errorMode`)
+
+- `"warn"` *(default)*: Renders a styled, muted text run with alt text: `[Image: alt text]` or `[Image unavailable]`.
+- `"silent"`: Completely omits the node from the Word document (0 XML overhead, 0 relationships).
+- `"throw"`: Rejects the `toDocx` conversion promise with the underlying Error. Useful in CI/CD build scripts.
+- `"placeholder"`: Inserts a custom placeholder graphic from `options.placeholder`.
+
+---
+
+## Diagram Fallbacks (`mermaidFallback` & `svgFallback`)
+
+When a Mermaid diagram or SVG fails to compile or rasterize:
+- **`mermaidFallback: "code"`** *(default)*: Transforms the failed diagram into an authentic Word code block (`lang: "mermaid"`), formatted with Consolas monospace font and borders.
+- **`svgFallback: "code"`**: Renders raw SVG XML in a Word code block (`lang: "xml"`).
+- **`collapsibleHeading`** *(default: `true`)*: Injects an `H6` heading (`###### ⚠️ Diagram Source (Render Fallback)`) above the code block. This creates a natively collapsible block in Word desktop and Microsoft 365, while staying out of default 1–3 level Tables of Contents.

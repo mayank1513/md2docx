@@ -1,0 +1,83 @@
+[**mdast2docx**](../index.md)
+
+***
+
+[mdast2docx](../index.md) / Node
+
+# Interface: Node
+
+Defined in: [packages/mdast/src/index.ts:560](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L560)
+
+Abstract mdast node.
+
+This interface is supposed to be extended.
+If you can use [Literal](Literal.md) or [Parent](Parent.md), you should.
+But for example in markdown, a thematic break (`***`) is neither literal nor
+parent, but still a node.
+
+To register custom mdast nodes, add them to [RootContentMap](RootContentMap.md) and other
+places where relevant (such as ElementContentMap).
+
+For a union of all registered mdast nodes, see [Nodes](../type-aliases/Nodes.md).
+
+## Extends
+
+- `Node`
+
+## Extended by
+
+- [`Checkbox`](Checkbox.md)
+- [`SVG`](SVG.md)
+- [`Literal`](Literal.md)
+- [`Parent`](Parent.md)
+- [`Break`](Break.md)
+- [`Definition`](Definition.md)
+- [`FootnoteReference`](FootnoteReference.md)
+- [`Image`](Image.md)
+- [`ImageReference`](ImageReference.md)
+- [`ThematicBreak`](ThematicBreak.md)
+
+## Properties
+
+### data?
+
+> `optional` **data?**: [`Data`](Data.md)
+
+Defined in: [packages/mdast/src/index.ts:564](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L564)
+
+Info from the ecosystem.
+
+#### Overrides
+
+`UnistNode.data`
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+`UnistNode.position`
+
+***
+
+### type
+
+> **type**: `string`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:90
+
+Node type.
+
+#### Inherited from
+
+`UnistNode.type`

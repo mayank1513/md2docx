@@ -1,0 +1,229 @@
+[**@m2d/mdast**](../index.md)
+
+***
+
+[@m2d/mdast](../index.md) / Data
+
+# Interface: Data
+
+Defined in: [packages/mdast/src/index.ts:179](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L179)
+
+Info associated with mdast nodes by the ecosystem.
+
+This space is guaranteed to never be specified by unist or mdast.
+But you can use it in utilities and plugins to store data.
+
+This type can be augmented to register custom data.
+For example:
+
+```ts
+declare module 'mdast' {
+  interface Data {
+    // `someNode.data.myId` is typed as `number | undefined`
+    myId?: number | undefined
+  }
+}
+```
+
+## Extends
+
+- `Data`
+
+## Extended by
+
+- [`SVGData`](SVGData.md)
+- [`BlockquoteData`](BlockquoteData.md)
+- [`BreakData`](BreakData.md)
+- [`CodeData`](CodeData.md)
+- [`DefinitionData`](DefinitionData.md)
+- [`DeleteData`](DeleteData.md)
+- [`EmphasisData`](EmphasisData.md)
+- [`FootnoteDefinitionData`](FootnoteDefinitionData.md)
+- [`FootnoteReferenceData`](FootnoteReferenceData.md)
+- [`HeadingData`](HeadingData.md)
+- [`HtmlData`](HtmlData.md)
+- [`ImageReferenceData`](ImageReferenceData.md)
+- [`InlineCodeData`](InlineCodeData.md)
+- [`LinkData`](LinkData.md)
+- [`LinkReferenceData`](LinkReferenceData.md)
+- [`ListData`](ListData.md)
+- [`ListItemData`](ListItemData.md)
+- [`ParagraphData`](ParagraphData.md)
+- [`RootData`](RootData.md)
+- [`StrongData`](StrongData.md)
+- [`TableData`](TableData.md)
+- [`TableRowData`](TableRowData.md)
+- [`TableCellData`](TableCellData.md)
+- [`TextData`](TextData.md)
+- [`ThematicBreakData`](ThematicBreakData.md)
+- [`YamlData`](YamlData.md)
+
+## Properties
+
+### alignment?
+
+> `optional` **alignment?**: `"center"` \| `"left"` \| `"right"` \| `"start"` \| `"end"` \| `"both"` \| `"mediumKashida"` \| `"distribute"` \| `"numTab"` \| `"highKashida"` \| `"lowKashida"` \| `"thaiDistribute"`
+
+Defined in: [packages/mdast/src/index.ts:184](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L184)
+
+***
+
+### allCaps?
+
+> `optional` **allCaps?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:195](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L195)
+
+***
+
+### bold?
+
+> `optional` **bold?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:185](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L185)
+
+***
+
+### border?
+
+> `optional` **border?**: [`Mutable`](../type-aliases/Mutable.md)\<`IBorderOptions` \| `IBordersOptions`\>
+
+Defined in: [packages/mdast/src/index.ts:183](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L183)
+
+Styles data compatible with docx - could be passed via inline or block html
+
+***
+
+### checked?
+
+> `optional` **checked?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:208](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L208)
+
+***
+
+### color?
+
+> `optional` **color?**: `string`
+
+Defined in: [packages/mdast/src/index.ts:199](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L199)
+
+***
+
+### emphasisMark?
+
+> `optional` **emphasisMark?**: `Record`\<`string`, `never`\>
+
+Defined in: [packages/mdast/src/index.ts:193](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L193)
+
+***
+
+### frame?
+
+> `optional` **frame?**: `IFrameOptions`
+
+Defined in: [packages/mdast/src/index.ts:202](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L202)
+
+***
+
+### highlight?
+
+> `optional` **highlight?**: `string`
+
+Defined in: [packages/mdast/src/index.ts:201](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L201)
+
+***
+
+### italics?
+
+> `optional` **italics?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:186](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L186)
+
+***
+
+### name?
+
+> `optional` **name?**: `string`
+
+Defined in: [packages/mdast/src/index.ts:210](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L210)
+
+***
+
+### pre?
+
+> `optional` **pre?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:203](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L203)
+
+***
+
+### smallCaps?
+
+> `optional` **smallCaps?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:196](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L196)
+
+***
+
+### strike?
+
+> `optional` **strike?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:194](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L194)
+
+***
+
+### style?
+
+> `optional` **style?**: `string`
+
+Defined in: [packages/mdast/src/index.ts:206](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L206)
+
+***
+
+### subScript?
+
+> `optional` **subScript?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:197](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L197)
+
+***
+
+### superScript?
+
+> `optional` **superScript?**: `boolean`
+
+Defined in: [packages/mdast/src/index.ts:198](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L198)
+
+***
+
+### tag?
+
+> `optional` **tag?**: `"symbol"` \| `"object"` \| `"html"` \| `"image"` \| `"link"` \| `"strong"` \| `"text"` \| `"svg"` \| `"blockquote"` \| `"code"` \| `"table"` \| `"a"` \| `"abbr"` \| `"address"` \| `"area"` \| `"article"` \| `"aside"` \| `"audio"` \| `"b"` \| `"base"` \| `"bdi"` \| `"bdo"` \| `"body"` \| `"br"` \| `"button"` \| `"canvas"` \| `"caption"` \| `"cite"` \| `"col"` \| `"colgroup"` \| `"data"` \| `"datalist"` \| `"dd"` \| `"del"` \| `"details"` \| `"dfn"` \| `"dialog"` \| `"div"` \| `"dl"` \| `"dt"` \| `"em"` \| `"embed"` \| `"fieldset"` \| `"figcaption"` \| `"figure"` \| `"footer"` \| `"form"` \| `"h1"` \| `"h2"` \| `"h3"` \| `"h4"` \| `"h5"` \| `"h6"` \| `"head"` \| `"header"` \| `"hgroup"` \| `"hr"` \| `"i"` \| `"iframe"` \| `"img"` \| `"input"` \| `"ins"` \| `"kbd"` \| `"label"` \| `"legend"` \| `"li"` \| `"main"` \| `"map"` \| `"mark"` \| `"menu"` \| `"meta"` \| `"meter"` \| `"nav"` \| `"noscript"` \| `"ol"` \| `"optgroup"` \| `"option"` \| `"output"` \| `"p"` \| `"picture"` \| `"pre"` \| `"progress"` \| `"q"` \| `"rp"` \| `"rt"` \| `"ruby"` \| `"s"` \| `"samp"` \| `"script"` \| `"search"` \| `"section"` \| `"select"` \| `"slot"` \| `"small"` \| `"source"` \| `"span"` \| `"style"` \| `"sub"` \| `"summary"` \| `"sup"` \| `"tbody"` \| `"td"` \| `"template"` \| `"textarea"` \| `"tfoot"` \| `"th"` \| `"thead"` \| `"time"` \| `"title"` \| `"tr"` \| `"track"` \| `"u"` \| `"ul"` \| `"var"` \| `"video"` \| `"wbr"` \| `"animate"` \| `"animateMotion"` \| `"animateTransform"` \| `"circle"` \| `"clipPath"` \| `"defs"` \| `"desc"` \| `"ellipse"` \| `"feBlend"` \| `"feColorMatrix"` \| `"feComponentTransfer"` \| `"feComposite"` \| `"feConvolveMatrix"` \| `"feDiffuseLighting"` \| `"feDisplacementMap"` \| `"feDistantLight"` \| `"feDropShadow"` \| `"feFlood"` \| `"feFuncA"` \| `"feFuncB"` \| `"feFuncG"` \| `"feFuncR"` \| `"feGaussianBlur"` \| `"feImage"` \| `"feMerge"` \| `"feMergeNode"` \| `"feMorphology"` \| `"feOffset"` \| `"fePointLight"` \| `"feSpecularLighting"` \| `"feSpotLight"` \| `"feTile"` \| `"feTurbulence"` \| `"filter"` \| `"foreignObject"` \| `"g"` \| `"line"` \| `"linearGradient"` \| `"marker"` \| `"mask"` \| `"metadata"` \| `"mpath"` \| `"path"` \| `"pattern"` \| `"polygon"` \| `"polyline"` \| `"radialGradient"` \| `"rect"` \| `"set"` \| `"stop"` \| `"switch"` \| `"textPath"` \| `"tspan"` \| `"use"` \| `"view"`
+
+Defined in: [packages/mdast/src/index.ts:204](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L204)
+
+***
+
+### type?
+
+> `optional` **type?**: `string`
+
+Defined in: [packages/mdast/src/index.ts:207](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L207)
+
+***
+
+### underline?
+
+> `optional` **underline?**: \{ `color`: `string`; `type`: `"single"` \| `"words"` \| `"double"` \| `"thick"` \| `"dotted"` \| `"dottedHeavy"` \| `"dash"` \| `"dashedHeavy"` \| `"dashLong"` \| `"dashLongHeavy"` \| `"dotDash"` \| `"dashDotHeavy"` \| `"dotDotDash"` \| `"dashDotDotHeavy"` \| `"wave"` \| `"wavyHeavy"` \| `"wavyDouble"` \| `"none"`; \} \| `Record`\<`string`, `never`\>
+
+Defined in: [packages/mdast/src/index.ts:187](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L187)
+
+***
+
+### value?
+
+> `optional` **value?**: `string`
+
+Defined in: [packages/mdast/src/index.ts:209](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L209)
