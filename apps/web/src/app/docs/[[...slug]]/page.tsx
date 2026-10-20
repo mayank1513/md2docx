@@ -19,8 +19,8 @@ import { formatLastUpdated } from "@/lib/utils";
 import { getMDXComponents } from "@/mdx-components";
 
 const GIT_CONFIG = {
-  user: "turboforge-dev",
-  repo: "turbo-forge",
+  user: "md2docx",
+  repo: "md2docx",
   branch: "main",
 };
 
@@ -116,7 +116,12 @@ export async function generateMetadata(
   return {
     title: page.data.title,
     description: page.data.description,
+    alternates: {
+      canonical: page.url,
+    },
     openGraph: {
+      title: `${page.data.title} | Md2Docx`,
+      description: page.data.description,
       images: getPageImage(page).url,
     },
   };

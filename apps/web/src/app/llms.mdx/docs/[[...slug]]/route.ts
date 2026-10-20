@@ -28,6 +28,9 @@ export async function GET(
 
 export function generateStaticParams() {
   const params = source.generateParams();
+  if (!params.length) {
+    return [{ slug: ["overview.mdx"] }];
+  }
   return params.map((p) => {
     if (!p.slug?.length) return p;
     const newSlug = [...p.slug];

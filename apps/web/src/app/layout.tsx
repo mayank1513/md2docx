@@ -19,10 +19,10 @@ export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
     template: "%s | Md2Docx",
-    default: "Md2Docx - Markdown to DOCX Converter",
+    default: "Md2Docx - Universal Markdown to Word Engine",
   },
   description:
-    "A powerful, modular, and extensible Markdown to DOCX converter for Node.js and browsers.",
+    "Convert standard Markdown, GFM tables, math equations, and diagrams into native Microsoft Word (.docx) documents with client privacy or server streaming.",
   keywords: [
     "markdown",
     "docx",
@@ -31,21 +31,50 @@ export const metadata: Metadata = {
     "remark",
     "word",
     "office",
+    "omml",
+    "latex",
+    "mermaid",
     "document generation",
+    "openxml",
   ],
+  alternates: {
+    canonical: "./",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     type: "website",
     siteName: "Md2Docx",
     locale: "en_US",
-    title: "Md2Docx - Markdown to DOCX Converter",
+    url: baseUrl,
+    title: "Md2Docx - Universal Markdown to Word Engine",
     description:
-      "A powerful, modular, and extensible Markdown to DOCX converter for Node.js and browsers.",
+      "Convert standard Markdown, GFM tables, math equations, and diagrams into native Microsoft Word (.docx) documents with client privacy or server streaming.",
+    images: [
+      {
+        url: "/icon.png",
+        width: 512,
+        height: 512,
+        alt: "Md2Docx Logo",
+      },
+    ],
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Md2Docx - Markdown to DOCX Converter",
+    card: "summary",
+    title: "Md2Docx - Universal Markdown to Word Engine",
     description:
-      "A powerful, modular, and extensible Markdown to DOCX converter for Node.js and browsers.",
+      "Convert standard Markdown, GFM tables, math equations, and diagrams into native Microsoft Word (.docx) documents with client privacy or server streaming.",
+    images: ["/icon.png"],
+    creator: "@mayank_chdhri",
   },
 };
 

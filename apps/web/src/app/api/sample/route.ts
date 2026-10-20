@@ -2,6 +2,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-static";
+
 export const GET = async () => {
   try {
     const samplePath = path.resolve(process.cwd(), "../../sample.md");
