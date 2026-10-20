@@ -1,0 +1,4 @@
+{
+  "title": "@m2d/mermaid-node",
+  "pages": ["overview", "headless-rendering", "themes-and-theming", "api"]
+}

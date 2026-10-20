@@ -1,0 +1,44 @@
+---
+title: Headless Node.js Rendering
+description: Server-side Mermaid rendering with beautiful-mermaid, transparent backgrounds, and sharp color inlining.
+---
+
+# Headless Mermaid Rendering (`@m2d/mermaid-node`)
+
+`@m2d/mermaid-node` renders Mermaid diagrams completely server-side in Node.js without requiring headless browsers (Puppeteer/Chromium), JSDOM, or canvas emulators.
+
+---
+
+## Why Headless `beautiful-mermaid`?
+
+Traditional server-side Mermaid rendering requires spawning a full headless Chromium browser process, consuming hundreds of megabytes of RAM and adding significant latency. 
+
+`@m2d/mermaid-node` uses `beautiful-mermaid`, which runs a pure TypeScript ELK.js layout engine:
+- **Zero Headless Chrome**: Runs anywhere Node.js runs (AWS Lambda, Cloud Run, CLI tools, Next.js API routes).
+- **Sub-10ms Compilation**: Renders diagrams in milliseconds instead of seconds.
+- **Micro Bundle**: Zero native browser dependencies.
+
+---
+
+## Sharp & librsvg Color Compatibility
+
+`beautiful-mermaid` uses a modern CSS variable and `color-mix()` architecture (e.g. `fill="var(--_node-fill)"`). However, Node's standard SVG rasterizer (`librsvg` via `sharp`) does not evaluate CSS custom properties, which historically caused all rendered diagram shapes and text to appear solid black.
+
+`@m2d/mermaid-node` automatically:
+1. **Inlines and resolves all CSS variables** and sRGB `color-mix()` calculations into explicit hex colors directly on SVG attributes before returning the SVG string.
+2. **Preserves a transparent canvas background** by default (`transparent: true`), allowing diagrams to blend seamlessly onto page backgrounds.
+3. **Auto-normalizes sequence diagrams** with multi-word actor names (e.g. `Client->>Server API: ...`) by injecting `participant <id> as <name>` declarations.
+
+---
+
+## Supported Diagram Types
+
+`beautiful-mermaid` natively supports 6 core diagram types:
+- **Flowcharts / Graphs** (`graph TD`, `flowchart LR`)
+- **Sequence Diagrams** (`sequenceDiagram`)
+- **Class Diagrams** (`classDiagram`)
+- **State Diagrams** (`stateDiagram-v2`)
+- **Entity Relationship Diagrams** (`erDiagram`)
+- **XY Charts** (`xychart-beta`)
+
+Diagram types outside this list (e.g. Gantt, Pie charts) or diagrams with unrecoverable syntax errors cleanly trigger `@m2d/image-node`'s fallback policy, rendering as collapsible `H6` headings + formatted Word code blocks.
