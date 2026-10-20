@@ -91,4 +91,39 @@ graph TD
     expect(docxBlob).toBeInstanceOf(Blob);
     expect(docxBlob.size).toBeGreaterThan(1000);
   });
+
+  it("inlines CSS variables into resolved hex values for librsvg/sharp", async () => {
+    const md = "```mermaid\ngraph TD\nA-->B\n```";
+    const tree = processor.parse(md);
+
+    const plugin = mermaidNodePlugin();
+    await plugin.preprocess?.(tree as unknown as Root, {});
+
+    const para = (tree.children as any)[0];
+    const svgNode = para.children[0];
+    const result = await svgNode.value;
+    expect(result.svg).not.toContain("var(--_text)");
+    expect(result.svg).not.toContain("var(--_node-fill)");
+    expect(result.svg).toContain("#");
+  });
+
+  it("normalizes sequence diagrams with spaces in actor names", async () => {
+    const md = `\`\`\`mermaid
+sequenceDiagram
+    Client->>Server API: Request
+    Server API-->>Client: Response
+\`\`\``;
+    const tree = processor.parse(md);
+
+    const plugin = mermaidNodePlugin();
+    await plugin.preprocess?.(tree as unknown as Root, {});
+
+    const para = (tree.children as any)[0];
+    const svgNode = para.children[0];
+    const result = await svgNode.value;
+    expect(result).toBeDefined();
+    expect(result.svg).toContain("<svg");
+    expect(result.svg).not.toContain('viewBox="0 0 0 0"');
+    expect(result.svg).toContain("Server API");
+  });
 });
