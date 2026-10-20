@@ -23,50 +23,130 @@
 
 ---
 
-## ✨ Why @m2d/core?
+## ✨ Features
 
-- 
-- 
+- ⚡ **Lightweight & Fast**: Direct conversion from Markdown Abstract Syntax Trees (MDAST) into native OpenXML Word structures.
+- 🌐 **Dual-Runtime Compatibility**: Runs 100% in-browser (`Blob`, zero server required) and on server runtimes (`Buffer`, `Uint8Array` in Node.js, Next.js, Cloudflare Workers).
+- 📑 **Section & Layout Control**: Multi-section documents with individual page sizes, orientation (Portrait/Landscape), margins, headers, and footers.
+- 🔌 **Extensible Plugin Pipeline**: Rich lifecycle hooks (`preprocess`, `inline`, `block`, `postprocess`) for images, diagrams, math equations, and HTML.
+- 🛡️ **Defensive & Resilient**: Built-in warning deduplication (`warnOnce`), safe error fallbacks, and non-mutating option handling.
+- 💾 **Persistent Caching Engine**: Multi-tiered cache (`@m2d/core/cache`) using IndexedDB and in-memory caches with timestamped TTL and lock-free concurrency.
 
 ---
 
 ## 📦 Installation
 
 ```bash
-$ pnpm add @m2d/core
+$ pnpm add @m2d/core docx
 ```
 
 **_or_**
 
 ```bash
-$ npm install @m2d/core
+$ npm install @m2d/core docx
 ```
 
 **_or_**
 
 ```bash
-$ yarn add @m2d/core
+$ yarn add @m2d/core docx
 ```
 
 ---
 
-## ⚡ Caching Architecture
+## 🚀 Quick Start
 
-`@m2d/core` includes a persistent caching utility (`createPersistentCache`) powered by IndexedDB and an in-memory runtime cache. It deduplicates concurrent computations, persists expensive conversions across sessions, and supports cache bypass via `bypassCache`.
+Convert a Markdown string to a Word `.docx` file in just a few lines:
 
-### Why TTL Instead of Write-on-Read LRU?
+```typescript
+import { toDocx } from "@m2d/core";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import { unified } from "unified";
 
-In document generation workflows, assets (raster images, Mermaid diagrams, KaTeX formulas) frequently contain multi-kilobyte or multi-megabyte binary payloads. We intentionally do **not** use write-on-read LRU (updating access timestamps during cache hits):
+// 1. Parse Markdown into an MDAST tree
+const markdown = "# Project Overview\n\nGenerated with **@m2d/core**.";
+const mdast = unified().use(remarkParse).use(remarkGfm).parse(markdown);
 
-1. **Eliminate Write Amplification**: IndexedDB does not support partial or delta record updates. Touching a timestamp on access forces IndexedDB to re-serialize and overwrite the entire record (including binary buffers) back to disk.
-2. **Lock-Free Concurrency**: `readonly` IndexedDB transactions run fully in parallel across async operations and browser tabs. Opening `readwrite` transactions on every read serializes execution, creating severe lock contention when rendering documents with dozens of images.
-3. **Zero Read Side-Effects**: Read operations are completely pure with no unhandled background promise rejections or quota spikes.
+// 2. Convert MDAST to a DOCX Blob (or 'buffer' on server)
+const docxBlob = await toDocx(mdast, {
+  title: "Project Overview",
+  creator: "md2docx",
+});
 
-Instead, records are timestamped when generated and cleaned up via age-based Time-To-Live (`simpleCleanup(maxAgeMinutes, namespace)`).
+// 3. In the browser, trigger download or save
+const url = URL.createObjectURL(docxBlob as Blob);
+const a = document.createElement("a");
+a.href = url;
+a.download = "document.docx";
+a.click();
+```
 
-### Consumer Validation (`shouldCache`)
+---
 
-`@m2d/core` remains strictly domain-agnostic. Determining whether a result is valid to cache (e.g., non-empty buffers, successfully resolved images, error-free diagrams) is the responsibility of the consumer plugin via the `shouldCache(result)` predicate.
+## 🔌 Official Plugins Ecosystem
+
+`@m2d/core` stays lean by delegating domain-specific nodes to modular plugins. Install only what you need:
+
+| Plugin | Package | Environment | Purpose |
+| :--- | :--- | :--- | :--- |
+| **HTML** | [`@m2d/html`](https://www.npmjs.com/package/@m2d/html) | Browser / Node | Parses inline HTML styling, `<kbd>`, `<mark>`, badges, and embeds |
+| **Image** | [`@m2d/image`](https://www.npmjs.com/package/@m2d/image) | Browser | In-browser canvas rasterization for SVGs, URLs, and Base64 images |
+| **Image (Node)** | [`@m2d/image-node`](https://www.npmjs.com/package/@m2d/image-node) | Server (Node.js) | Server-side image and SVG rasterization via `sharp` |
+| **Mermaid** | [`@m2d/mermaid`](https://www.npmjs.com/package/@m2d/mermaid) | Browser | Renders client-side Mermaid diagrams into SVG/PNG with auto-fixer |
+| **Mermaid (Node)** | [`@m2d/mermaid-node`](https://www.npmjs.com/package/@m2d/mermaid-node) | Server (Node.js) | Server-side DOM-less Mermaid diagrams via `beautiful-mermaid` |
+| **Math** | [`@m2d/math`](https://www.npmjs.com/package/@m2d/math) | Browser / Node | Compiles LaTeX math formulas into native Word `<m:oMath>` equations |
+| **Table** | [`@m2d/table`](https://www.npmjs.com/package/@m2d/table) | Browser / Node | Renders GFM tables with column alignments, borders, and header fills |
+| **List** | [`@m2d/list`](https://www.npmjs.com/package/@m2d/list) | Browser / Node | Formats ordered, unordered, and nested hierarchical lists |
+| **MDAST Types** | [`@m2d/mdast`](https://www.npmjs.com/package/@m2d/mdast) | Browser / Node | TypeScript types for extended MDAST AST nodes |
+
+### Using Plugins
+
+```typescript
+import { toDocx } from "@m2d/core";
+import { tablePlugin } from "@m2d/table";
+import { imagePlugin } from "@m2d/image";
+
+const docxBlob = await toDocx(mdast, {}, {
+  plugins: [tablePlugin(), imagePlugin()],
+});
+```
+
+---
+
+## 📜 API Reference
+
+### `toDocx(astInputs, docxProps?, defaultSectionProps?, outputType?)`
+
+```typescript
+function toDocx(
+  astInputs: Root | { ast: Root; props?: ISectionProps }[],
+  docxProps?: IDocxProps,
+  defaultSectionProps?: IDefaultSectionOptions,
+  outputType?: "blob" | "buffer" | "arraybuffer",
+): Promise<Blob | Buffer | ArrayBuffer | Uint8Array>;
+```
+
+#### Parameters
+
+- **`astInputs`**: An MDAST `Root` node, or an array of section descriptors `{ ast: Root, props?: ISectionProps }[]` for multi-section documents.
+- **`docxProps`** *(optional)*: Global document properties passed to `docx.Document` (title, author, subject, styles, etc.).
+- **`defaultSectionProps`** *(optional)*: Layout and conversion configuration applied to sections:
+  - `useTitle` *(boolean, default: `true`)*: Maps top-level `# Heading` to Word's `Title` style and demotes nested headings proportionally.
+  - `plugins` *(IPlugin[])*: Array of conversion plugins.
+  - `trimInnerSpaces` *(boolean, default: `true`)*: Normalizes repeated whitespace in text runs.
+  - Plus standard `docx` `ISectionOptions` (margins, paper size, orientation, headers, footers).
+- **`outputType`** *(optional, default: `'blob'`)*: Target binary format (`"blob"`, `"buffer"`, or `"arraybuffer"`).
+
+---
+
+## 📚 Deep Dive Guides & Architecture
+
+Explore our dedicated documentation guides for advanced configurations and internal know-how:
+
+- ⚡ **[Caching Architecture Guide](./docs/caching.mdx)**: Multi-tiered cache design, why TTL avoids write-amplification, lock-free IndexedDB concurrency, and `shouldCache` validation.
+- 🔌 **[Plugin Authoring Guide](./docs/plugin-authoring.mdx)**: How to create custom plugins, hook into `preprocess`, `block`, `inline`, and `postprocess` lifecycles, and handle errors.
+- 📑 **[Sections & Layout Guide](./docs/sections-and-layout.mdx)**: Crafting multi-section documents, landscape pages, custom margins, and heading hierarchy.
 
 ---
 
