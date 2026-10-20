@@ -19,35 +19,117 @@
   <img alt="license" src="https://img.shields.io/npm/l/@m2d/remark-docx" />
 </p>
 
-> @m2d/remark-docx: Remark DOCX Compiler Plugin
+> @m2d/remark-docx: Unified & Remark compiler plugin that transforms Markdown directly into Microsoft Word (`.docx`) documents.
 
 ---
 
-## ✨ Why @m2d/remark-docx?
+## ✨ Features
 
-- 
-- 
+- 🔌 **Unified & Remark Compiler**: Plugs directly into `unified().use(remarkDocx)` to compile MDAST syntax trees into Word OpenXML.
+- 📦 **Auto-Injected Plugins**: Automatically configures tables, math, lists, images, emojis, and HTML plugins when none are specified.
+- 🌐 **Isomorphic Execution**: Runs in both browser (generating client-side `Blob`s) and Node.js (generating `Buffer`s for file writing).
+- ⚙️ **Configurable Outputs**: Supports `"blob"`, `"buffer"`, `"base64"`, and `"uint8array"` formats.
+- ⚡ **Dual Execution APIs**: Compatible with both async `.process()` and synchronous `.processSync()` pipelines.
 
 ---
 
 ## 📦 Installation
 
 ```bash
-$ pnpm add @m2d/remark-docx
+$ pnpm add @m2d/remark-docx docx unified remark-parse remark-gfm
 ```
 
 **_or_**
 
 ```bash
-$ npm install @m2d/remark-docx
+$ npm install @m2d/remark-docx docx unified remark-parse remark-gfm
 ```
 
 **_or_**
 
 ```bash
-$ yarn add @m2d/remark-docx
+$ yarn add @m2d/remark-docx docx unified remark-parse remark-gfm
 ```
 
+---
+
+## 🚀 Quick Start
+
+### Browser (Download as DOCX)
+
+```typescript
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import { remarkDocx } from "@m2d/remark-docx";
+
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkDocx, "blob");
+
+const file = await processor.process("# Hello World\n\nExported directly to Word!");
+const blob = (await file.result) as Blob;
+
+// Trigger browser download
+const url = URL.createObjectURL(blob);
+const link = document.createElement("a");
+link.href = url;
+link.download = "document.docx";
+link.click();
+URL.revokeObjectURL(url);
+```
+
+### Node.js (Write to Disk)
+
+```typescript
+import fs from "node:fs/promises";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import { remarkDocx } from "@m2d/remark-docx";
+
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkDocx, "buffer");
+
+const file = await processor.process("# Server Report\n\nWritten via Node.js.");
+const buffer = (await file.result) as Buffer;
+
+await fs.writeFile("report.docx", buffer);
+```
+
+---
+
+## ⚙️ Plugin Signature
+
+```typescript
+import { OutputType } from "docx";
+import { IDocxProps, ISectionProps } from "mdast2docx";
+
+remarkDocx(
+  outputType?: "blob" | "buffer" | "base64" | "uint8array", // Default: "blob"
+  docxProps?: IDocxProps,                                  // Global Word document options
+  sectionProps?: ISectionProps,                            // Section margins, headers, and plugins
+  pluginProps?: {                                          // Options passed to auto-injected plugins
+    table?: TablePluginOptions;
+    list?: ListPluginOptions;
+    mermaid?: MermaidPluginOptions;
+    image?: ImagePluginOptions;
+    emoji?: EmojiPluginOptions;
+  }
+);
+```
+
+---
+
+## 📚 Deep Dive Guides
+
+- 🔌 **[Unified Pipeline Integration Guide](./docs/unified-pipeline-integration.mdx)**: Architecture, plugin auto-injection, and manual plugin overrides.
+- 💾 **[Output Formats & Environments Guide](./docs/output-formats-and-environments.mdx)**: Browser downloads, server writing, sync execution, and binary output types.
+
+---
 
 ## License
 

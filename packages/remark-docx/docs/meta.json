@@ -1,0 +1,9 @@
+{
+  "title": "@m2d/remark-docx",
+  "pages": [
+    "overview",
+    "unified-pipeline-integration",
+    "output-formats-and-environments",
+    "api"
+  ]
+}
