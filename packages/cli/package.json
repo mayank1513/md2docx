@@ -40,7 +40,7 @@
     "cli": "./dist/cli.mjs"
   },
   "scripts": {
-    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch"
   },
