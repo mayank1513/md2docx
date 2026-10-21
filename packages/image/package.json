@@ -42,6 +42,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
+    "@m2d/cache": "workspace:*",
     "@m2d/core": "workspace:*",
     "@svg-fns/io": "^1.0.1",
     "@svg-fns/svg2img": "^0.2.0"

@@ -152,6 +152,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
+    "@m2d/cache": "workspace:*",
     "@m2d/core": "workspace:*",
     "@m2d/emoji": "^0.1.3",
     "@m2d/html": "workspace:*",

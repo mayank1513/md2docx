@@ -1,3 +1,8 @@
+import {
+  type CacheConfigType,
+  createPersistentCache,
+  simpleCleanup,
+} from "@m2d/cache";
 import type {
   IPlugin,
   Parent,
@@ -6,11 +11,6 @@ import type {
   RootContent,
   SVG,
 } from "@m2d/core";
-import {
-  type CacheConfigType,
-  createPersistentCache,
-  simpleCleanup,
-} from "@m2d/core/cache";
 import mermaid, { type MermaidConfig, type RenderResult } from "mermaid";
 
 export interface IMermaidPluginOptions {

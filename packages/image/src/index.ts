@@ -1,4 +1,10 @@
 /** biome-ignore-all lint/style/noNonNullAssertion: done responsibly */
+
+import {
+  type CacheConfigType,
+  createPersistentCache,
+  simpleCleanup,
+} from "@m2d/cache";
 import type {
   EmptyNode,
   Image,
@@ -11,11 +17,6 @@ import type {
   RootContent,
   SVG,
 } from "@m2d/core";
-import {
-  type CacheConfigType,
-  createPersistentCache,
-  simpleCleanup,
-} from "@m2d/core/cache";
 import type { Definitions } from "@m2d/core/utils";
 import type { IImageOptions } from "docx";
 import {
