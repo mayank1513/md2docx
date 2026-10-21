@@ -65,7 +65,11 @@
   },
   "forge": {
     "aliases": [
+      "@md2docx/cli",
+      "@mdast2docx/cli",
       "@m2d/md2docx-node",
+      "@md2docx/md2docx-node",
+      "@mdast2docx/md2docx-node",
       "md2docx-node"
     ],
     "icon": "Terminal",

@@ -58,7 +58,10 @@
     "typescript": "latest"
   },
   "forge": {
-    "aliases": [],
+    "aliases": [
+      "@md2docx/md2docx",
+      "@mdast2docx/md2docx"
+    ],
     "icon": "LibraryBig",
     "description": "The simplest way to convert Markdown to DOCX. Batteries-included wrapper around all @m2d/remark-docx package and Unified."
   },

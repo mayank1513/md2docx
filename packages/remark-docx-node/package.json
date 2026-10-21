@@ -59,7 +59,10 @@
     "unified": "^11.0.0"
   },
   "forge": {
-    "aliases": [],
+    "aliases": [
+      "@md2docx/remark-docx-node",
+      "@mdast2docx/remark-docx-node"
+    ],
     "icon": "FileCheck",
     "description": "Server-side Remark DOCX Compiler Plugin with native image & Mermaid diagram support"
   },

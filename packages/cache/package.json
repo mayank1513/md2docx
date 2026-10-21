@@ -50,7 +50,10 @@
     "typescript": "latest"
   },
   "forge": {
-    "aliases": [],
+    "aliases": [
+      "@md2docx/cache",
+      "@mdast2docx/cache"
+    ],
     "icon": "Database",
     "description": "Persistent Caching Engine"
   },
