@@ -1,0 +1,115 @@
+---
+title: Programmatic Node.js API
+description: Using md2docx programmatically in Node.js scripts, backend servers, and serverless functions.
+---
+
+# Programmatic Node.js API
+
+In addition to the command-line interface, `@m2d/cli` exports a high-level programmatic `md2docx` function pre-configured for server-side Node.js environments.
+
+---
+
+## 🚀 Quick Example
+
+```typescript
+import { md2docx } from "@m2d/cli";
+import fs from "node:fs/promises";
+
+const markdown = `
+# Backend Document Generation
+
+- Runs on Node.js without browser or DOM polyfills
+- Renders native diagrams and images
+`;
+
+// Returns a Node.js Buffer by default
+const buffer = await md2docx(markdown, {
+  title: "API Document",
+  author: "Engineering Team",
+});
+
+await fs.writeFile("output.docx", buffer);
+```
+
+---
+
+## 📖 Function Signature
+
+```typescript
+export const md2docx = async <T extends OutputType = "nodebuffer">(
+  md: string,
+  docxProps?: IDocxProps,
+  sectionProps?: ISectionProps,
+  outputType?: T,
+  pluginProps?: Mdast2DocxNodePluginProps,
+): Promise<OutputByType[T]>;
+```
+
+### Parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `md` | `string` | The input Markdown string. |
+| `docxProps` | `IDocxProps` | Global document metadata (e.g. `title`, `creator`, `description`, `styles`). |
+| `sectionProps` | `ISectionProps` | Section properties (margins, page orientation, headers/footers, custom `plugins`). |
+| `outputType` | `OutputType` | Binary format. Defaults to `"nodebuffer"` on Node. Supported: `"nodebuffer"`, `"blob"`, `"base64"`, `"uint8array"`, `"arraybuffer"`. |
+| `pluginProps` | `Mdast2DocxNodePluginProps` | Configuration options for sub-plugins (`image`, `mermaid`, `list`, `table`, `emoji`). |
+
+---
+
+## 🌐 Backend Server Integrations
+
+### Express.js Route
+
+```typescript
+import express from "express";
+import { md2docx } from "@m2d/cli";
+
+const app = express();
+app.use(express.json());
+
+app.post("/api/export-docx", async (req, res) => {
+  try {
+    const { markdown, title } = req.body;
+
+    const buffer = await md2docx(markdown, { title: title || "Export" });
+
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    );
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${title || "document"}.docx"`,
+    );
+
+    res.send(buffer);
+  } catch (error) {
+    console.error("Failed to generate DOCX:", error);
+    res.status(500).json({ error: "Document generation failed" });
+  }
+});
+
+app.listen(3000, () => console.log("Server listening on port 3000"));
+```
+
+### Next.js Route Handler (`app/api/export/route.ts`)
+
+```typescript
+import { NextRequest, NextResponse } from "next/server";
+import { md2docx } from "@m2d/cli";
+
+export async function POST(req: NextRequest) {
+  const { markdown, title = "Export" } = await req.json();
+
+  const buffer = await md2docx(markdown, { title });
+
+  return new NextResponse(buffer, {
+    headers: {
+      "Content-Type":
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "Content-Disposition": `attachment; filename="${title}.docx"`,
+    },
+  });
+}
+```
