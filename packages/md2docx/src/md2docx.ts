@@ -1,4 +1,5 @@
 import type { IDocxProps, ISectionProps } from "@m2d/core";
+import { warnOnce } from "@m2d/core/utils";
 import { type Mdast2DocxPluginProps, remarkDocx } from "@m2d/remark-docx";
 import type { OutputType } from "docx";
 import remarkFrontmatter from "remark-frontmatter";
@@ -9,6 +10,8 @@ import { unified } from "unified";
 
 /**
  * Converts a Markdown string into a DOCX document using Unified and `@m2d/remark-docx`.
+ * Optimized for client-side and browser environments.
+ * For server-side Node.js workflows with native image and diagram rendering, use `@m2d/cli`.
  *
  * @param md - The Markdown string to convert.
  * @param docxProps - Document properties passed to `@m2d/core`.
@@ -24,6 +27,13 @@ export const md2docx = async (
   outputType: OutputType = "blob",
   pluginProps?: Mdast2DocxPluginProps,
 ) => {
+  if (typeof window === "undefined") {
+    warnOnce(
+      "md2docx-client-on-node",
+      "Running @m2d/md2docx in a Node.js environment. For native image and diagram support on Node, use '@m2d/cli' (or '@m2d/remark-docx-node').",
+    );
+  }
+
   const processor = unified().use([
     remarkParse,
     remarkGfm,
