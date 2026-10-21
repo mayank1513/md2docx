@@ -100,5 +100,8 @@
     "hyperlinks",
     "images",
     "mdast2docx"
-  ]
+  ],
+  "dependencies": {
+    "@types/mdast": "^4.0.4"
+  }
 }
