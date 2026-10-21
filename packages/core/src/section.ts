@@ -1,4 +1,3 @@
-import type { Root } from "@m2d/mdast";
 // skipcq: JS-C1003
 import * as docx from "docx";
 import {
@@ -12,6 +11,7 @@ import {
   Paragraph,
   TextRun,
 } from "docx";
+import type { Root } from "mdast";
 import type {
   BlockNodeChildrenProcessor,
   Definitions,

@@ -1,6 +1,5 @@
-import type { Root as M2dRoot, RootContent } from "@m2d/mdast";
 import { Document, type OutputType, Packer, type Paragraph } from "docx";
-import type { Root } from "mdast";
+import type { Root, RootContent } from "mdast";
 import { toSection } from "./section";
 import {
   DEFAULT_SECTION_PROPS,
@@ -84,7 +83,7 @@ export const toDocx = async (
   // Convert MDAST trees into document sections
   const sections = await Promise.all(
     processedAstInputs.map(({ ast, props, definitions, footnoteDefinitions }) =>
-      toSection(ast as M2dRoot, definitions, footnoteDefinitions, props),
+      toSection(ast, definitions, footnoteDefinitions, props),
     ),
   );
 
