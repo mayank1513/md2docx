@@ -63,11 +63,22 @@ describe("remarkDocx compiler plugin", () => {
     expect(result).toBeInstanceOf(Blob);
   });
 
-  it("should not output console.log during processing", async () => {
-    const consoleSpy = vi.spyOn(console, "log");
-    const processor = unified().use(remarkParse).use(remarkGfm).use(remarkDocx);
-    await processor.process(markdown).then((res) => res.result);
+  it("warns when running client-side remarkDocx in Node.js environment", async () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const originalWindow = globalThis.window;
+    // @ts-expect-error simulate Node.js where window is undefined
+    delete globalThis.window;
 
-    expect(consoleSpy).not.toHaveBeenCalled();
-  }, 30000);
+    try {
+      const processor = unified().use(remarkParse).use(remarkDocx);
+      await processor.process("# Test Node Env");
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("@m2d/remark-docx-node"),
+      );
+    } finally {
+      globalThis.window = originalWindow;
+      warnSpy.mockRestore();
+    }
+  });
 });

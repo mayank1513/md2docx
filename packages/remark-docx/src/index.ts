@@ -10,7 +10,7 @@ import {
   mermaidPlugin,
   tablePlugin,
 } from "mdast2docx/plugins";
-import { DEFAULT_SECTION_PROPS } from "mdast2docx/utils";
+import { DEFAULT_SECTION_PROPS, warnOnce } from "mdast2docx/utils";
 import type { Plugin } from "unified";
 
 export interface Mdast2DocxPluginProps {
@@ -57,10 +57,15 @@ export const remarkDocx: Plugin<
         emojiPlugin(pluginProps?.emoji),
         imagePlugin(pluginProps?.image),
       ];
-      sectionProps.plugins =
-        typeof window === "undefined"
-          ? plugins.slice(2, -1) // server-side: skip html & image plugins
-          : plugins;
+      if (typeof window === "undefined") {
+        warnOnce(
+          "remark-docx-client-on-node",
+          "Running client-side @m2d/remark-docx in a Node.js environment. Client plugins (html, image, mermaid) are skipped. Please use '@m2d/remark-docx-node' for native image and diagram support on Node.",
+        );
+        sectionProps.plugins = plugins.slice(2, -1);
+      } else {
+        sectionProps.plugins = plugins;
+      }
     }
 
     return toDocx(node as Root, docxProps, sectionProps, outputType);

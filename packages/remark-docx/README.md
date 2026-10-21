@@ -82,14 +82,14 @@ URL.revokeObjectURL(url);
 
 ### Node.js (with Native Images & Mermaid Support)
 
-For Node.js environments, import from `@m2d/remark-docx/node` to automatically wire native server-side image resolution (`@m2d/image-node`) and diagram rendering (`@m2d/mermaid-node`):
+For Node.js environments, use [`@m2d/remark-docx-node`](../remark-docx-node) to automatically wire native server-side image resolution (`@m2d/image-node`) and diagram rendering (`@m2d/mermaid-node`):
 
 ```typescript
 import fs from "node:fs/promises";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
-import { remarkDocx } from "@m2d/remark-docx/node";
+import { remarkDocx } from "@m2d/remark-docx-node";
 
 const processor = unified()
   .use(remarkParse)
