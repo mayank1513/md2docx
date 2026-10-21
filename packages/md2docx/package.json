@@ -1,13 +1,13 @@
 {
   "name": "@m2d/md2docx",
-  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "author": "Mayank Kumar Chaudhari (https://mayank-chaudhari.vercel.app)",
   "private": false,
   "version": "0.0.0",
   "publishConfig": {
     "access": "public",
     "provenance": true
   },
-  "description": "",
+  "description": "The simplest way to convert Markdown to DOCX. Batteries-included wrapper around all @m2d/remark-docx package and Unified. One import, one call — full Markdown → Word conversion with HTML, images, math, tables, and more.",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,11 +37,22 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "@m2d/core": "workspace:*",
+    "@m2d/remark-docx": "workspace:*",
+    "docx": "^9.12.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5"
+  },
   "devDependencies": {
+    "@types/mdast": "^4.0.4",
     "@types/node": "latest",
     "tsup": "latest",
     "typescript": "latest"
@@ -49,7 +60,7 @@
   "forge": {
     "aliases": [],
     "icon": "LibraryBig",
-    "description": ""
+    "description": "The simplest way to convert Markdown to DOCX. Batteries-included wrapper around all @m2d/remark-docx package and Unified."
   },
   "funding": [
     {
@@ -62,7 +73,35 @@
     }
   ],
   "keywords": [
-    "@m2d/md2docx",
-    "turboforge"
+    "md2docx",
+    "markdown to docx",
+    "markdown to word",
+    "markdown docx converter",
+    "convert markdown to word",
+    "md to docx",
+    "docx generator",
+    "document generator",
+    "docx export",
+    "markdown export",
+    "mdast2docx",
+    "mdast to docx",
+    "markdown",
+    "mdast",
+    "docx",
+    "ms-word",
+    "unified",
+    "remark",
+    "rehype",
+    "plugin",
+    "converter",
+    "html to docx",
+    "math to docx",
+    "table to docx",
+    "image to docx",
+    "mermaid to docx",
+    "rich-text",
+    "typescript",
+    "open-source",
+    "mayank1513"
   ]
 }
