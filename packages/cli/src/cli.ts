@@ -61,7 +61,7 @@ export const main = async (args: string[] = process.argv.slice(2)) => {
 
   if (init) {
     await writeFile(
-      resolve(findProjectRoot(), configFile || "cli.config.json"),
+      resolve(await findProjectRoot(), configFile || "cli.config.json"),
       JSON.stringify(DEFAULT_CONFIG, null, 2),
     );
     console.log(
