@@ -1,5 +1,4 @@
 {
-  "title": "@m2d/html",
   "pages": [
     "overview",
     "ast-transformation-and-pipeline-order",
