@@ -2,7 +2,7 @@
   "title": "@m2d/core",
   "description": "Core MDAST to DOCX Engine",
   "tagLine": "Core engine to convert extended MDAST to DOCX. Supports plugins for footnotes, images, lists, tables, and more. Designed for seamless Markdown-to-DOCX conversion.",
-  "lastModified": "2026-10-20T10:13:55.113Z",
+  "lastModified": "2026-10-21T02:08:42.825Z",
   "version": "1.8.0",
   "root": true,
   "icon": "FileText",

@@ -1,4 +1,10 @@
 {
   "title": "Version 1.3.0",
-  "description": "Enhance Markdown-to-DOCX conversion with Mermaid and mindmap diagram support using this plugin for @m2d/core. Converts code blocks into SVG images with customizable Mermaid config."
+  "description": "Enhance Markdown-to-DOCX conversion with Mermaid and mindmap diagram support using this plugin for @m2d/core. Converts code blocks into SVG images with customizable Mermaid config.",
+  "pages": [
+    "overview",
+    "diagram-syntax-and-theming",
+    "auto-fixing-and-fallbacks",
+    "api"
+  ]
 }

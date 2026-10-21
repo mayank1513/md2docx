@@ -1,4 +1,10 @@
 {
   "title": "Version 1.5.0",
-  "description": "MDAST to DOCX plugin for resolving and embedding images. Supports base64, URLs, and custom resolvers for seamless DOCX image integration."
+  "description": "MDAST to DOCX plugin for resolving and embedding images. Supports base64, URLs, and custom resolvers for seamless DOCX image integration.",
+  "pages": [
+    "overview",
+    "error-handling-and-fallbacks",
+    "custom-resolvers-and-caching",
+    "api"
+  ]
 }

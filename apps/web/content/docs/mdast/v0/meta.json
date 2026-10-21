@@ -1,4 +1,10 @@
 {
   "title": "Version 0.2.4",
-  "description": "Extended MDAST types and custom node data for mdast2docx with support for DOCX formatting."
+  "description": "Extended MDAST types and custom node data for mdast2docx with support for DOCX formatting.",
+  "pages": [
+    "overview",
+    "extended-ast-nodes",
+    "node-lifecycle-and-empty-nodes",
+    "api"
+  ]
 }

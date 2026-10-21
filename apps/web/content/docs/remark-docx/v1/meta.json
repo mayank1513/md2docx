@@ -1,4 +1,10 @@
 {
   "title": "Version 1.2.3",
-  "description": "A unified plugin to prepare MDAST trees for DOCX conversion using mdast2docx."
+  "description": "A unified plugin to prepare MDAST trees for DOCX conversion using mdast2docx.",
+  "pages": [
+    "overview",
+    "unified-pipeline-integration",
+    "output-formats-and-environments",
+    "api"
+  ]
 }

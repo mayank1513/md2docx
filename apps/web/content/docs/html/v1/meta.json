@@ -1,4 +1,10 @@
 {
   "title": "Version 1.1.12",
-  "description": "Extend MDAST by parsing embedded HTML in Markdown. Converts HTML into structured MDAST nodes compatible with @m2d/core for DOCX generation."
+  "description": "Extend MDAST by parsing embedded HTML in Markdown. Converts HTML into structured MDAST nodes compatible with @m2d/core for DOCX generation.",
+  "pages": [
+    "overview",
+    "ast-transformation-and-pipeline-order",
+    "supported-elements-and-inline-css",
+    "api"
+  ]
 }
