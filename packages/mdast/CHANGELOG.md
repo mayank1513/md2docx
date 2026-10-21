@@ -1,5 +1,15 @@
 # @m2d/mdast
 
+## 0.2.5
+
+### Patch Changes
+
+- [`c1d2a1f`](https://github.com/md2docx/md2docx/commit/c1d2a1fb4713a7f29b6fbf099daf1fe2e94cf9bd) Thanks [@mayank1513](https://github.com/mayank1513)! - Standardize package.json export conditions to nested `import.types` (`.d.mts`) and `require.types` (`.d.ts`) for NodeNext and Bundler module resolution.
+
+- [`d4468e2`](https://github.com/md2docx/md2docx/commit/d4468e252b27042551924197d7a9286d94ad1e73) Thanks [@mayank1513](https://github.com/mayank1513)! - Clean up obsolete `M2dRoot` type alias and casting in `@m2d/core`, and remove unused `hast.ts` file in `@m2d/mdast`.
+
+- [`ae692af`](https://github.com/md2docx/md2docx/commit/ae692afdbf6fff1efdd6f60e1a76b09209973336) Thanks [@mayank1513](https://github.com/mayank1513)! - Refactor `@m2d/mdast` to extend `@types/mdast` via TypeScript declaration augmentation rather than duplicating the AST definitions.
+
 ## 0.2.4
 
 ### Patch Changes

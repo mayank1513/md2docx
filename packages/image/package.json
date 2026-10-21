@@ -2,7 +2,7 @@
   "name": "@m2d/image",
   "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
   "private": false,
-  "version": "1.5.0",
+  "version": "1.5.1",
   "publishConfig": {
     "access": "public",
     "provenance": true
