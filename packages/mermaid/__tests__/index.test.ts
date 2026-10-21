@@ -66,4 +66,32 @@ graph TD
     const docxBlob = await toDocx(ast, {}, { plugins: [mermaidPlugin()] });
     expect(docxBlob).toBeDefined();
   }, 30000);
+
+  it("should accept theme and custom mermaidConfig options", async ({
+    expect,
+  }) => {
+    const mermaidMd = `
+\`\`\`mermaid
+flowchart LR
+  A[Start] --> B[End]
+\`\`\`
+`;
+    const ast = unified().use(remarkParse).parse(mermaidMd);
+    const docxBlob = await toDocx(
+      ast,
+      {},
+      {
+        plugins: [
+          mermaidPlugin({
+            mermaidConfig: {
+              theme: "dark",
+              darkMode: true,
+              fontFamily: "monospace",
+            },
+          }),
+        ],
+      },
+    );
+    expect(docxBlob).toBeDefined();
+  }, 30000);
 });

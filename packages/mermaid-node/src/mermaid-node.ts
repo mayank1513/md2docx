@@ -7,9 +7,13 @@ import type {
   SVG,
 } from "@m2d/core";
 import { type CacheConfigType, createPersistentCache } from "@m2d/core/cache";
-import { renderMermaidSVGAsync, THEMES } from "beautiful-mermaid";
+import {
+  type RenderOptions,
+  renderMermaidSVGAsync,
+  THEMES,
+} from "beautiful-mermaid";
 
-export { THEMES };
+export { type RenderOptions, THEMES };
 export type MermaidTheme = keyof typeof THEMES | Record<string, unknown>;
 
 export interface RenderResultLike {
@@ -19,15 +23,21 @@ export interface RenderResultLike {
 
 export interface IMermaidNodePluginOptions {
   /**
-   * Built-in theme name (e.g. 'zinc-light', 'github-light', 'dracula') or custom theme object.
+   * Built-in theme name (e.g. 'zinc-light', 'zinc-dark', 'github-light', 'github-dark', 'dracula') or custom theme object.
    * @default 'zinc-light'
    */
   theme?: MermaidTheme;
 
   /**
-   * Additional render options passed to beautiful-mermaid.
+   * Whether to render with a transparent background.
+   * @default true
    */
-  renderOptions?: Record<string, unknown>;
+  transparent?: boolean;
+
+  /**
+   * Additional render options passed to beautiful-mermaid (e.g. font, padding, nodeSpacing, layerSpacing, componentSpacing).
+   */
+  renderOptions?: RenderOptions;
 
   /**
    * Optional fixer function to repair invalid Mermaid code before retrying render.
@@ -83,6 +93,11 @@ const mixColors = (
   ]);
 };
 
+const isDark = (hex: string): boolean => {
+  const [r, g, b] = hexToRgb(hex);
+  return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+};
+
 /**
  * Inlines CSS custom properties and color-mix values in beautiful-mermaid SVG
  * so that librsvg / sharp renders them in full color rather than solid black.
@@ -105,6 +120,15 @@ export const inlineSvgCssVariables = (
   }
   const bg = vars["--bg"] || "#FFFFFF";
   const fg = vars["--fg"] || "#27272A";
+  const darkTheme = isDark(bg);
+
+  const defaultNodeFill = darkTheme
+    ? transparent
+      ? mixColors(fg, bg, 12)
+      : mixColors(fg, bg, 5)
+    : transparent
+      ? "#FFFFFF"
+      : mixColors(fg, bg, 3);
 
   const colorMap: Record<string, string> = {
     "var(--_text)": fg,
@@ -113,9 +137,10 @@ export const inlineSvgCssVariables = (
     "var(--_text-faint)": mixColors(fg, bg, 25),
     "var(--_line)": vars["--line"] || mixColors(fg, bg, 50),
     "var(--_arrow)": vars["--accent"] || mixColors(fg, bg, 85),
-    "var(--_node-fill)":
-      vars["--surface"] || (transparent ? "#FFFFFF" : mixColors(fg, bg, 3)),
-    "var(--_node-stroke)": vars["--border"] || mixColors(fg, bg, 20),
+    "var(--_node-fill)": vars["--surface"] || defaultNodeFill,
+    "var(--_node-stroke)":
+      vars["--border"] ||
+      (darkTheme ? mixColors(fg, bg, 30) : mixColors(fg, bg, 20)),
     "var(--_group-fill)": transparent ? "none" : bg,
     "var(--_group-hdr)": mixColors(fg, bg, 5),
     "var(--_inner-stroke)": mixColors(fg, bg, 12),
@@ -128,6 +153,33 @@ export const inlineSvgCssVariables = (
   for (const [varRef, resolvedHex] of Object.entries(colorMap)) {
     inlined = inlined.replaceAll(varRef, resolvedHex);
   }
+
+  // Dual-contrast enhancements for pseudostates so they remain crisp and visible on both light and dark backgrounds
+  const haloStroke = darkTheme ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.8)";
+
+  // state-start: solid dot with subtle contrasting outline
+  inlined = inlined.replace(
+    /(<g class="node" [^>]*data-shape="state-start"[^>]*>[\s\S]*?<circle [^>]*stroke=")(none)(")/g,
+    `$1${haloStroke}$3 stroke-width="1"`,
+  );
+
+  // state-end: bullseye with subtle contrasting outer ring and inner dot
+  inlined = inlined.replace(
+    /(<g class="node" [^>]*data-shape="state-end"[^>]*>)([\s\S]*?)(<\/g>)/g,
+    (_match, open, inner, close) => {
+      // outer ring: prepend a subtle contrasting under-stroke circle
+      let updated = inner.replace(
+        /(<circle [^>]*cx="([^"]+)" [^>]*cy="([^"]+)" [^>]*r="([^"]+)" [^>]*fill="none" [^>]*stroke=")([^"]+)(" stroke-width=")([^"]+)(" \/>)/,
+        `<circle cx="$2" cy="$3" r="$4" fill="none" stroke="${haloStroke}" stroke-width="2" />\n$1$5$6$7$8`,
+      );
+      // inner filled circle: add subtle contrasting stroke
+      updated = updated.replace(
+        /(<circle [^>]*fill=")([^"]+)(" stroke="none"[^>]*\/>)/,
+        `$1$2" stroke="${haloStroke}" stroke-width="0.75" />`,
+      );
+      return `${open}${updated}${close}`;
+    },
+  );
 
   if (transparent) {
     inlined = inlined.replace(/background:\s*var\(--bg\);?/, "");
@@ -201,15 +253,16 @@ export const normalizeSequenceDiagram = (code: string): string => {
  */
 const resolveTheme = (
   theme?: MermaidTheme,
-  renderOptions?: Record<string, unknown>,
-): Record<string, unknown> => {
+  transparent = true,
+  renderOptions?: RenderOptions,
+): RenderOptions => {
   const baseTheme =
     typeof theme === "string"
       ? (THEMES[theme as keyof typeof THEMES] ?? THEMES["zinc-light"])
       : (theme ?? THEMES["zinc-light"]);
 
   return {
-    transparent: true,
+    transparent,
     ...baseTheme,
     ...renderOptions,
   };
@@ -222,9 +275,14 @@ const renderDiagram = async (
   code: string,
   options?: IMermaidNodePluginOptions,
 ): Promise<RenderResultLike | undefined> => {
-  const themeConfig = resolveTheme(options?.theme, options?.renderOptions);
+  const isTransparent =
+    options?.transparent ?? options?.renderOptions?.transparent ?? true;
+  const themeConfig = resolveTheme(
+    options?.theme,
+    isTransparent,
+    options?.renderOptions,
+  );
   const normalizedCode = normalizeSequenceDiagram(code);
-  const isTransparent = Boolean(themeConfig.transparent ?? true);
 
   try {
     const rawSvg = await renderMermaidSVGAsync(normalizedCode, themeConfig);

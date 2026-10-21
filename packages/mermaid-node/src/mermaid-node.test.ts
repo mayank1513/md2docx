@@ -126,4 +126,73 @@ sequenceDiagram
     expect(result.svg).not.toContain('viewBox="0 0 0 0"');
     expect(result.svg).toContain("Server API");
   });
+
+  it("renders state diagrams with dual-contrast outlines on start and end pseudostates", async () => {
+    const md = `\`\`\`mermaid
+stateDiagram-v2
+    [*] --> Idle
+    Idle --> [*]
+\`\`\``;
+    const tree = processor.parse(md);
+
+    const plugin = mermaidNodePlugin();
+    await plugin.preprocess?.(tree as unknown as Root, {});
+
+    const para = (tree.children as any)[0];
+    const svgNode = para.children[0];
+    const result = await svgNode.value;
+    expect(result).toBeDefined();
+    expect(result.svg).toContain('data-shape="state-start"');
+    expect(result.svg).toContain('data-shape="state-end"');
+    expect(result.svg).toContain('stroke-width="1"');
+    expect(result.svg).toContain('stroke-width="2"');
+  });
+
+  it("supports dark themes without forcing white node fill", async () => {
+    const md = "```mermaid\ngraph TD\nA-->B\n```";
+    const tree = processor.parse(md);
+
+    const plugin = mermaidNodePlugin({ theme: "zinc-dark" });
+    await plugin.preprocess?.(tree as unknown as Root, {});
+
+    const para = (tree.children as any)[0];
+    const svgNode = para.children[0];
+    const result = await svgNode.value;
+    expect(result).toBeDefined();
+    expect(result.svg).not.toContain('fill="#FFFFFF"');
+  });
+
+  it("supports transparent: false option", async () => {
+    const md = "```mermaid\ngraph TD\nA-->B\n```";
+    const tree = processor.parse(md);
+
+    const plugin = mermaidNodePlugin({ transparent: false });
+    await plugin.preprocess?.(tree as unknown as Root, {});
+
+    const para = (tree.children as any)[0];
+    const svgNode = para.children[0];
+    const result = await svgNode.value;
+    expect(result).toBeDefined();
+    expect(result.svg).toContain("background");
+  });
+
+  it("supports passing custom renderOptions like font, padding, and nodeSpacing", async () => {
+    const md = "```mermaid\ngraph TD\nA-->B\n```";
+    const tree = processor.parse(md);
+
+    const plugin = mermaidNodePlugin({
+      renderOptions: {
+        font: "Comic Sans MS",
+        padding: 60,
+        nodeSpacing: 50,
+      },
+    });
+    await plugin.preprocess?.(tree as unknown as Root, {});
+
+    const para = (tree.children as any)[0];
+    const svgNode = para.children[0];
+    const result = await svgNode.value;
+    expect(result).toBeDefined();
+    expect(result.svg).toContain("Comic Sans MS");
+  });
 });
