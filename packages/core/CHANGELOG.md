@@ -1,5 +1,20 @@
 # @m2d/core
 
+## 1.8.1
+
+### Patch Changes
+
+- [`ba608e8`](https://github.com/md2docx/md2docx/commit/ba608e8b1c9dcd51a3a332ba60e7d5c84735106f) Thanks [@mayank1513](https://github.com/mayank1513)! - Extract persistent caching engine into `@m2d/cache` and re-export from `@m2d/core/cache` with deprecation notice for non-breaking backward compatibility.
+
+- [`0dcccbf`](https://github.com/md2docx/md2docx/commit/0dcccbf511b31f717f694a38666c62a8aeb69db7) Thanks [@mayank1513](https://github.com/mayank1513)! - Export runtime values alongside types in `@m2d/core/cache` compatibility bridge.
+
+- [`c1d2a1f`](https://github.com/md2docx/md2docx/commit/c1d2a1fb4713a7f29b6fbf099daf1fe2e94cf9bd) Thanks [@mayank1513](https://github.com/mayank1513)! - Standardize package.json export conditions to nested `import.types` (`.d.mts`) and `require.types` (`.d.ts`) for NodeNext and Bundler module resolution.
+
+- [`d4468e2`](https://github.com/md2docx/md2docx/commit/d4468e252b27042551924197d7a9286d94ad1e73) Thanks [@mayank1513](https://github.com/mayank1513)! - Clean up obsolete `M2dRoot` type alias and casting in `@m2d/core`, and remove unused `hast.ts` file in `@m2d/mdast`.
+- Updated dependencies [[`ba608e8`](https://github.com/md2docx/md2docx/commit/ba608e8b1c9dcd51a3a332ba60e7d5c84735106f), [`c1d2a1f`](https://github.com/md2docx/md2docx/commit/c1d2a1fb4713a7f29b6fbf099daf1fe2e94cf9bd), [`d4468e2`](https://github.com/md2docx/md2docx/commit/d4468e252b27042551924197d7a9286d94ad1e73), [`ae692af`](https://github.com/md2docx/md2docx/commit/ae692afdbf6fff1efdd6f60e1a76b09209973336)]:
+  - @m2d/cache@0.1.0
+  - @m2d/mdast@0.2.5
+
 ## 1.8.0
 
 ### Minor Changes
