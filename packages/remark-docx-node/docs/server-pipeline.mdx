@@ -1,0 +1,54 @@
+---
+title: Server-Side Pipeline
+description: Headless Markdown to DOCX compilation in Node.js with native image and Mermaid diagram rasterization.
+---
+
+# Server-Side Pipeline (`@m2d/remark-docx-node`)
+
+`@m2d/remark-docx-node` is the official Node.js unified compiler plugin for transforming Markdown AST trees directly into Microsoft Word documents (`.docx`).
+
+---
+
+## Why `@m2d/remark-docx-node`?
+
+Client-side DOM/Canvas APIs (`document.createElement("canvas")`, `Image()`, and DOM-based Mermaid renderers) do not exist in headless backend environments (Express, Fastify, Next.js API routes, AWS Lambda, GitHub Actions).
+
+`@m2d/remark-docx-node` automatically wires native Node.js plugins out of the box:
+- **`@m2d/image-node`**: High-performance image and SVG rasterization powered by `sharp` and `librsvg`.
+- **`@m2d/mermaid-node`**: Headless Mermaid diagram rasterization powered by `beautiful-mermaid`.
+- **`@m2d/table`**, **`@m2d/list`**, **`@m2d/math`**, **`@m2d/emoji`**: Cross-platform formatting plugins.
+
+---
+
+## Quick Example
+
+```typescript
+import fs from "node:fs/promises";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import { remarkDocx } from "@m2d/remark-docx-node";
+
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkDocx, "buffer");
+
+const markdown = `
+# Backend Report 🚀
+
+- Automatically resolves local images from disk
+- Automatically compiles Mermaid diagrams
+
+\`\`\`mermaid
+graph LR
+  A[Markdown] --> B[Unified AST]
+  B --> C[Word DOCX]
+\`\`\`
+`;
+
+const file = await processor.process(markdown);
+const buffer = (await file.result) as Buffer;
+
+await fs.writeFile("output.docx", buffer);
+```

@@ -1,0 +1,87 @@
+{
+  "name": "@m2d/remark-docx-node",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Unified compiler plugin to convert MDAST trees to DOCX on Node.js with native image rasterization and Mermaid diagram rendering.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/remark-docx-node"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/remark-docx-node/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "docx": "^9.12.0",
+    "mdast2docx": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4",
+    "@types/node": "latest",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "tsup": "latest",
+    "typescript": "latest",
+    "unified": "^11.0.5"
+  },
+  "peerDependencies": {
+    "docx": "^9.12.0",
+    "unified": "^11.0.0"
+  },
+  "forge": {
+    "aliases": [],
+    "icon": "FileCheck",
+    "description": "Server-side Remark DOCX Compiler Plugin with native image & Mermaid diagram support"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "remark",
+    "docx",
+    "unified",
+    "markdown",
+    "node",
+    "image-node",
+    "mermaid-node",
+    "mdast2docx",
+    "md2docx"
+  ]
+}
