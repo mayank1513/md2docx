@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: required for testing */
 import fs from "node:fs";
 import path from "node:path";
 import { toDocx } from "@m2d/core";
