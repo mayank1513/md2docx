@@ -7,7 +7,7 @@
     "access": "public",
     "provenance": true
   },
-  "description": "",
+  "description": "Command-line interface and programmatic Node.js engine for Markdown to DOCX conversion.",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,23 +37,39 @@
     "dist/**"
   ],
   "bin": {
-    "cli": "./dist/cli.mjs"
+    "cli": "./dist/cli.mjs",
+    "m2d": "./dist/cli.mjs",
+    "md2docx": "./dist/cli.mjs",
+    "md2docx-node": "./dist/cli.mjs"
   },
   "scripts": {
     "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "@m2d/core": "workspace:*",
+    "@m2d/remark-docx-node": "workspace:*",
+    "@turboforge/cli-kit": "latest",
+    "docx": "^9.12.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5"
+  },
   "devDependencies": {
     "@types/node": "latest",
     "tsup": "latest",
-    "typescript": "latest",
-    "@turboforge/cli-kit": "latest"
+    "typescript": "latest"
   },
   "forge": {
-    "aliases": [],
+    "aliases": [
+      "@m2d/md2docx-node",
+      "md2docx-node"
+    ],
     "icon": "Terminal",
-    "description": ""
+    "description": "Command-line interface and programmatic Node.js engine for Markdown to DOCX conversion"
   },
   "funding": [
     {
@@ -67,6 +83,10 @@
   ],
   "keywords": [
     "@m2d/cli",
+    "@m2d/md2docx-node",
+    "md2docx-node",
+    "cli",
+    "markdown-to-docx",
     "turboforge"
   ]
 }
