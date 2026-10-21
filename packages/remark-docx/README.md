@@ -80,21 +80,23 @@ link.click();
 URL.revokeObjectURL(url);
 ```
 
-### Node.js (Write to Disk)
+### Node.js (with Native Images & Mermaid Support)
+
+For Node.js environments, import from `@m2d/remark-docx/node` to automatically wire native server-side image resolution (`@m2d/image-node`) and diagram rendering (`@m2d/mermaid-node`):
 
 ```typescript
 import fs from "node:fs/promises";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
-import { remarkDocx } from "@m2d/remark-docx";
+import { remarkDocx } from "@m2d/remark-docx/node";
 
 const processor = unified()
   .use(remarkParse)
   .use(remarkGfm)
   .use(remarkDocx, "buffer");
 
-const file = await processor.process("# Server Report\n\nWritten via Node.js.");
+const file = await processor.process("# Server Report\n\nWritten via Node.js with native image and Mermaid rasterization.");
 const buffer = (await file.result) as Buffer;
 
 await fs.writeFile("report.docx", buffer);
