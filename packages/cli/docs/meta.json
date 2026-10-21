@@ -1,3 +1,9 @@
 {
-  "pages": ["cli-usage", "configuration-and-plugins", "programmatic-api"]
+  "pages": [
+    "overview",
+    "cli-usage",
+    "configuration-and-plugins",
+    "programmatic-api",
+    "api"
+  ]
 }
