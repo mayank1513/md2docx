@@ -11,6 +11,8 @@
   "cSpell.words": ["noscss"],
   "conventionalCommits.scopes": [
     "@app/web",
+    "@m2d/cache",
+    "@m2d/cli",
     "@m2d/core",
     "@m2d/html",
     "@m2d/image",

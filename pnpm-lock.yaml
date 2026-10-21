@@ -353,8 +353,42 @@ importers:
         specifier: ^4.6.7
         version: 4.6.7
 
+  packages/cache:
+    dependencies:
+      xxhash-wasm:
+        specifier: ^1.1.0
+        version: 1.1.0
+    devDependencies:
+      '@types/node':
+        specifier: latest
+        version: 26.6.5
+      tsup:
+        specifier: latest
+        version: 9.0.0(jiti@2.7.0)(postcss@8.5.30)(typescript@6.0.3)(yaml@2.9.1)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
+  packages/cli:
+    devDependencies:
+      '@turboforge/cli-kit':
+        specifier: latest
+        version: 1.0.2(jiti@2.7.0)(yaml@2.9.1)
+      '@types/node':
+        specifier: latest
+        version: 26.6.5
+      tsup:
+        specifier: latest
+        version: 9.0.0(jiti@2.7.0)(postcss@8.5.30)(typescript@6.0.3)(yaml@2.9.1)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
   packages/core:
     dependencies:
+      '@m2d/cache':
+        specifier: workspace:*
+        version: link:../cache
       '@m2d/mdast':
         specifier: workspace:*
         version: link:../mdast
@@ -417,6 +451,9 @@ importers:
 
   packages/image:
     dependencies:
+      '@m2d/cache':
+        specifier: workspace:*
+        version: link:../cache
       '@m2d/core':
         specifier: workspace:*
         version: link:../core
@@ -581,6 +618,9 @@ importers:
 
   packages/mdast2docx:
     dependencies:
+      '@m2d/cache':
+        specifier: workspace:*
+        version: link:../cache
       '@m2d/core':
         specifier: workspace:*
         version: link:../core
@@ -645,6 +685,9 @@ importers:
 
   packages/mermaid:
     dependencies:
+      '@m2d/cache':
+        specifier: workspace:*
+        version: link:../cache
       '@m2d/core':
         specifier: workspace:*
         version: link:../core
