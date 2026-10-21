@@ -112,6 +112,7 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
+    "@m2d/cache": "workspace:*",
     "@m2d/mdast": "workspace:*"
   },
   "peerDependencies": {
