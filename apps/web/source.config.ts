@@ -14,7 +14,7 @@ import { z } from "zod";
 // You can customise Zod schemas for frontmatter and `meta.json` here
 // see https://fumadocs.dev/docs/mdx/collections
 export const docs = defineDocs({
-  dir: "content/docs",
+  dir: process.env["SKIP_DOCS"] ? "content/dummy" : "content/docs",
   docs: {
     schema: (ctx) => {
       const { path } = ctx;
