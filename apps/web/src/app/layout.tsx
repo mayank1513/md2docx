@@ -61,19 +61,21 @@ export const metadata: Metadata = {
       "Convert standard Markdown, GFM tables, math equations, and diagrams into native Microsoft Word (.docx) documents with client privacy or server streaming.",
     images: [
       {
-        url: "/icon.png",
-        width: 512,
-        height: 512,
-        alt: "Md2Docx Logo",
+        url: "https://repository-images.githubusercontent.com/1405696656/b1920a9f-dda5-4809-844c-326e46b6485e",
+        width: 1280,
+        height: 640,
+        alt: "Md2Docx - Universal Markdown to Word Engine",
       },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Md2Docx - Universal Markdown to Word Engine",
     description:
       "Convert standard Markdown, GFM tables, math equations, and diagrams into native Microsoft Word (.docx) documents with client privacy or server streaming.",
-    images: ["/icon.png"],
+    images: [
+      "https://repository-images.githubusercontent.com/1405696656/b1920a9f-dda5-4809-844c-326e46b6485e",
+    ],
     creator: "@mayank_chdhri",
   },
 };

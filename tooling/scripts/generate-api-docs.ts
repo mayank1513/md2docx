@@ -87,6 +87,17 @@ for (const pkgDir of PKG_DOC_DIRS) {
       .toSorted((a, b) => parseInt(b.slice(1), 10) - parseInt(a.slice(1), 10)),
   );
 
+  const versionMetaPath = path.join(outDir, "..", "meta.json");
+  let customVersionMeta: Record<string, any> = {};
+  try {
+    customVersionMeta = (await readJson(versionMetaPath)) as Record<
+      string,
+      any
+    >;
+  } catch {
+    // No custom meta.json provided in packages/<pkg>/docs
+  }
+
   await Promise.all([
     atomicWrite(
       rootMetaFilePath,
@@ -106,11 +117,12 @@ for (const pkgDir of PKG_DOC_DIRS) {
       ),
     ),
     atomicWrite(
-      path.join(outDir, "..", "meta.json"),
+      versionMetaPath,
       JSON.stringify(
         {
           title: `Version ${pkgJson.version}`,
           description: tagLine,
+          ...customVersionMeta, // Preserves custom "pages" array, titles, and icons from packages/<pkg>/docs/meta.json
         },
         null,
         2,

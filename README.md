@@ -1,5 +1,9 @@
 # Md2Docx <img src="https://raw.githubusercontent.com/mayank1513/mayank1513/main/popper.png" style="height: 40px"/>
 
+<p align="center">
+  <img src="./apps/web/public/banner.svg" alt="Md2Docx Banner" width="100%" />
+</p>
+
 <p className="flex gap-2">
   <a href="https://github.com/md2docx/md2docx/actions/workflows/ci.yml" rel="noopener noreferrer">
     <img alt="CI" src="https://github.com/md2docx/md2docx/actions/workflows/ci.yml/badge.svg" />
