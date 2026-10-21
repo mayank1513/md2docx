@@ -591,6 +591,18 @@ importers:
         specifier: ^11.0.5
         version: 11.0.5
 
+  packages/md2docx:
+    devDependencies:
+      '@types/node':
+        specifier: latest
+        version: 26.6.5
+      tsup:
+        specifier: latest
+        version: 9.0.0(jiti@2.7.0)(postcss@8.5.30)(typescript@6.0.3)(yaml@2.9.1)
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+
   packages/mdast:
     dependencies:
       '@types/mdast':

@@ -14,6 +14,7 @@
         "@m2d/image-node",
         "@m2d/list",
         "@m2d/math",
+        "@m2d/md2docx",
         "@m2d/mdast",
         "@m2d/mermaid",
         "@m2d/mermaid-node",
