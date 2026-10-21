@@ -25,6 +25,7 @@
     "@m2d/mermaid-node",
     "@m2d/react-markdown",
     "@m2d/remark-docx",
+    "@m2d/remark-docx-node",
     "@m2d/table",
     "@tool/scripts",
     "@tool/tsconfig",

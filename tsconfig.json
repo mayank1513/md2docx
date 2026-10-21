@@ -52,6 +52,10 @@
         "./packages/remark-docx/src",
         "./packages/remark-docx/dist"
       ],
+      "@m2d/remark-docx-node": [
+        "./packages/remark-docx-node/src",
+        "./packages/remark-docx-node/dist"
+      ],
       "@m2d/table": ["./packages/table/src", "./packages/table/dist"],
       "mdast2docx": ["./packages/mdast2docx/src", "./packages/mdast2docx/dist"]
     }
