@@ -472,9 +472,9 @@ export const imagePlugin: (options?: IImagePluginOptions) => IPlugin = (
               ...existingData,
               ...resolved,
               altText: existingAltText ?? {
-                description: alt,
-                name: alt,
-                title: alt,
+                description: alt ?? undefined,
+                name: alt ?? "",
+                title: alt ?? undefined,
               },
             };
 

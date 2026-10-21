@@ -370,9 +370,9 @@ const collectImagePromises = (
           ...existingData,
           ...resolved,
           altText: existingData?.altText ?? {
-            description: alt,
-            name: alt,
-            title: alt,
+            description: alt ?? undefined,
+            name: alt ?? "",
+            title: alt ?? undefined,
           },
         };
 

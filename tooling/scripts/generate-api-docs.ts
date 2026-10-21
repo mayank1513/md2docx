@@ -67,9 +67,9 @@ for (const pkgDir of PKG_DOC_DIRS) {
 
   // Copy reference docs
   try {
-    const cutomDocsDir = path.join(pkgPath, "docs");
-    if ((await stat(cutomDocsDir)).isDirectory()) {
-      await cp(path.join(pkgPath, "docs"), path.resolve(outDir, ".."), {
+    const customDocsDir = path.join(pkgPath, "docs");
+    if ((await stat(customDocsDir)).isDirectory()) {
+      await cp(customDocsDir, path.resolve(outDir, ".."), {
         recursive: true,
       });
     }
@@ -88,12 +88,10 @@ for (const pkgDir of PKG_DOC_DIRS) {
   );
 
   const versionMetaPath = path.join(outDir, "..", "meta.json");
-  let customVersionMeta: Record<string, any> = {};
+  let customVersionMeta: Record<string, unknown> = {};
   try {
-    customVersionMeta = (await readJson(versionMetaPath)) as Record<
-      string,
-      any
-    >;
+    customVersionMeta =
+      (await readJson<Record<string, unknown>>(versionMetaPath)) || {};
   } catch {
     // No custom meta.json provided in packages/<pkg>/docs
   }
