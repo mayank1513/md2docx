@@ -20,7 +20,7 @@ type Pkg = {
 
 const ROOT = process.cwd();
 const PKG_CONFIG = path.join(ROOT, `${CACHE_DIR}/packages.json`);
-const token = process.env.CODECOV_TOKEN;
+const token = process.env["CODECOV_TOKEN"];
 const CODECOV_VERSION = "v11.3.1"; // Pinned version for reproducible, reliable CI
 const MAX_CONCURRENCY = 4; // Prevent rate-limiting / overwhelming upload endpoint
 
@@ -87,22 +87,18 @@ const getCodecovBinary = async () => {
 const binary = await getCodecovBinary();
 const packages = await readJson<Pkg[]>(PKG_CONFIG);
 
-const isCI = process.env.GITHUB_ACTIONS === "true";
-const slug = process.env.GITHUB_REPOSITORY || "md2docx/md2docx";
+const isCI = process.env["GITHUB_ACTIONS"] === "true";
+const slug = process.env["GITHUB_REPOSITORY"] || "md2docx/md2docx";
 
 // Determine commit SHA and PR number without shell execution
 let commitSha = "";
 let prNumber = "";
 
 if (isCI) {
-  if (
-    process.env.GITHUB_EVENT_PATH &&
-    existsSync(process.env.GITHUB_EVENT_PATH)
-  ) {
+  const eventPath = process.env["GITHUB_EVENT_PATH"];
+  if (eventPath && existsSync(eventPath)) {
     try {
-      const eventData = JSON.parse(
-        readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"),
-      );
+      const eventData = JSON.parse(readFileSync(eventPath, "utf8"));
       if (eventData.pull_request) {
         commitSha = eventData.pull_request.head?.sha || "";
         prNumber = String(eventData.pull_request.number || "");
@@ -112,7 +108,7 @@ if (isCI) {
     }
   }
   if (!commitSha) {
-    commitSha = process.env.GITHUB_SHA || "";
+    commitSha = process.env["GITHUB_SHA"] || "";
   }
 } else {
   try {
@@ -136,8 +132,9 @@ console.log(
 const commitArgs = ["create-commit", "-t", token, "-r", slug, "-Z"];
 if (commitSha) commitArgs.push("-C", commitSha);
 if (prNumber) commitArgs.push("-P", prNumber);
-if (process.env.GITHUB_REF_NAME) {
-  commitArgs.push("-B", process.env.GITHUB_REF_NAME);
+const refName = process.env["GITHUB_REF_NAME"];
+if (refName) {
+  commitArgs.push("-B", refName);
 }
 
 try {
