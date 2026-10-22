@@ -34,9 +34,9 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm turbo telemetry disable
 
-      - name: Verify npm authentication
+      - name: Configure npm authentication
         run: |
-          pnpm config get registry
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           npm whoami --registry=https://registry.npmjs.org/
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
@@ -50,7 +50,7 @@ jobs:
           pr-title: "chore: update versions"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 
