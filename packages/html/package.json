@@ -23,6 +23,26 @@
         "default": "./dist/index.js"
       }
     },
+    "./utils": {
+      "import": {
+        "types": "./dist/utils.d.mts",
+        "default": "./dist/utils.mjs"
+      },
+      "require": {
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
+      }
+    },
+    "./dist/utils": {
+      "import": {
+        "types": "./dist/utils.d.mts",
+        "default": "./dist/utils.mjs"
+      },
+      "require": {
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "repository": {

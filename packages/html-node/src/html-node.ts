@@ -1,9 +1,6 @@
 import type { IPlugin } from "@m2d/core";
-import {
-  createHtmlPlugin,
-  type DocumentLike,
-  type HtmlPluginOptions,
-} from "@m2d/html";
+import { createHtmlPlugin, type HtmlPluginOptions } from "@m2d/html";
+import type { DocumentLike } from "@m2d/html/utils";
 import { parseHTML } from "linkedom";
 
 export interface NodeHtmlPluginOptions extends HtmlPluginOptions {

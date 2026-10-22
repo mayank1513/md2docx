@@ -15,8 +15,6 @@ import type {
 import { AlignmentType, BorderStyle, type IBorderOptions } from "docx";
 import { type DocumentLike, standardizeColor } from "./utils";
 
-export type { DocumentLike };
-
 /**
  * HTML inline tags supported by the plugin for conversion.
  */
