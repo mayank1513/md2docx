@@ -1,5 +1,12 @@
 # @m2d/cli
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`692eb67`](https://github.com/md2docx/md2docx/commit/692eb67792c9af1b2e86c25e4df73ba04b8b5ab7), [`327f0e9`](https://github.com/md2docx/md2docx/commit/327f0e940566bd04fcd9035a7b3d2673729c6e77)]:
+  - @m2d/remark-docx-node@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes
