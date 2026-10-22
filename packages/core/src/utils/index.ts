@@ -11,8 +11,10 @@ import type {
 } from "@m2d/mdast";
 import type * as DOCX from "docx";
 import type {
+  CheckBox,
   Math as DOCXMath,
   ExternalHyperlink,
+  FootnoteReferenceRun,
   ImageRun,
   InternalHyperlink,
   IParagraphOptions,
@@ -155,7 +157,9 @@ export type InlineDocxNodes =
   | ImageRun
   | InternalHyperlink
   | ExternalHyperlink
-  | DOCXMath;
+  | DOCXMath
+  | CheckBox
+  | FootnoteReferenceRun;
 export type InlineProcessor = (
   node: ExtendedRootContent,
   runProps: MutableRunOptions,
