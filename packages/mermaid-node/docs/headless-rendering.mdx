@@ -42,3 +42,23 @@ Traditional server-side Mermaid rendering requires spawning a full headless Chro
 - **XY Charts** (`xychart-beta`)
 
 Diagram types outside this list (e.g. Gantt, Pie charts) or diagrams with unrecoverable syntax errors cleanly trigger `@m2d/image-node`'s fallback policy, rendering as collapsible `H6` headings + formatted Word code blocks.
+
+---
+
+## Frequently Asked Questions (FAQ)
+
+### Why not use a headless browser (Puppeteer / Playwright / Chromium) in Node?
+
+> **The Rule of Thumb:** If you are already running a headless browser in your backend, **run the entire conversion inside that browser** using `@m2d/mermaid` and `@m2d/md2docx` instead!
+
+1. **Overhead & Infrastructure Burden**: Spawning headless Chromium requires hundreds of megabytes of RAM, native C++ OS dependencies (which frequently break in minimal Alpine/Docker containers and AWS Lambda), and seconds of warmup latency.
+2. **The Architectural Contradiction**: If a server environment already supports headless Chrome, there is no need for a hybrid Node diagram plugin—the entire document pipeline can execute natively in the browser with full DOM, Canvas, and official `mermaid.js` support.
+3. **The Sweet Spot of `@m2d/mermaid-node`**: Designed for high-throughput, edge, serverless, and CLI environments that demand pure TypeScript execution, sub-10ms rendering, and zero binary dependencies.
+
+### What are the limitations of `beautiful-mermaid`?
+
+`beautiful-mermaid` is an ultra-fast, zero-DOM TypeScript layout engine using ELK.js rather than the full D3/DOM-dependent `mermaid.js` bundle:
+- **Supported (6 Core Types)**: Flowcharts, Sequence Diagrams, Class Diagrams, State Diagrams, ER Diagrams, and XY Charts.
+- **Unsupported**: Gantt charts, Pie charts, Git graphs, Mindmaps, Timelines, and Quadrant charts.
+- **Graceful Fallback**: Unsupported or syntax-errored diagrams do not crash document generation; `@m2d/image-node` captures the error and embeds the source code as a formatted Word code block with an informative heading.
+
