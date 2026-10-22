@@ -1,8 +1,8 @@
-[**@m2d/cache**](../index.md)
+[**@m2d/cache**](../index.mdx)
 
 ***
 
-[@m2d/cache](../index.md) / createPersistentCache
+[@m2d/cache](../index.mdx) / createPersistentCache
 
 # Function: createPersistentCache()
 
@@ -47,11 +47,11 @@ A tag used to group related cached entries for cleanup or metrics
 
 ### config?
 
-[`CacheConfigType`](../type-aliases/CacheConfigType.md)\<`TResult`\>
+[`CacheConfigType`](../type-aliases/CacheConfigType.mdx)\<`TResult`\>
 
 Optional configuration:
   - `ignoreKeys` _(string[])_ — Keys to exclude from cache key generation (default: `[]`)
-  - `cache` _(Record<string, Promise<Result>>)_ — External in-memory cache object to sync across plugins/tabs (default: internal default cache)
+  - `cache` _(Record\<string, Promise\<Result\>\>)_ — External in-memory cache object to sync across plugins/tabs (default: internal default cache)
   - `cacheMode` _(`"memory"` | `"idb"` | `"both"`)_ — Where to store the result:
       - `"memory"`: RAM-only; fast but temporary
       - `"idb"`: stores in IndexedDB only; avoids memory usage; Useful for processing large data

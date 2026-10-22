@@ -1,12 +1,12 @@
-[**mdast2docx**](../index.md)
+[**mdast2docx**](../index.mdx)
 
 ***
 
-[mdast2docx](../index.md) / toDocx
+[mdast2docx](../index.mdx) / toDocx
 
 # Function: toDocx()
 
-> **toDocx**(`astInputs`, `docxProps?`, `defaultSectionProps?`, `outputType?`): `Promise`\<`string` \| `ArrayBuffer` \| readonly `number`[] \| `Uint8Array`\<`ArrayBufferLike`\> \| `Blob` \| `Buffer`\<`ArrayBufferLike`\>\>
+> **toDocx**(`astInputs`, `docxProps?`, `defaultSectionProps?`, `outputType?`): `Promise`\<`string` \| readonly `number`[] \| `ArrayBuffer` \| `Uint8Array`\<`ArrayBufferLike`\> \| `Blob` \| `Buffer`\<`ArrayBufferLike`\>\>
 
 Defined in: [packages/core/src/index.ts:28](https://github.com/md2docx/md2docx/blob/main/packages/core/src/index.ts#L28)
 
@@ -16,19 +16,19 @@ Converts an MDAST (Markdown Abstract Syntax Tree) into a DOCX document.
 
 ### astInputs
 
-[`IInputMDAST`](../type-aliases/IInputMDAST.md)
+[`IInputMDAST`](../type-aliases/IInputMDAST.mdx)
 
 A single or multiple MDAST trees with optional section properties.
 
 ### docxProps?
 
-[`IDocxProps`](../type-aliases/IDocxProps.md) = `{}`
+[`IDocxProps`](../type-aliases/IDocxProps.mdx) = `{}`
 
 General document properties.
 
 ### defaultSectionProps?
 
-[`ISectionProps`](../type-aliases/ISectionProps.md) = `DEFAULT_SECTION_PROPS`
+[`ISectionProps`](../type-aliases/ISectionProps.mdx) = `DEFAULT_SECTION_PROPS`
 
 Default properties for each document section.
 
@@ -40,7 +40,7 @@ The desired output format (default: `"blob"`).
 
 ## Returns
 
-`Promise`\<`string` \| `ArrayBuffer` \| readonly `number`[] \| `Uint8Array`\<`ArrayBufferLike`\> \| `Blob` \| `Buffer`\<`ArrayBufferLike`\>\>
+`Promise`\<`string` \| readonly `number`[] \| `ArrayBuffer` \| `Uint8Array`\<`ArrayBufferLike`\> \| `Blob` \| `Buffer`\<`ArrayBufferLike`\>\>
 
 A DOCX document in the specified format.
 

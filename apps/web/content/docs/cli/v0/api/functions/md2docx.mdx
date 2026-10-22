@@ -1,12 +1,12 @@
-[**@m2d/cli**](../index.md)
+[**@m2d/cli**](../index.mdx)
 
 ***
 
-[@m2d/cli](../index.md) / md2docx
+[@m2d/cli](../index.mdx) / md2docx
 
 # Function: md2docx()
 
-> **md2docx**\<`T`\>(`md`, `docxProps?`, `sectionProps?`, `outputType?`, `pluginProps?`): `Promise`\<[`OutputByType`](../type-aliases/OutputByType.md)\[`T`\]\>
+> **md2docx**\<`T`\>(`md`, `docxProps?`, `sectionProps?`, `outputType?`, `pluginProps?`): `Promise`\<[`OutputByType`](../type-aliases/OutputByType.mdx)\[`T`\]\>
 
 Defined in: [packages/cli/src/shared.ts:26](https://github.com/md2docx/md2docx/blob/main/packages/cli/src/shared.ts#L26)
 
@@ -16,7 +16,7 @@ Converts Markdown to DOCX in Node.js using `@m2d/remark-docx-node` with native i
 
 ### T
 
-`T` *extends* keyof [`OutputByType`](../type-aliases/OutputByType.md) = `"nodebuffer"`
+`T` *extends* keyof [`OutputByType`](../type-aliases/OutputByType.mdx) = `"nodebuffer"`
 
 ## Parameters
 
@@ -28,7 +28,7 @@ Markdown string input
 
 ### docxProps?
 
-[`IDocxProps`](../type-aliases/IDocxProps.md) = `{}`
+[`IDocxProps`](../type-aliases/IDocxProps.mdx) = `{}`
 
 Global document properties passed to `@m2d/core`
 
@@ -46,12 +46,12 @@ Desired DOCX output format (`"nodebuffer"` by default on Node)
 
 ### pluginProps?
 
-[`Mdast2DocxNodePluginProps`](../interfaces/Mdast2DocxNodePluginProps.md)
+[`Mdast2DocxNodePluginProps`](../interfaces/Mdast2DocxNodePluginProps.mdx)
 
 Configurations for sub-plugins (nodeImage, nodeMermaid, list, table, emoji)
 
 ## Returns
 
-`Promise`\<[`OutputByType`](../type-aliases/OutputByType.md)\[`T`\]\>
+`Promise`\<[`OutputByType`](../type-aliases/OutputByType.mdx)\[`T`\]\>
 
 The generated DOCX output

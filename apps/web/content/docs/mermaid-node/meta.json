@@ -2,7 +2,7 @@
   "title": "@m2d/mermaid-node",
   "description": "Server-Side Mermaid Plugin",
   "tagLine": "Server-side Node.js Mermaid diagram plugin for @m2d/core using beautiful-mermaid.",
-  "lastModified": "2026-10-22T05:49:46.015Z",
+  "lastModified": "2026-10-22T09:40:14.019Z",
   "version": "0.1.2",
   "root": true,
   "icon": "GitGraph",
