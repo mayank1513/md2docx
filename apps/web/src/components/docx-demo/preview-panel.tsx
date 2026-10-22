@@ -1,11 +1,16 @@
+"use client";
+
+import { Md } from "@m2d/react-markdown/client";
 import { Check, Copy, SlidersHorizontal } from "lucide-react";
-import { useMemo, useState } from "react";
-import { highlight } from "sugar-high";
+import { isValidElement, useMemo, useState } from "react";
+import rehypeKatex from "rehype-katex";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import { Button } from "../ui/button";
 import { TARGETS } from "./constants";
+import { highlightCode } from "./highlight";
 import { MermaidViewer } from "./mermaid-viewer";
 import type { PresetId, TargetId, ViewMode } from "./types";
-import { renderMarkdownPreviewHtml, splitMarkdownWithMermaid } from "./utils";
 
 interface PreviewPanelProps {
   viewMode: ViewMode;
@@ -28,11 +33,6 @@ export const PreviewPanel = ({
 }: PreviewPanelProps) => {
   const [copiedCode, setCopiedCode] = useState(false);
 
-  const segments = useMemo(
-    () => splitMarkdownWithMermaid(markdown),
-    [markdown],
-  );
-
   const handleCopyCode = async () => {
     try {
       await navigator.clipboard.writeText(generatedCode);
@@ -43,6 +43,63 @@ export const PreviewPanel = ({
     }
   };
 
+  const markdownComponents = useMemo(
+    () => ({
+      pre: ({
+        children,
+        ...props
+      }: React.HTMLAttributes<HTMLPreElement> & { node?: unknown }) => {
+        // If the child is a mermaid code block, unwrap from <pre> styling
+        if (
+          isValidElement<{ className?: string }>(children) &&
+          children.props?.className?.includes("language-mermaid")
+        ) {
+          return <>{children}</>;
+        }
+        return (
+          <pre
+            className="my-3 p-3 rounded-lg bg-muted/60 text-foreground font-mono text-xs overflow-x-auto border border-border not-prose"
+            {...props}
+          >
+            {children}
+          </pre>
+        );
+      },
+      code: ({
+        className,
+        children,
+        ...props
+      }: React.HTMLAttributes<HTMLElement> & { node?: unknown }) => {
+        const text = Array.isArray(children)
+          ? children.join("")
+          : String(children ?? "");
+
+        if (className?.includes("language-mermaid")) {
+          return <MermaidViewer chart={text} />;
+        }
+
+        const match = /language-(\w+)/.exec(className || "");
+        if (match) {
+          return (
+            <code className={className} {...props}>
+              {highlightCode(text, match[1])}
+            </code>
+          );
+        }
+
+        return (
+          <code
+            className="px-1.5 py-0.5 rounded text-xs font-mono bg-muted text-primary"
+            {...props}
+          >
+            {children}
+          </code>
+        );
+      },
+    }),
+    [],
+  );
+
   return (
     <div className="p-5">
       {viewMode === "edit" && (
@@ -52,29 +109,20 @@ export const PreviewPanel = ({
           rows={selectedPreset === "full" ? 14 : 11}
           className="w-full font-mono text-xs md:text-sm p-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y leading-relaxed"
           placeholder="Write Markdown here..."
+          spellCheck={false}
         />
       )}
 
       {viewMode === "preview" && (
         <div className="w-full min-h-[260px] max-h-[500px] overflow-y-auto p-5 rounded-xl border border-border bg-background text-foreground prose prose-sm dark:prose-invert max-w-none leading-relaxed">
-          {segments.map((segment, idx) =>
-            segment.type === "mermaid" ? (
-              <MermaidViewer
-                // biome-ignore lint/suspicious/noArrayIndexKey: fixed segments
-                key={`mermaid_${idx}`}
-                chart={segment.code}
-              />
-            ) : (
-              <div
-                // biome-ignore lint/suspicious/noArrayIndexKey: fixed segments
-                key={`md_${idx}`}
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: preview render
-                dangerouslySetInnerHTML={{
-                  __html: renderMarkdownPreviewHtml(segment.content),
-                }}
-              />
-            ),
-          )}
+          <Md
+            remarkPlugins={[remarkGfm, remarkMath]}
+            rehypePlugins={[rehypeKatex]}
+            // @ts-expect-error – custom components shape conforms to HAST runtime
+            components={markdownComponents}
+          >
+            {markdown}
+          </Md>
         </div>
       )}
 
@@ -113,12 +161,7 @@ export const PreviewPanel = ({
             </Button>
           </div>
           <pre className="font-mono text-xs overflow-x-auto leading-relaxed text-foreground">
-            <code
-              // biome-ignore lint/security/noDangerouslySetInnerHtml: syntax highlighted code
-              dangerouslySetInnerHTML={{
-                __html: highlight(generatedCode),
-              }}
-            />
+            <code>{highlightCode(generatedCode, "typescript")}</code>
           </pre>
         </div>
       )}

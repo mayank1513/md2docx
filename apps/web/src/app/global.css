@@ -126,6 +126,54 @@
     --sh-comment: #a19595;
   }
 
+  /* Lowlight Highlight.js Syntax Highlighting - Light */
+  .hljs-keyword,
+  .hljs-selector-tag,
+  .hljs-subst {
+    color: #d946ef;
+    font-weight: 600;
+  }
+  .hljs-string,
+  .hljs-title,
+  .hljs-section,
+  .hljs-attribute,
+  .hljs-literal,
+  .hljs-template-tag,
+  .hljs-template-variable,
+  .hljs-type {
+    color: #16a34a;
+  }
+  .hljs-comment,
+  .hljs-quote,
+  .hljs-deletion {
+    color: #6b7280;
+    font-style: italic;
+  }
+  .hljs-number,
+  .hljs-regexp,
+  .hljs-link {
+    color: #d97706;
+  }
+  .hljs-variable,
+  .hljs-name,
+  .hljs-selector-id,
+  .hljs-selector-class {
+    color: #2563eb;
+  }
+  .hljs-built_in,
+  .hljs-title.class_,
+  .hljs-class .hljs-title {
+    color: #ca8a04;
+  }
+  .hljs-attr,
+  .hljs-property {
+    color: #0284c7;
+  }
+  .hljs-operator,
+  .hljs-punctuation {
+    color: #6b7280;
+  }
+
   .dark {
     --background: #09090b;
     --foreground: #fafafa;
@@ -165,6 +213,54 @@
     --sh-keyword: #f472b6;
     --sh-comment: #6b7280;
     --sh-jsxliterals: #c084fc;
+  }
+
+  /* Lowlight Highlight.js Syntax Highlighting - Dark */
+  .dark .hljs-keyword,
+  .dark .hljs-selector-tag,
+  .dark .hljs-subst {
+    color: #f472b6;
+    font-weight: 600;
+  }
+  .dark .hljs-string,
+  .dark .hljs-title,
+  .dark .hljs-section,
+  .dark .hljs-attribute,
+  .dark .hljs-literal,
+  .dark .hljs-template-tag,
+  .dark .hljs-template-variable,
+  .dark .hljs-type {
+    color: #4ade80;
+  }
+  .dark .hljs-comment,
+  .dark .hljs-quote,
+  .dark .hljs-deletion {
+    color: #9ca3af;
+    font-style: italic;
+  }
+  .dark .hljs-number,
+  .dark .hljs-regexp,
+  .dark .hljs-link {
+    color: #fbbf24;
+  }
+  .dark .hljs-variable,
+  .dark .hljs-name,
+  .dark .hljs-selector-id,
+  .dark .hljs-selector-class {
+    color: #60a5fa;
+  }
+  .dark .hljs-built_in,
+  .dark .hljs-title.class_,
+  .dark .hljs-class .dark .hljs-title {
+    color: #fef08a;
+  }
+  .dark .hljs-attr,
+  .dark .hljs-property {
+    color: #38bdf8;
+  }
+  .dark .hljs-operator,
+  .dark .hljs-punctuation {
+    color: #9ca3af;
   }
 
   * {
