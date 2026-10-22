@@ -6,7 +6,7 @@
 
 # Interface: YamlData
 
-Defined in: [packages/mdast/src/index.ts:1191](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L1191)
+Defined in: node\_modules/.pnpm/@types+mdast@4.0.4/node\_modules/@types/mdast/index.d.ts:1115
 
 Info associated with mdast YAML nodes by the ecosystem.
 
@@ -18,9 +18,9 @@ Info associated with mdast YAML nodes by the ecosystem.
 
 ### alignment?
 
-> `optional` **alignment?**: `"center"` \| `"left"` \| `"right"` \| `"start"` \| `"end"` \| `"both"` \| `"mediumKashida"` \| `"distribute"` \| `"numTab"` \| `"highKashida"` \| `"lowKashida"` \| `"thaiDistribute"`
+> `optional` **alignment?**: `"both"` \| `"start"` \| `"center"` \| `"end"` \| `"mediumKashida"` \| `"distribute"` \| `"numTab"` \| `"highKashida"` \| `"lowKashida"` \| `"thaiDistribute"` \| `"left"` \| `"right"`
 
-Defined in: [packages/mdast/src/index.ts:184](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L184)
+Defined in: [packages/mdast/src/index.ts:89](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L89)
 
 #### Inherited from
 
@@ -32,7 +32,7 @@ Defined in: [packages/mdast/src/index.ts:184](https://github.com/md2docx/md2docx
 
 > `optional` **allCaps?**: `boolean`
 
-Defined in: [packages/mdast/src/index.ts:195](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L195)
+Defined in: [packages/mdast/src/index.ts:100](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L100)
 
 #### Inherited from
 
@@ -40,11 +40,23 @@ Defined in: [packages/mdast/src/index.ts:195](https://github.com/md2docx/md2docx
 
 ***
 
+### altText?
+
+> `optional` **altText?**: `DocPropertiesOptions` \| \{ `description?`: `string`; `name?`: `string`; `title?`: `string`; \}
+
+Defined in: [packages/mdast/src/index.ts:114](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L114)
+
+#### Inherited from
+
+[`Data`](Data.md).[`altText`](Data.md#alttext)
+
+***
+
 ### bold?
 
 > `optional` **bold?**: `boolean`
 
-Defined in: [packages/mdast/src/index.ts:185](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L185)
+Defined in: [packages/mdast/src/index.ts:90](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L90)
 
 #### Inherited from
 
@@ -56,9 +68,7 @@ Defined in: [packages/mdast/src/index.ts:185](https://github.com/md2docx/md2docx
 
 > `optional` **border?**: [`Mutable`](../type-aliases/Mutable.md)\<`IBorderOptions` \| `IBordersOptions`\>
 
-Defined in: [packages/mdast/src/index.ts:183](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L183)
-
-Styles data compatible with docx - could be passed via inline or block html
+Defined in: [packages/mdast/src/index.ts:88](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L88)
 
 #### Inherited from
 
@@ -70,7 +80,7 @@ Styles data compatible with docx - could be passed via inline or block html
 
 > `optional` **checked?**: `boolean`
 
-Defined in: [packages/mdast/src/index.ts:208](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L208)
+Defined in: [packages/mdast/src/index.ts:111](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L111)
 
 #### Inherited from
 
@@ -82,7 +92,7 @@ Defined in: [packages/mdast/src/index.ts:208](https://github.com/md2docx/md2docx
 
 > `optional` **color?**: `string`
 
-Defined in: [packages/mdast/src/index.ts:199](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L199)
+Defined in: [packages/mdast/src/index.ts:104](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L104)
 
 #### Inherited from
 
@@ -94,7 +104,7 @@ Defined in: [packages/mdast/src/index.ts:199](https://github.com/md2docx/md2docx
 
 > `optional` **emphasisMark?**: `Record`\<`string`, `never`\>
 
-Defined in: [packages/mdast/src/index.ts:193](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L193)
+Defined in: [packages/mdast/src/index.ts:98](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L98)
 
 #### Inherited from
 
@@ -106,7 +116,7 @@ Defined in: [packages/mdast/src/index.ts:193](https://github.com/md2docx/md2docx
 
 > `optional` **frame?**: `IFrameOptions`
 
-Defined in: [packages/mdast/src/index.ts:202](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L202)
+Defined in: [packages/mdast/src/index.ts:106](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L106)
 
 #### Inherited from
 
@@ -114,11 +124,41 @@ Defined in: [packages/mdast/src/index.ts:202](https://github.com/md2docx/md2docx
 
 ***
 
+### hChildren?
+
+> `optional` **hChildren?**: `ElementContent`[]
+
+Defined in: node\_modules/.pnpm/mdast-util-to-hast@13.2.1/node\_modules/mdast-util-to-hast/index.d.ts:74
+
+Field supported by `mdast-util-to-hast` to signal that a node should
+result in something with these children.
+
+When this is defined, when a parent is created, these children will
+be used.
+
+#### Inherited from
+
+[`Data`](Data.md).[`hChildren`](Data.md#hchildren)
+
+***
+
+### height?
+
+> `optional` **height?**: `number`
+
+Defined in: [packages/mdast/src/index.ts:118](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L118)
+
+#### Inherited from
+
+[`Data`](Data.md).[`height`](Data.md#height)
+
+***
+
 ### highlight?
 
 > `optional` **highlight?**: `string`
 
-Defined in: [packages/mdast/src/index.ts:201](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L201)
+Defined in: [packages/mdast/src/index.ts:105](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L105)
 
 #### Inherited from
 
@@ -126,11 +166,47 @@ Defined in: [packages/mdast/src/index.ts:201](https://github.com/md2docx/md2docx
 
 ***
 
+### hName?
+
+> `optional` **hName?**: `string`
+
+Defined in: node\_modules/.pnpm/mdast-util-to-hast@13.2.1/node\_modules/mdast-util-to-hast/index.d.ts:83
+
+Field supported by `mdast-util-to-hast` to signal that a node should
+result in a particular element, instead of its default behavior.
+
+When this is defined, an element with the given tag name is created.
+For example, when setting `hName` to `'b'`, a `<b>` element is created.
+
+#### Inherited from
+
+[`Data`](Data.md).[`hName`](Data.md#hname)
+
+***
+
+### hProperties?
+
+> `optional` **hProperties?**: `Properties`
+
+Defined in: node\_modules/.pnpm/mdast-util-to-hast@13.2.1/node\_modules/mdast-util-to-hast/index.d.ts:92
+
+Field supported by `mdast-util-to-hast` to signal that a node should
+result in an element with these properties.
+
+When this is defined, when an element is created, these properties will
+be used.
+
+#### Inherited from
+
+[`Data`](Data.md).[`hProperties`](Data.md#hproperties)
+
+***
+
 ### italics?
 
 > `optional` **italics?**: `boolean`
 
-Defined in: [packages/mdast/src/index.ts:186](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L186)
+Defined in: [packages/mdast/src/index.ts:91](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L91)
 
 #### Inherited from
 
@@ -142,7 +218,7 @@ Defined in: [packages/mdast/src/index.ts:186](https://github.com/md2docx/md2docx
 
 > `optional` **name?**: `string`
 
-Defined in: [packages/mdast/src/index.ts:210](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L210)
+Defined in: [packages/mdast/src/index.ts:113](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L113)
 
 #### Inherited from
 
@@ -154,7 +230,7 @@ Defined in: [packages/mdast/src/index.ts:210](https://github.com/md2docx/md2docx
 
 > `optional` **pre?**: `boolean`
 
-Defined in: [packages/mdast/src/index.ts:203](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L203)
+Defined in: [packages/mdast/src/index.ts:107](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L107)
 
 #### Inherited from
 
@@ -166,7 +242,7 @@ Defined in: [packages/mdast/src/index.ts:203](https://github.com/md2docx/md2docx
 
 > `optional` **smallCaps?**: `boolean`
 
-Defined in: [packages/mdast/src/index.ts:196](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L196)
+Defined in: [packages/mdast/src/index.ts:101](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L101)
 
 #### Inherited from
 
@@ -178,7 +254,7 @@ Defined in: [packages/mdast/src/index.ts:196](https://github.com/md2docx/md2docx
 
 > `optional` **strike?**: `boolean`
 
-Defined in: [packages/mdast/src/index.ts:194](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L194)
+Defined in: [packages/mdast/src/index.ts:99](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L99)
 
 #### Inherited from
 
@@ -190,7 +266,7 @@ Defined in: [packages/mdast/src/index.ts:194](https://github.com/md2docx/md2docx
 
 > `optional` **style?**: `string`
 
-Defined in: [packages/mdast/src/index.ts:206](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L206)
+Defined in: [packages/mdast/src/index.ts:109](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L109)
 
 #### Inherited from
 
@@ -202,7 +278,7 @@ Defined in: [packages/mdast/src/index.ts:206](https://github.com/md2docx/md2docx
 
 > `optional` **subScript?**: `boolean`
 
-Defined in: [packages/mdast/src/index.ts:197](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L197)
+Defined in: [packages/mdast/src/index.ts:102](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L102)
 
 #### Inherited from
 
@@ -214,7 +290,7 @@ Defined in: [packages/mdast/src/index.ts:197](https://github.com/md2docx/md2docx
 
 > `optional` **superScript?**: `boolean`
 
-Defined in: [packages/mdast/src/index.ts:198](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L198)
+Defined in: [packages/mdast/src/index.ts:103](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L103)
 
 #### Inherited from
 
@@ -224,9 +300,9 @@ Defined in: [packages/mdast/src/index.ts:198](https://github.com/md2docx/md2docx
 
 ### tag?
 
-> `optional` **tag?**: `"symbol"` \| `"object"` \| `"html"` \| `"image"` \| `"link"` \| `"strong"` \| `"text"` \| `"svg"` \| `"blockquote"` \| `"code"` \| `"table"` \| `"a"` \| `"abbr"` \| `"address"` \| `"area"` \| `"article"` \| `"aside"` \| `"audio"` \| `"b"` \| `"base"` \| `"bdi"` \| `"bdo"` \| `"body"` \| `"br"` \| `"button"` \| `"canvas"` \| `"caption"` \| `"cite"` \| `"col"` \| `"colgroup"` \| `"data"` \| `"datalist"` \| `"dd"` \| `"del"` \| `"details"` \| `"dfn"` \| `"dialog"` \| `"div"` \| `"dl"` \| `"dt"` \| `"em"` \| `"embed"` \| `"fieldset"` \| `"figcaption"` \| `"figure"` \| `"footer"` \| `"form"` \| `"h1"` \| `"h2"` \| `"h3"` \| `"h4"` \| `"h5"` \| `"h6"` \| `"head"` \| `"header"` \| `"hgroup"` \| `"hr"` \| `"i"` \| `"iframe"` \| `"img"` \| `"input"` \| `"ins"` \| `"kbd"` \| `"label"` \| `"legend"` \| `"li"` \| `"main"` \| `"map"` \| `"mark"` \| `"menu"` \| `"meta"` \| `"meter"` \| `"nav"` \| `"noscript"` \| `"ol"` \| `"optgroup"` \| `"option"` \| `"output"` \| `"p"` \| `"picture"` \| `"pre"` \| `"progress"` \| `"q"` \| `"rp"` \| `"rt"` \| `"ruby"` \| `"s"` \| `"samp"` \| `"script"` \| `"search"` \| `"section"` \| `"select"` \| `"slot"` \| `"small"` \| `"source"` \| `"span"` \| `"style"` \| `"sub"` \| `"summary"` \| `"sup"` \| `"tbody"` \| `"td"` \| `"template"` \| `"textarea"` \| `"tfoot"` \| `"th"` \| `"thead"` \| `"time"` \| `"title"` \| `"tr"` \| `"track"` \| `"u"` \| `"ul"` \| `"var"` \| `"video"` \| `"wbr"` \| `"animate"` \| `"animateMotion"` \| `"animateTransform"` \| `"circle"` \| `"clipPath"` \| `"defs"` \| `"desc"` \| `"ellipse"` \| `"feBlend"` \| `"feColorMatrix"` \| `"feComponentTransfer"` \| `"feComposite"` \| `"feConvolveMatrix"` \| `"feDiffuseLighting"` \| `"feDisplacementMap"` \| `"feDistantLight"` \| `"feDropShadow"` \| `"feFlood"` \| `"feFuncA"` \| `"feFuncB"` \| `"feFuncG"` \| `"feFuncR"` \| `"feGaussianBlur"` \| `"feImage"` \| `"feMerge"` \| `"feMergeNode"` \| `"feMorphology"` \| `"feOffset"` \| `"fePointLight"` \| `"feSpecularLighting"` \| `"feSpotLight"` \| `"feTile"` \| `"feTurbulence"` \| `"filter"` \| `"foreignObject"` \| `"g"` \| `"line"` \| `"linearGradient"` \| `"marker"` \| `"mask"` \| `"metadata"` \| `"mpath"` \| `"path"` \| `"pattern"` \| `"polygon"` \| `"polyline"` \| `"radialGradient"` \| `"rect"` \| `"set"` \| `"stop"` \| `"switch"` \| `"textPath"` \| `"tspan"` \| `"use"` \| `"view"`
+> `optional` **tag?**: `"symbol"` \| `"object"` \| `"map"` \| `"filter"` \| `"meta"` \| `"a"` \| `"b"` \| `"data"` \| `"blockquote"` \| `"code"` \| `"html"` \| `"image"` \| `"link"` \| `"strong"` \| `"table"` \| `"text"` \| `"svg"` \| `"abbr"` \| `"address"` \| `"area"` \| `"article"` \| `"aside"` \| `"audio"` \| `"base"` \| `"bdi"` \| `"bdo"` \| `"body"` \| `"br"` \| `"button"` \| `"canvas"` \| `"caption"` \| `"cite"` \| `"col"` \| `"colgroup"` \| `"datalist"` \| `"dd"` \| `"del"` \| `"details"` \| `"dfn"` \| `"dialog"` \| `"div"` \| `"dl"` \| `"dt"` \| `"em"` \| `"embed"` \| `"fieldset"` \| `"figcaption"` \| `"figure"` \| `"footer"` \| `"form"` \| `"h1"` \| `"h2"` \| `"h3"` \| `"h4"` \| `"h5"` \| `"h6"` \| `"head"` \| `"header"` \| `"hgroup"` \| `"hr"` \| `"i"` \| `"iframe"` \| `"img"` \| `"input"` \| `"ins"` \| `"kbd"` \| `"label"` \| `"legend"` \| `"li"` \| `"main"` \| `"mark"` \| `"menu"` \| `"meter"` \| `"nav"` \| `"noscript"` \| `"ol"` \| `"optgroup"` \| `"option"` \| `"output"` \| `"p"` \| `"picture"` \| `"pre"` \| `"progress"` \| `"q"` \| `"rp"` \| `"rt"` \| `"ruby"` \| `"s"` \| `"samp"` \| `"script"` \| `"search"` \| `"section"` \| `"select"` \| `"slot"` \| `"small"` \| `"source"` \| `"span"` \| `"style"` \| `"sub"` \| `"summary"` \| `"sup"` \| `"tbody"` \| `"td"` \| `"template"` \| `"textarea"` \| `"tfoot"` \| `"th"` \| `"thead"` \| `"time"` \| `"title"` \| `"tr"` \| `"track"` \| `"u"` \| `"ul"` \| `"var"` \| `"video"` \| `"wbr"` \| `"animate"` \| `"animateMotion"` \| `"animateTransform"` \| `"circle"` \| `"clipPath"` \| `"defs"` \| `"desc"` \| `"ellipse"` \| `"feBlend"` \| `"feColorMatrix"` \| `"feComponentTransfer"` \| `"feComposite"` \| `"feConvolveMatrix"` \| `"feDiffuseLighting"` \| `"feDisplacementMap"` \| `"feDistantLight"` \| `"feDropShadow"` \| `"feFlood"` \| `"feFuncA"` \| `"feFuncB"` \| `"feFuncG"` \| `"feFuncR"` \| `"feGaussianBlur"` \| `"feImage"` \| `"feMerge"` \| `"feMergeNode"` \| `"feMorphology"` \| `"feOffset"` \| `"fePointLight"` \| `"feSpecularLighting"` \| `"feSpotLight"` \| `"feTile"` \| `"feTurbulence"` \| `"foreignObject"` \| `"g"` \| `"line"` \| `"linearGradient"` \| `"marker"` \| `"mask"` \| `"metadata"` \| `"mpath"` \| `"path"` \| `"pattern"` \| `"polygon"` \| `"polyline"` \| `"radialGradient"` \| `"rect"` \| `"set"` \| `"stop"` \| `"switch"` \| `"textPath"` \| `"tspan"` \| `"use"` \| `"view"`
 
-Defined in: [packages/mdast/src/index.ts:204](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L204)
+Defined in: [packages/mdast/src/index.ts:108](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L108)
 
 #### Inherited from
 
@@ -238,7 +314,7 @@ Defined in: [packages/mdast/src/index.ts:204](https://github.com/md2docx/md2docx
 
 > `optional` **type?**: `string`
 
-Defined in: [packages/mdast/src/index.ts:207](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L207)
+Defined in: [packages/mdast/src/index.ts:110](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L110)
 
 #### Inherited from
 
@@ -250,7 +326,7 @@ Defined in: [packages/mdast/src/index.ts:207](https://github.com/md2docx/md2docx
 
 > `optional` **underline?**: \{ `color`: `string`; `type`: `"single"` \| `"words"` \| `"double"` \| `"thick"` \| `"dotted"` \| `"dottedHeavy"` \| `"dash"` \| `"dashedHeavy"` \| `"dashLong"` \| `"dashLongHeavy"` \| `"dotDash"` \| `"dashDotHeavy"` \| `"dotDotDash"` \| `"dashDotDotHeavy"` \| `"wave"` \| `"wavyHeavy"` \| `"wavyDouble"` \| `"none"`; \} \| `Record`\<`string`, `never`\>
 
-Defined in: [packages/mdast/src/index.ts:187](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L187)
+Defined in: [packages/mdast/src/index.ts:92](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L92)
 
 #### Inherited from
 
@@ -262,8 +338,20 @@ Defined in: [packages/mdast/src/index.ts:187](https://github.com/md2docx/md2docx
 
 > `optional` **value?**: `string`
 
-Defined in: [packages/mdast/src/index.ts:209](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L209)
+Defined in: [packages/mdast/src/index.ts:112](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L112)
 
 #### Inherited from
 
 [`Data`](Data.md).[`value`](Data.md#value)
+
+***
+
+### width?
+
+> `optional` **width?**: `number`
+
+Defined in: [packages/mdast/src/index.ts:117](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L117)
+
+#### Inherited from
+
+[`Data`](Data.md).[`width`](Data.md#width)

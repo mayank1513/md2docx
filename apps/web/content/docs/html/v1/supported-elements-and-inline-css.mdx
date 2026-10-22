@@ -56,6 +56,20 @@ Inline styles specified via `style="..."` on HTML elements are parsed and standa
 
 ---
 
+## Standalone Utilities (`@m2d/html/utils`)
+
+`@m2d/html/utils` exports standalone helpers for color normalization and DOM abstraction:
+
+```typescript
+import { standardizeColor, type DocumentLike } from "@m2d/html/utils";
+
+// Converts any CSS color to 6-digit hex format without '#'
+const hex = standardizeColor("red"); // "ff0000"
+const hexFromHash = standardizeColor("#0052cc"); // "0052cc"
+```
+
+---
+
 ## Known Limitations
 
 - **External Stylesheets**: CSS files or `<style>` blocks in the document head are not evaluated.

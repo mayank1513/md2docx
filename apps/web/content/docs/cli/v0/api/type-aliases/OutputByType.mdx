@@ -1,0 +1,119 @@
+[**@m2d/cli**](../index.md)
+
+***
+
+[@m2d/cli](../index.md) / OutputByType
+
+# Type Alias: OutputByType
+
+> **OutputByType** = `object`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10109
+
+Maps output type names to their corresponding TypeScript types.
+
+This type is used to provide type-safe document generation where the output
+format determines the return type. Based on JSZip's output types.
+
+## Example
+
+```typescript
+// Generate as base64 string
+const doc: OutputByType["base64"] = await packer.toBase64(document);
+
+// Generate as Buffer (Node.js)
+const doc: OutputByType["nodebuffer"] = await packer.toBuffer(document);
+
+// Generate as Blob (browser)
+const doc: OutputByType["blob"] = await packer.toBlob(document);
+```
+
+## Properties
+
+### array
+
+> `readonly` **array**: readonly `number`[]
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10119
+
+Array of numbers (0-255) representing bytes
+
+***
+
+### arraybuffer
+
+> `readonly` **arraybuffer**: `ArrayBuffer`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10123
+
+ArrayBuffer representation
+
+***
+
+### base64
+
+> `readonly` **base64**: `string`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10111
+
+Base64-encoded string representation
+
+***
+
+### binarystring
+
+> `readonly` **binarystring**: `string`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10117
+
+Binary string representation
+
+***
+
+### blob
+
+> `readonly` **blob**: `Blob`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10125
+
+Blob representation (browser environments)
+
+***
+
+### nodebuffer
+
+> `readonly` **nodebuffer**: `Buffer`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10127
+
+Node.js Buffer representation
+
+***
+
+### string
+
+> `readonly` **string**: `string`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10113
+
+UTF-8 string representation
+
+***
+
+### text
+
+> `readonly` **text**: `string`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10115
+
+Text string representation
+
+***
+
+### uint8array
+
+> `readonly` **uint8array**: `Uint8Array`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10121
+
+Uint8Array (typed array) representation

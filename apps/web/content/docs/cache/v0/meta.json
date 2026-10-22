@@ -1,0 +1,8 @@
+{
+  "title": "Version 0.1.0",
+  "description": "High-performance persistent caching engine for md2docx using xxhash-wasm and IndexedDB.",
+  "pages": [
+    "overview",
+    "api"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Version 0.1.1",
+  "description": "Command-line interface and programmatic Node.js engine for Markdown to DOCX conversion.",
+  "pages": [
+    "overview",
+    "cli-usage",
+    "configuration-and-plugins",
+    "programmatic-api",
+    "api"
+  ]
+}

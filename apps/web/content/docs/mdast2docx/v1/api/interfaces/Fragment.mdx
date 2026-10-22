@@ -6,7 +6,7 @@
 
 # Interface: Fragment
 
-Defined in: [packages/mdast/src/index.ts:30](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L30)
+Defined in: [packages/mdast/src/index.ts:33](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L33)
 
 Abstract mdast node that contains other mdast nodes (*children*).
 
@@ -22,9 +22,9 @@ For a union of all registered mdast parents, see [Parents](../type-aliases/Paren
 
 ### children
 
-> **children**: ([`EmptyNode`](EmptyNode.md) \| `Fragment` \| [`Definition`](Definition.md) \| [`FootnoteDefinition`](FootnoteDefinition.md) \| [`ListItem`](ListItem.md) \| [`TableCell`](TableCell.md) \| [`TableRow`](TableRow.md) \| [`Yaml`](Yaml.md) \| [`Break`](Break.md) \| [`Delete`](Delete.md) \| [`Emphasis`](Emphasis.md) \| [`FootnoteReference`](FootnoteReference.md) \| [`Html`](Html.md) \| [`Image`](Image.md) \| [`ImageReference`](ImageReference.md) \| [`InlineCode`](InlineCode.md) \| [`Link`](Link.md) \| [`LinkReference`](LinkReference.md) \| [`Strong`](Strong.md) \| [`Text`](Text.md) \| [`Checkbox`](Checkbox.md) \| [`SVG`](SVG.md) \| [`Blockquote`](Blockquote.md) \| [`Code`](Code.md) \| [`Heading`](Heading.md) \| [`List`](List.md) \| [`Paragraph`](Paragraph.md) \| [`Table`](Table.md) \| [`ThematicBreak`](ThematicBreak.md))[]
+> **children**: ([`EmptyNode`](EmptyNode.md) \| `Fragment` \| [`Blockquote`](Blockquote.md) \| [`Break`](Break.md) \| [`Code`](Code.md) \| [`Definition`](Definition.md) \| [`Delete`](Delete.md) \| [`Emphasis`](Emphasis.md) \| [`FootnoteDefinition`](FootnoteDefinition.md) \| [`FootnoteReference`](FootnoteReference.md) \| [`Heading`](Heading.md) \| [`Html`](Html.md) \| [`Image`](Image.md) \| [`ImageReference`](ImageReference.md) \| [`InlineCode`](InlineCode.md) \| [`Link`](Link.md) \| [`LinkReference`](LinkReference.md) \| [`List`](List.md) \| [`ListItem`](ListItem.md) \| [`Paragraph`](Paragraph.md) \| [`Strong`](Strong.md) \| [`Table`](Table.md) \| [`TableCell`](TableCell.md) \| [`TableRow`](TableRow.md) \| [`Text`](Text.md) \| [`ThematicBreak`](ThematicBreak.md) \| [`Yaml`](Yaml.md) \| [`Checkbox`](Checkbox.md) \| [`SVG`](SVG.md) \| `InlineMath` \| `Math` \| `MdxJsxFlowElement` \| `MdxJsxTextElement`)[]
 
-Defined in: [packages/mdast/src/index.ts:32](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L32)
+Defined in: [packages/mdast/src/index.ts:35](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L35)
 
 List of children.
 
@@ -36,13 +36,13 @@ List of children.
 
 ### data?
 
-> `optional` **data?**: [`Data`](Data.md)
+> `optional` **data?**: [`FragmentData`](FragmentData.md)
 
-Defined in: [packages/mdast/src/index.ts:564](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L564)
+Defined in: [packages/mdast/src/index.ts:36](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L36)
 
 Info from the ecosystem.
 
-#### Inherited from
+#### Overrides
 
 [`Parent`](Parent.md).[`data`](Parent.md#data)
 
@@ -69,7 +69,7 @@ have a position.
 
 > **type**: `"fragment"`
 
-Defined in: [packages/mdast/src/index.ts:31](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L31)
+Defined in: [packages/mdast/src/index.ts:34](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L34)
 
 Node type.
 

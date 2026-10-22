@@ -6,10 +6,14 @@
 
 # Interface: EmptyNode
 
-Defined in: [packages/mdast/src/index.ts:23](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L23)
+Defined in: [packages/mdast/src/index.ts:24](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L24)
 
 This is used to avoid multiple times processing of a given node.
 Acts like event.stopPropagation.
+
+## Extends
+
+- [`Node`](Node.md)
 
 ## Indexable
 
@@ -21,9 +25,40 @@ Acts like event.stopPropagation.
 
 > **\_type**: `string`
 
-Defined in: [packages/mdast/src/index.ts:26](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L26)
+Defined in: [packages/mdast/src/index.ts:27](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L27)
 
 original type of the node
+
+***
+
+### data?
+
+> `optional` **data?**: [`Data`](Data.md)
+
+Defined in: node\_modules/.pnpm/@types+mdast@4.0.4/node\_modules/@types/mdast/index.d.ts:492
+
+Info from the ecosystem.
+
+#### Inherited from
+
+[`Node`](Node.md).[`data`](Node.md#data)
+
+***
+
+### position?
+
+> `optional` **position?**: `Position`
+
+Defined in: node\_modules/.pnpm/@types+unist@3.0.3/node\_modules/@types/unist/index.d.ts:103
+
+Position of a node in a source document.
+
+Nodes that are generated (not in the original source document) must not
+have a position.
+
+#### Inherited from
+
+[`Node`](Node.md).[`position`](Node.md#position)
 
 ***
 
@@ -31,4 +66,10 @@ original type of the node
 
 > **type**: `""`
 
-Defined in: [packages/mdast/src/index.ts:24](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L24)
+Defined in: [packages/mdast/src/index.ts:25](https://github.com/md2docx/md2docx/blob/main/packages/mdast/src/index.ts#L25)
+
+Node type.
+
+#### Overrides
+
+[`Node`](Node.md).[`type`](Node.md#type)

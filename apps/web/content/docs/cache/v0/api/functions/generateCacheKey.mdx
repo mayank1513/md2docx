@@ -1,0 +1,40 @@
+[**@m2d/cache**](../index.md)
+
+***
+
+[@m2d/cache](../index.md) / generateCacheKey
+
+# Function: generateCacheKey()
+
+> **generateCacheKey**(`ignoreKeys`, `namespace`, ...`args`): `Promise`\<`string`\>
+
+Defined in: [cache.ts:172](https://github.com/md2docx/md2docx/blob/main/packages/cache/src/cache.ts#L172)
+
+Generates a consistent 64-bit hash key for caching based on input arguments.
+
+- Serializes objects using `stableSerialize`
+- Combines all arguments into a single stable string
+
+## Parameters
+
+### ignoreKeys
+
+`string`[]
+
+Keys to exclude from object serialization
+
+### namespace
+
+`string`
+
+### args
+
+...`unknown`[]
+
+Values to base the cache key on (objects, arrays, or primitives)
+
+## Returns
+
+`Promise`\<`string`\>
+
+A stable 64-bit hash string

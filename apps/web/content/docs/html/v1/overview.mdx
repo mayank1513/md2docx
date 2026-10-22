@@ -94,6 +94,15 @@ const docxBlob = await toDocx(mdast, {}, {
 
 > ⚠️ **Important Pipeline Order**: Always register `htmlPlugin()` **at the beginning** of your plugins array. It executes during the `preprocess` phase to generate the MDAST nodes that subsequent plugins rely upon.
 
+### Standalone Utilities (`@m2d/html/utils`)
+
+```typescript
+import { standardizeColor, type DocumentLike } from "@m2d/html/utils";
+
+// Normalizes CSS colors ('#ff0000', 'red', 'rgb(...)') into DOCX 6-digit hex ('ff0000')
+const hexColor = standardizeColor("red"); // "ff0000"
+```
+
 ---
 
 ## 📚 Deep Dive Guides

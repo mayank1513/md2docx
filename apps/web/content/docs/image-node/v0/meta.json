@@ -1,5 +1,5 @@
 {
-  "title": "Version 0.1.0",
+  "title": "Version 0.1.2",
   "description": "Server-side Node.js image and SVG rasterization plugin for @m2d/core using sharp.",
   "pages": [
     "overview",

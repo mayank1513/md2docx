@@ -6,7 +6,7 @@
 
 # Interface: IMermaidNodePluginOptions
 
-Defined in: [packages/mermaid-node/src/mermaid-node.ts:20](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L20)
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:24](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L24)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [packages/mermaid-node/src/mermaid-node.ts:20](https://github.com/md
 
 > `optional` **cache?**: `Record`\<`string`, `Promise`\<`unknown`\>\>
 
-Defined in: [packages/mermaid-node/src/mermaid-node.ts:40](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L40)
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:50](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L50)
 
 In-memory cache object, useful for cache sharing across plugins.
 
@@ -24,7 +24,7 @@ In-memory cache object, useful for cache sharing across plugins.
 
 > `optional` **cacheConfig?**: `CacheConfigType`\<[`RenderResultLike`](RenderResultLike.md) \| `undefined`\>
 
-Defined in: [packages/mermaid-node/src/mermaid-node.ts:43](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L43)
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:53](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L53)
 
 Configure caching
 
@@ -34,7 +34,7 @@ Configure caching
 
 > `optional` **fixMermaid?**: (`mermaidCode`, `error`) => `string`
 
-Defined in: [packages/mermaid-node/src/mermaid-node.ts:35](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L35)
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:45](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L45)
 
 Optional fixer function to repair invalid Mermaid code before retrying render.
 
@@ -56,11 +56,11 @@ Optional fixer function to repair invalid Mermaid code before retrying render.
 
 ### renderOptions?
 
-> `optional` **renderOptions?**: `Record`\<`string`, `unknown`\>
+> `optional` **renderOptions?**: [`RenderOptions`](RenderOptions.md)
 
-Defined in: [packages/mermaid-node/src/mermaid-node.ts:30](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L30)
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:40](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L40)
 
-Additional render options passed to beautiful-mermaid.
+Additional render options passed to beautiful-mermaid (e.g. font, padding, nodeSpacing, layerSpacing, componentSpacing).
 
 ***
 
@@ -68,12 +68,28 @@ Additional render options passed to beautiful-mermaid.
 
 > `optional` **theme?**: [`MermaidTheme`](../type-aliases/MermaidTheme.md)
 
-Defined in: [packages/mermaid-node/src/mermaid-node.ts:25](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L25)
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:29](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L29)
 
-Built-in theme name (e.g. 'zinc-light', 'github-light', 'dracula') or custom theme object.
+Built-in theme name (e.g. 'zinc-light', 'zinc-dark', 'github-light', 'github-dark', 'dracula') or custom theme object.
 
 #### Default
 
 ```ts
 'zinc-light'
+```
+
+***
+
+### transparent?
+
+> `optional` **transparent?**: `boolean`
+
+Defined in: [packages/mermaid-node/src/mermaid-node.ts:35](https://github.com/md2docx/md2docx/blob/main/packages/mermaid-node/src/mermaid-node.ts#L35)
+
+Whether to render with a transparent background.
+
+#### Default
+
+```ts
+true
 ```

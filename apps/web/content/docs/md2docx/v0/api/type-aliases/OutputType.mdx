@@ -1,0 +1,23 @@
+[**@m2d/md2docx**](../index.md)
+
+***
+
+[@m2d/md2docx](../index.md) / OutputType
+
+# Type Alias: OutputType
+
+> **OutputType** = keyof `OutputByType`
+
+Defined in: node\_modules/.pnpm/docx@9.12.0/node\_modules/docx/dist/index.d.ts:10142
+
+Valid output type identifiers.
+
+Use these string literals to specify the desired output format when
+generating documents.
+
+## Example
+
+```typescript
+const outputType: OutputType = "base64";
+const doc = await packer.generate(document, { type: outputType });
+```

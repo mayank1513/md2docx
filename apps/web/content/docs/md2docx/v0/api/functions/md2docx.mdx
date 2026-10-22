@@ -1,0 +1,53 @@
+[**@m2d/md2docx**](../index.md)
+
+***
+
+[@m2d/md2docx](../index.md) / md2docx
+
+# Function: md2docx()
+
+> **md2docx**(`md`, `docxProps?`, `sectionProps?`, `outputType?`, `pluginProps?`): `Promise`\<`unknown`\>
+
+Defined in: [packages/md2docx/src/md2docx.ts:23](https://github.com/md2docx/md2docx/blob/main/packages/md2docx/src/md2docx.ts#L23)
+
+Converts a Markdown string into a DOCX document using Unified and `@m2d/remark-docx`.
+Optimized for client-side and browser environments.
+For server-side Node.js workflows with native image and diagram rendering, use `@m2d/cli`.
+
+## Parameters
+
+### md
+
+`string`
+
+The Markdown string to convert.
+
+### docxProps?
+
+[`IDocxProps`](../type-aliases/IDocxProps.md) = `{}`
+
+Document properties passed to `@m2d/core`.
+
+### sectionProps?
+
+`Optional`\<`IDefaultMdastToDocxSectionProps`\>
+
+Default section properties (page size, margins, plugins).
+
+### outputType?
+
+keyof `OutputByType` = `"blob"`
+
+Desired DOCX output format (`"blob"`, `"buffer"`, `"base64"`, etc.). Default: `"blob"`.
+
+### pluginProps?
+
+[`Mdast2DocxPluginProps`](../interfaces/Mdast2DocxPluginProps.md)
+
+Configurations for sub-plugins (mermaid, emoji, list, table, image).
+
+## Returns
+
+`Promise`\<`unknown`\>
+
+The generated DOCX output in the requested format.

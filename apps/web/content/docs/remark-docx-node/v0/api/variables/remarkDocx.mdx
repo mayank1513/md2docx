@@ -1,0 +1,43 @@
+[**@m2d/remark-docx-node**](../index.md)
+
+***
+
+[@m2d/remark-docx-node](../index.md) / remarkDocx
+
+# Variable: remarkDocx
+
+> `const` **remarkDocx**: `Plugin`\<\[`outputType?`: `OutputType`, `docxProps?`: `IDocxProps`, `sectionProps?`: `ISectionProps`, `pluginProps?`: [`Mdast2DocxNodePluginProps`](../interfaces/Mdast2DocxNodePluginProps.md)\], `Root`\>
+
+Defined in: [index.ts:34](https://github.com/md2docx/md2docx/blob/main/packages/remark-docx-node/src/index.ts#L34)
+
+A unified compiler plugin to convert MDAST to DOCX on Node.js using `mdast2docx/plugins/node`.
+Automatically configures `nodeHtmlPlugin`, `nodeImagePlugin`, and `nodeMermaidPlugin` for server-side rasterization and parsing.
+
+## Param
+
+**outputType**
+
+The output type for DOCX generation (e.g. "blob", "buffer", "base64").
+                    Defaults to `"blob"`.
+
+## Param
+
+**docxProps**
+
+Global DOCX document properties passed to `toDocx`. Optional.
+
+## Param
+
+**sectionProps**
+
+Section-level props including plugin overrides. Optional.
+
+## Param
+
+**pluginProps**
+
+Configurations for node plugins (nodeHtml, nodeMermaid, list, table, emoji, nodeImage).
+
+## Returns
+
+A unified plugin that injects a DOCX compiler.

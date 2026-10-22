@@ -6,7 +6,7 @@
 
 # Interface: IDefaultImagePluginOptions
 
-Defined in: [index.ts:67](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L67)
+Defined in: [index.ts:68](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L68)
 
 Full configuration for the image plugin including defaulted and required options.
 
@@ -16,7 +16,7 @@ Full configuration for the image plugin including defaulted and required options
 
 > `optional` **cache?**: `Record`\<`string`, `Promise`\<`unknown`\>\>
 
-Defined in: [index.ts:129](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L129)
+Defined in: [index.ts:130](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L130)
 
 In-memory cache object, useful for cache sharing across plugins/tabs.
 
@@ -26,7 +26,7 @@ In-memory cache object, useful for cache sharing across plugins/tabs.
 
 > `optional` **cacheConfig?**: `CacheConfigType`\<`IImageOptions`\>
 
-Defined in: [index.ts:132](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L132)
+Defined in: [index.ts:133](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L133)
 
 Configure caching
 
@@ -36,7 +36,7 @@ Configure caching
 
 > `optional` **collapsibleHeading?**: `string` \| `boolean`
 
-Defined in: [index.ts:124](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L124)
+Defined in: [index.ts:125](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L125)
 
 Optional heading added above fallback code blocks (H6 level, maps to Heading 5 in Word).
 - `false`: No heading is inserted (only the code block).
@@ -55,7 +55,7 @@ true
 
 > **dpi**: `number`
 
-Defined in: [index.ts:140](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L140)
+Defined in: [index.ts:141](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L141)
 
 Target resolution in DPI for calculating physical dimensions
 
@@ -65,7 +65,7 @@ Target resolution in DPI for calculating physical dimensions
 
 > `optional` **errorMode?**: [`ImageErrorMode`](../type-aliases/ImageErrorMode.md)
 
-Defined in: [index.ts:97](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L97)
+Defined in: [index.ts:98](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L98)
 
 General image error behavior.
 - "warn": Emits a styled, muted text run with alt text.
@@ -85,7 +85,7 @@ General image error behavior.
 
 > **fallbackImageType**: `"jpg"` \| `"png"`
 
-Defined in: [index.ts:72](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L72)
+Defined in: [index.ts:73](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L73)
 
 Fallback format to convert unsupported image types.
 
@@ -101,7 +101,7 @@ Fallback format to convert unsupported image types.
 
 > **fixGeneratedSvg**: (`svg`, `metadata`) => `string`
 
-Defined in: [index.ts:155](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L155)
+Defined in: [index.ts:156](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L156)
 
 Applies generic fixes to known SVG rendering issues (e.g., Mermaid pie chart title alignment).
 Designed to be overridden to handle tool-specific quirks in generated SVGs.
@@ -132,7 +132,7 @@ Modified SVG string.
 
 > **imageResolver**: [`ImageResolver`](../type-aliases/ImageResolver.md)
 
-Defined in: [index.ts:78](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L78)
+Defined in: [index.ts:79](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L79)
 
 Image resolution function used to convert URL/base64/SVG to image options
 
@@ -142,7 +142,7 @@ Image resolution function used to convert URL/base64/SVG to image options
 
 > **maxAgeMinutes**: `number`
 
-Defined in: [index.ts:143](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L143)
+Defined in: [index.ts:144](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L144)
 
 Duration in minutes after which cached records are removed as stale. Default: 7 days (10080 minutes).
 
@@ -152,7 +152,7 @@ Duration in minutes after which cached records are removed as stale. Default: 7 
 
 > **maxH**: `number`
 
-Defined in: [index.ts:84](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L84)
+Defined in: [index.ts:85](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L85)
 
 Max image height (in inches) for inserted image
 
@@ -162,7 +162,7 @@ Max image height (in inches) for inserted image
 
 > **maxW**: `number`
 
-Defined in: [index.ts:81](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L81)
+Defined in: [index.ts:82](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L82)
 
 Max image width (in inches) for inserted image
 
@@ -172,7 +172,7 @@ Max image width (in inches) for inserted image
 
 > `optional` **mermaidFallback?**: [`MermaidFallbackMode`](../type-aliases/MermaidFallbackMode.md)
 
-Defined in: [index.ts:106](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L106)
+Defined in: [index.ts:107](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L107)
 
 Fallback strategy specifically for failed Mermaid diagrams (when data.mermaid is present).
 - "code": Renders the raw Mermaid diagram definition as a formatted monospace code block.
@@ -191,7 +191,7 @@ Fallback strategy specifically for failed Mermaid diagrams (when data.mermaid is
 
 > `optional` **placeholder?**: `string`
 
-Defined in: [index.ts:87](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L87)
+Defined in: [index.ts:88](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L88)
 
 Optional placeholder image (base64 or URL) used on errors
 
@@ -201,7 +201,7 @@ Optional placeholder image (base64 or URL) used on errors
 
 > **quality**: `number`
 
-Defined in: [index.ts:75](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L75)
+Defined in: [index.ts:76](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L76)
 
 Quality factor (0–1). Applies only to lossy formats (`jpeg`/`webp`/`avif`). Default: `0.92`.
 
@@ -211,7 +211,7 @@ Quality factor (0–1). Applies only to lossy formats (`jpeg`/`webp`/`avif`). De
 
 > `optional` **salt?**: `string`
 
-Defined in: [index.ts:137](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L137)
+Defined in: [index.ts:138](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L138)
 
 Optional salt string used to differentiate cache keys for similar images (e.g., dark/light theme).
 
@@ -221,7 +221,7 @@ Optional salt string used to differentiate cache keys for similar images (e.g., 
 
 > **scale**: `number`
 
-Defined in: [index.ts:69](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L69)
+Defined in: [index.ts:70](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L70)
 
 Scale factor for base64 (data URL) images.
 
@@ -237,7 +237,7 @@ Scale factor for base64 (data URL) images.
 
 > `optional` **svgFallback?**: [`SvgFallbackMode`](../type-aliases/SvgFallbackMode.md)
 
-Defined in: [index.ts:115](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L115)
+Defined in: [index.ts:116](https://github.com/md2docx/md2docx/blob/main/packages/image/src/index.ts#L116)
 
 Fallback strategy for failed non-Mermaid SVGs.
 - "warn": Emits styled muted text badge `[Image: <alt or 'SVG unavailable'>]`.

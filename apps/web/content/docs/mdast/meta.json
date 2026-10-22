@@ -2,8 +2,8 @@
   "title": "@m2d/mdast",
   "description": "Extended MDAST Node Definitions",
   "tagLine": "Extended MDAST types and custom node data for mdast2docx with support for DOCX formatting.",
-  "lastModified": "2026-10-21T02:10:31.498Z",
-  "version": "0.2.4",
+  "lastModified": "2026-10-22T05:49:31.848Z",
+  "version": "0.2.5",
   "root": true,
   "icon": "Network",
   "pages": [

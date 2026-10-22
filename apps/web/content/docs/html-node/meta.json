@@ -1,0 +1,12 @@
+{
+  "title": "@m2d/html-node",
+  "description": "Server-Side HTML to MDAST Plugin",
+  "tagLine": "Server-side HTML to MDAST plugin for md2docx using linkedom. Converts HTML elements in Markdown into DOCX-compatible MDAST nodes on Node.js.",
+  "lastModified": "2026-10-22T05:49:03.887Z",
+  "version": "0.1.0",
+  "root": true,
+  "icon": "Code",
+  "pages": [
+    "v0"
+  ]
+}

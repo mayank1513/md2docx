@@ -1,0 +1,38 @@
+[**@m2d/cache**](../index.md)
+
+***
+
+[@m2d/cache](../index.md) / simpleCleanup
+
+# Function: simpleCleanup()
+
+> **simpleCleanup**(`maxAgeMinutes`, `namespace`): `Promise`\<`void`\>
+
+Defined in: [cache.ts:349](https://github.com/md2docx/md2docx/blob/main/packages/cache/src/cache.ts#L349)
+
+Deletes stale cache entries from IndexedDB based on age and namespace.
+
+- Only entries with matching `namespace` are considered
+- Entries older than `maxAgeMinutes` (based on `last-accessed` field) are deleted
+
+Requirements for each entry:
+- `namespace: string` set in `createPersistentCache`
+- `last-accessed: number` is automatically set by `writeToCache`
+
+## Parameters
+
+### maxAgeMinutes
+
+`number`
+
+Age threshold in minutes; entries older than this will be removed
+
+### namespace
+
+`string`
+
+Namespace tag to limit cleanup scope
+
+## Returns
+
+`Promise`\<`void`\>

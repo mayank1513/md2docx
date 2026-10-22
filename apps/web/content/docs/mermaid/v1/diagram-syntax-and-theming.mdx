@@ -42,17 +42,17 @@ Because `@m2d/mermaid` uses the official browser-based `mermaid` library, it sup
 Pass any official Mermaid configuration options via `mermaidConfig`:
 
 ```typescript
-import { mermaidPlugin } from "@m2d/mermaid";
+import \{ mermaidPlugin \} from "@m2d/mermaid";
 
-const plugin = mermaidPlugin({
-  mermaidConfig: {
+const plugin = mermaidPlugin(\{
+  mermaidConfig: \{
     theme: "neutral", // "default" | "forest" | "dark" | "neutral" | "base"
-    themeVariables: {
+    themeVariables: \{
       primaryColor: "#0284c7",
       primaryTextColor: "#ffffff",
       lineColor: "#64748b",
-    },
+    \},
     fontFamily: "Inter, system-ui, sans-serif",
-  },
-});
+  \},
+\});
 ```

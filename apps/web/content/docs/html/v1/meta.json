@@ -1,5 +1,5 @@
 {
-  "title": "Version 1.1.12",
+  "title": "Version 1.2.0",
   "description": "Extend MDAST by parsing embedded HTML in Markdown. Converts HTML into structured MDAST nodes compatible with @m2d/core for DOCX generation.",
   "pages": [
     "overview",

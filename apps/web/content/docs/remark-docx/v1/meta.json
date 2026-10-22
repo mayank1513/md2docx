@@ -1,5 +1,5 @@
 {
-  "title": "Version 1.2.3",
+  "title": "Version 1.4.0",
   "description": "A unified plugin to prepare MDAST trees for DOCX conversion using mdast2docx.",
   "pages": [
     "overview",

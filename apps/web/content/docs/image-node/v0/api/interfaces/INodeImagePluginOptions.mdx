@@ -6,7 +6,7 @@
 
 # Interface: INodeImagePluginOptions
 
-Defined in: [image-node.ts:53](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L53)
+Defined in: [image-node/src/image-node.ts:53](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L53)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: [image-node.ts:53](https://github.com/md2docx/md2docx/blob/main/pack
 
 > `optional` **collapsibleHeading?**: `string` \| `boolean`
 
-Defined in: [image-node.ts:98](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L98)
+Defined in: [image-node/src/image-node.ts:98](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L98)
 
 Optional heading added above fallback code blocks (H6 level, maps to Heading 5 in Word).
 - `false`: No heading is inserted (only the code block).
@@ -33,7 +33,7 @@ true
 
 > `optional` **dpi?**: `number`
 
-Defined in: [image-node.ts:63](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L63)
+Defined in: [image-node/src/image-node.ts:63](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L63)
 
 Resolution in DPI for computing physical dimensions (default: 96)
 
@@ -43,7 +43,7 @@ Resolution in DPI for computing physical dimensions (default: 96)
 
 > `optional` **errorMode?**: [`ImageErrorMode`](../type-aliases/ImageErrorMode.md)
 
-Defined in: [image-node.ts:74](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L74)
+Defined in: [image-node/src/image-node.ts:74](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L74)
 
 General image error behavior.
 - "warn": Emits a styled, muted text run with alt text.
@@ -63,7 +63,7 @@ General image error behavior.
 
 > `optional` **fallbackImageType?**: `"jpg"` \| `"png"` \| `"gif"`
 
-Defined in: [image-node.ts:57](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L57)
+Defined in: [image-node/src/image-node.ts:57](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L57)
 
 Fallback image format if original format is unsupported.
 
@@ -79,7 +79,7 @@ Fallback image format if original format is unsupported.
 
 > `optional` **imageResolver?**: [`NodeImageResolver`](../type-aliases/NodeImageResolver.md)
 
-Defined in: [image-node.ts:65](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L65)
+Defined in: [image-node/src/image-node.ts:65](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L65)
 
 Optional custom resolver
 
@@ -89,7 +89,7 @@ Optional custom resolver
 
 > `optional` **maxH?**: `number`
 
-Defined in: [image-node.ts:61](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L61)
+Defined in: [image-node/src/image-node.ts:61](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L61)
 
 Max image height in inches (default: 8)
 
@@ -99,7 +99,7 @@ Max image height in inches (default: 8)
 
 > `optional` **maxW?**: `number`
 
-Defined in: [image-node.ts:59](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L59)
+Defined in: [image-node/src/image-node.ts:59](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L59)
 
 Max image width in inches (default: 6)
 
@@ -109,7 +109,7 @@ Max image width in inches (default: 6)
 
 > `optional` **mermaidFallback?**: [`MermaidFallbackMode`](../type-aliases/MermaidFallbackMode.md)
 
-Defined in: [image-node.ts:82](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L82)
+Defined in: [image-node/src/image-node.ts:82](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L82)
 
 Fallback strategy specifically for failed Mermaid diagrams (when data.mermaid is present).
 - "code": Renders the raw Mermaid diagram definition as a formatted monospace code block.
@@ -128,7 +128,7 @@ Fallback strategy specifically for failed Mermaid diagrams (when data.mermaid is
 
 > `optional` **pathPrefix?**: `string`
 
-Defined in: [image-node.ts:55](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L55)
+Defined in: [image-node/src/image-node.ts:55](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L55)
 
 Optional directory prefix for resolving relative local file paths
 
@@ -138,7 +138,7 @@ Optional directory prefix for resolving relative local file paths
 
 > `optional` **placeholder?**: `string`
 
-Defined in: [image-node.ts:100](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L100)
+Defined in: [image-node/src/image-node.ts:100](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L100)
 
 Custom placeholder image source (path, URL, or data URL)
 
@@ -148,7 +148,7 @@ Custom placeholder image source (path, URL, or data URL)
 
 > `optional` **svgFallback?**: [`SvgFallbackMode`](../type-aliases/SvgFallbackMode.md)
 
-Defined in: [image-node.ts:90](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L90)
+Defined in: [image-node/src/image-node.ts:90](https://github.com/md2docx/md2docx/blob/main/packages/image-node/src/image-node.ts#L90)
 
 Fallback strategy for failed non-Mermaid SVGs.
 - "warn": Emits styled muted text badge `[Image: <alt or 'SVG unavailable'>]`.

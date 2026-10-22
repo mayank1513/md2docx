@@ -1,0 +1,73 @@
+[**@m2d/cache**](../index.md)
+
+***
+
+[@m2d/cache](../index.md) / createPersistentCache
+
+# Function: createPersistentCache()
+
+> **createPersistentCache**\<`TArgs`, `TResult`\>(`generator`, `namespace`, `config?`): (...`args`) => `Promise`\<`TResult`\>
+
+Defined in: [cache.ts:271](https://github.com/md2docx/md2docx/blob/main/packages/cache/src/cache.ts#L271)
+
+Creates a cached version of an async function with memory and/or persistent caching capabilities.
+
+## Features:
+- Prevents redundant computations across sessions or concurrent calls
+- Shares results between tabs or plugins (Pass external cache object to share in-memory cache across plugins)
+- Supports in-memory, IndexedDB, or both as cache targets
+- Optional parallel execution of cache read and function compute
+- Useful for data generation, API fetches, or any expensive computation
+
+## Parameters
+
+## Type Parameters
+
+### TArgs
+
+`TArgs` *extends* `unknown`[]
+
+### TResult
+
+`TResult`
+
+## Parameters
+
+### generator
+
+(...`args`) => `Promise`\<`TResult`\>
+
+The async function to cache (e.g., a fetcher or processor)
+
+### namespace
+
+`string`
+
+A tag used to group related cached entries for cleanup or metrics
+
+### config?
+
+[`CacheConfigType`](../type-aliases/CacheConfigType.md)\<`TResult`\>
+
+Optional configuration:
+  - `ignoreKeys` _(string[])_ — Keys to exclude from cache key generation (default: `[]`)
+  - `cache` _(Record<string, Promise<Result>>)_ — External in-memory cache object to sync across plugins/tabs (default: internal default cache)
+  - `cacheMode` _(`"memory"` | `"idb"` | `"both"`)_ — Where to store the result:
+      - `"memory"`: RAM-only; fast but temporary
+      - `"idb"`: stores in IndexedDB only; avoids memory usage; Useful for processing large data
+      - `"both"` (default): caches in both RAM and IndexedDB
+  - `parallel` _(boolean)_ — If true, reads from cache and computes in parallel (default: `true`);
+      ignored when `cacheMode` is `"memory"`
+
+## Returns
+
+A memoized async function that handles caching automatically.
+
+(...`args`) => `Promise`\<`TResult`\>
+
+## Example
+
+```ts
+const fetchWithCache = createPersistentCache(fetchJson, "remote-data");
+await fetchWithCache("https://example.com/api/data");
+```

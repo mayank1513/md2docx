@@ -1,0 +1,38 @@
+[**@m2d/cache**](../index.md)
+
+***
+
+[@m2d/cache](../index.md) / stableSerialize
+
+# Function: stableSerialize()
+
+> **stableSerialize**(`obj`, `ignoreKeys?`): `string`
+
+Defined in: [cache.ts:134](https://github.com/md2docx/md2docx/blob/main/packages/cache/src/cache.ts#L134)
+
+Serializes a value into a stable string for cache key generation.
+
+- Recursively handles arrays and objects
+- Skips functions, promises and undefined values
+- Omits keys listed in `ignoreKeys` (only for objects)
+- Ensures consistent key ordering for objects
+
+## Parameters
+
+### obj
+
+`unknown`
+
+The input to serialize (can be primitive, array, or object)
+
+### ignoreKeys?
+
+`string`[] = `[]`
+
+Keys to exclude from object serialization
+
+## Returns
+
+`string`
+
+A stable, stringified representation
