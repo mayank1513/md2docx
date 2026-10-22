@@ -7,11 +7,16 @@ import {
   mathPlugin,
   tablePlugin,
 } from "mdast2docx/plugins";
-import { nodeImagePlugin, nodeMermaidPlugin } from "mdast2docx/plugins/node";
+import {
+  nodeHtmlPlugin,
+  nodeImagePlugin,
+  nodeMermaidPlugin,
+} from "mdast2docx/plugins/node";
 import { DEFAULT_SECTION_PROPS } from "mdast2docx/utils";
 import type { Plugin } from "unified";
 
 export interface Mdast2DocxNodePluginProps {
+  html?: Parameters<typeof nodeHtmlPlugin>[0];
   mermaid?: Parameters<typeof nodeMermaidPlugin>[0];
   list?: Parameters<typeof listPlugin>[0];
   table?: Parameters<typeof tablePlugin>[0];
@@ -21,13 +26,13 @@ export interface Mdast2DocxNodePluginProps {
 
 /**
  * A unified compiler plugin to convert MDAST to DOCX on Node.js using `mdast2docx/plugins/node`.
- * Automatically configures `nodeImagePlugin` and `nodeMermaidPlugin` for server-side rasterization.
+ * Automatically configures `nodeHtmlPlugin`, `nodeImagePlugin`, and `nodeMermaidPlugin` for server-side rasterization and parsing.
  *
  * @param outputType - The output type for DOCX generation (e.g. "blob", "buffer", "base64").
  *                     Defaults to `"blob"`.
  * @param docxProps - Global DOCX document properties passed to `toDocx`. Optional.
  * @param sectionProps - Section-level props including plugin overrides. Optional.
- * @param pluginProps - Configurations for node plugins (nodeMermaid, list, table, emoji, nodeImage).
+ * @param pluginProps - Configurations for node plugins (nodeHtml, nodeMermaid, list, table, emoji, nodeImage).
  * @returns A unified plugin that injects a DOCX compiler.
  */
 export const remarkDocx: Plugin<
@@ -48,6 +53,7 @@ export const remarkDocx: Plugin<
   this.compiler = (node: Root): Promise<OutputByType[OutputType]> => {
     if (!sectionProps.plugins) {
       sectionProps.plugins = [
+        nodeHtmlPlugin(pluginProps?.html),
         nodeMermaidPlugin(pluginProps?.mermaid),
         listPlugin(pluginProps?.list),
         mathPlugin(),

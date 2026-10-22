@@ -13,7 +13,9 @@ import type {
   TableRow,
 } from "@m2d/core";
 import { AlignmentType, BorderStyle, type IBorderOptions } from "docx";
-import { standardizeColor } from "./utils";
+import { type DocumentLike, standardizeColor } from "./utils";
+
+export type { DocumentLike };
 
 /**
  * HTML inline tags supported by the plugin for conversion.
@@ -176,13 +178,18 @@ const STYLE_MAP = {
   outset: BorderStyle.OUTSET,
 } as const;
 
+/** Checks whether a node is a DOM element across browser and virtual DOM implementations */
+const isElement = (node: unknown): node is HTMLElement | SVGElement =>
+  Boolean(node && typeof node === "object" && (node as Node).nodeType === 1);
+
 /**
  * Converts a parsed CSS border to a docx-compatible IBorderOptions.
  *
  * @param cssBorder - Parsed border properties.
+ * @param doc - Optional DOM element creator.
  * @returns docx-compatible border settings or undefined.
  */
-const getDocxBorder = (cssBorder?: CssBorder) => {
+const getDocxBorder = (cssBorder?: CssBorder, doc?: DocumentLike) => {
   if (!cssBorder || !Object.keys(cssBorder).length) return undefined;
   const { width, color, style } = cssBorder;
   const border: Mutable<IBorderOptions> = {
@@ -191,7 +198,7 @@ const getDocxBorder = (cssBorder?: CssBorder) => {
       : BorderStyle.SINGLE,
   };
   if (width) border.size = width;
-  if (color) border.color = standardizeColor(color);
+  if (color) border.color = standardizeColor(color, doc);
   return border;
 };
 
@@ -200,12 +207,13 @@ const getDocxBorder = (cssBorder?: CssBorder) => {
  *
  * @param el - DOM element to extract style from.
  * @param inline - Flag indicating if the style is for inline content.
+ * @param doc - Optional DOM element creator.
  * @returns Style metadata as `Data`.
  * skipcq: JS-R1005
  */
-const parseStyles = (el: Node, inline = true): Data => {
+const parseStyles = (el: Node, inline = true, doc?: DocumentLike): Data => {
   const data: Data = {};
-  if (!(el instanceof HTMLElement || el instanceof SVGElement)) return data;
+  if (!isElement(el)) return data;
   const {
     textAlign,
     fontWeight,
@@ -213,22 +221,22 @@ const parseStyles = (el: Node, inline = true): Data => {
     textDecoration,
     textTransform,
     color,
-  } = el.style;
+  } = (el as HTMLElement).style ?? {};
   const style = el.getAttribute("style");
   const borders = parseCssBorders(style);
   data.style = style ?? undefined;
   if (inline && borders.border) {
-    data.border = getDocxBorder(borders.border);
+    data.border = getDocxBorder(borders.border, doc);
   } else if (Object.keys(borders).length) {
     const leftBorder = { ...borders.border, ...borders.left };
     const rightBorder = { ...borders.border, ...borders.right };
     const topBorder = { ...borders.border, ...borders.top };
     const bottomBorder = { ...borders.border, ...borders.bottom };
     data.border = {
-      left: getDocxBorder(leftBorder),
-      right: getDocxBorder(rightBorder),
-      top: getDocxBorder(topBorder),
-      bottom: getDocxBorder(bottomBorder),
+      left: getDocxBorder(leftBorder, doc),
+      right: getDocxBorder(rightBorder, doc),
+      top: getDocxBorder(topBorder, doc),
+      bottom: getDocxBorder(bottomBorder, doc),
     };
   }
 
@@ -260,9 +268,9 @@ const parseStyles = (el: Node, inline = true): Data => {
 
   if (textTransform === "lowercase") data.smallCaps = true;
 
-  if (color) data.color = standardizeColor(color);
+  if (color) data.color = standardizeColor(color, doc);
 
-  const tagName = el.tagName;
+  const tagName = (el as HTMLElement).tagName;
   if (tagName === "SUP") data.superScript = true;
   else if (tagName === "SUB") data.subScript = true;
   else if (["STRONG", "B"].includes(tagName)) data.bold = true;
@@ -291,10 +299,16 @@ const parseStyles = (el: Node, inline = true): Data => {
  * Converts an inline HTML DOM node into MDAST `PhrasingContent`.
  *
  * @param el - DOM node to process.
+ * @param isPre - Whether within a preformatted element.
+ * @param doc - Optional DOM element creator.
  * @returns PhrasingContent-compatible node.
  */
-const processInlineDOMNode = (el: Node, isPre = false): PhrasingContent => {
-  if (!(el instanceof HTMLElement || el instanceof SVGElement))
+const processInlineDOMNode = (
+  el: Node,
+  isPre = false,
+  doc?: DocumentLike,
+): PhrasingContent => {
+  if (!isElement(el))
     return {
       type: "text",
       value:
@@ -303,15 +317,19 @@ const processInlineDOMNode = (el: Node, isPre = false): PhrasingContent => {
     };
 
   const children = Array.from(el.childNodes).map((cNode) =>
-    processInlineDOMNode(cNode, isPre),
+    processInlineDOMNode(cNode, isPre, doc),
   );
-  const data = parseStyles(el);
-  const attributes: Record<string, string> = el
-    .getAttributeNames()
-    // biome-ignore lint/performance/noAccumulatingSpread: required
-    .reduce((acc, cur) => ({ ...acc, [cur]: el.getAttribute(cur) }), {});
+  const data = parseStyles(el, true, doc);
+  const attributeNames = Array.from(el.getAttributeNames?.() ?? []);
+  const attributes: Record<string, string> = attributeNames.reduce(
+    (acc, cur) => {
+      acc[cur] = el.getAttribute(cur) ?? "";
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 
-  const tagName = el.tagName;
+  const tagName = (el as HTMLElement).tagName;
   switch (tagName) {
     case "BR":
       return { type: "break" };
@@ -325,7 +343,7 @@ const processInlineDOMNode = (el: Node, isPre = false): PhrasingContent => {
     case "svg":
       return {
         type: "svg",
-        value: el.outerHTML,
+        value: (el as SVGElement).outerHTML,
         data,
       };
     case "EM":
@@ -369,32 +387,41 @@ const processInlineDOMNode = (el: Node, isPre = false): PhrasingContent => {
  *
  * @param el - Root DOM node to process.
  * @param data - Optional metadata to apply.
+ * @param doc - Optional DOM element creator.
  * @returns A BlockContent node or fragment node.
  */
-const createFragmentWithParentNodes = (el: Node, data?: Data): BlockContent => {
+const createFragmentWithParentNodes = (
+  el: Node,
+  data?: Data,
+  doc?: DocumentLike,
+): BlockContent => {
   const childNodes = Array.from(el.childNodes);
   const children: BlockContent[] = [];
   const tmp: Node[] = [];
   for (const node of childNodes) {
     if (
-      (node instanceof HTMLElement || node instanceof SVGElement) &&
-      !INLINE_TAGS.includes(node.tagName as (typeof INLINE_TAGS)[number])
+      isElement(node) &&
+      !INLINE_TAGS.includes(
+        (node as HTMLElement).tagName as (typeof INLINE_TAGS)[number],
+      )
     ) {
       if (tmp.length) {
         children.push({
           type: "paragraph",
-          children: tmp.map((tNode) => processInlineDOMNode(tNode, data?.pre)),
+          children: tmp.map((tNode) =>
+            processInlineDOMNode(tNode, data?.pre, doc),
+          ),
         });
         tmp.length = 0;
       }
       // skipcq: JS-0357
-      children.push(processDOMNode(node));
+      children.push(processDOMNode(node as HTMLElement, doc));
     } else tmp.push(node);
   }
   if (tmp.length)
     children.push({
       type: "paragraph",
-      children: tmp.map((tNode) => processInlineDOMNode(tNode, data?.pre)),
+      children: tmp.map((tNode) => processInlineDOMNode(tNode, data?.pre, doc)),
     });
   return children.length === 1
     ? { ...children[0], data: { ...data, ...children[0].data } }
@@ -410,25 +437,33 @@ const createFragmentWithParentNodes = (el: Node, data?: Data): BlockContent => {
  *
  * @param el - Table DOM node.
  * @param data_ - Optional style metadata.
+ * @param doc - Optional DOM element creator.
  * @returns List of table rows.
  */
-const createRows = (el: HTMLElement, data_?: Data): TableRow[] =>
+const createRows = (
+  el: HTMLElement,
+  data_?: Data,
+  doc?: DocumentLike,
+): TableRow[] =>
   Array.from(el.children).flatMap((tr) => {
-    const data = { ...data_, ...parseStyles(tr as HTMLElement) };
-    return tr.tagName === "TR"
+    const data = { ...data_, ...parseStyles(tr as HTMLElement, false, doc) };
+    return (tr as HTMLElement).tagName === "TR"
       ? ({
           type: "tableRow",
-          children: Array.from(tr.children).map((col) => ({
+          children: Array.from((tr as HTMLElement).children).map((col) => ({
             type: "tableCell",
             children: [
-              createFragmentWithParentNodes(col, { ...data, tag: undefined }),
+              createFragmentWithParentNodes(
+                col,
+                { ...data, tag: undefined },
+                doc,
+              ),
             ],
-            data: { ...data, tag: col.tagName.toLowerCase() },
+            data: { ...data, tag: (col as HTMLElement).tagName.toLowerCase() },
           })),
           data,
         } as TableRow)
-      : // to handle tbody and thead as it is not present in md
-        createRows(tr as HTMLElement, data);
+      : createRows(tr as HTMLElement, data, doc);
   });
 
 /**
@@ -446,10 +481,14 @@ const defaultBorder = {
  * Converts block-level HTML elements into MDAST `BlockContent` nodes.
  *
  * @param el - HTML or svg element to process.
+ * @param doc - Optional DOM element creator.
  * @returns Converted block content node.
  */
-const processDOMNode = (el: HTMLElement | SVGElement): BlockContent => {
-  const data = parseStyles(el);
+const processDOMNode = (
+  el: HTMLElement | SVGElement,
+  doc?: DocumentLike,
+): BlockContent => {
+  const data = parseStyles(el, false, doc);
   const tagName = el.tagName;
   switch (tagName) {
     case "H1":
@@ -462,7 +501,7 @@ const processDOMNode = (el: HTMLElement | SVGElement): BlockContent => {
         type: "heading",
         depth: parseInt(tagName[1], 10),
         children: Array.from(el.childNodes).map((cNode) =>
-          processInlineDOMNode(cNode),
+          processInlineDOMNode(cNode, false, doc),
         ),
         data,
       } as Heading;
@@ -473,7 +512,7 @@ const processDOMNode = (el: HTMLElement | SVGElement): BlockContent => {
     case "SUMMARY":
     case "FORM":
     case "LI":
-      return createFragmentWithParentNodes(el, data);
+      return createFragmentWithParentNodes(el, data, doc);
     case "UL":
     case "OL":
       return {
@@ -481,7 +520,7 @@ const processDOMNode = (el: HTMLElement | SVGElement): BlockContent => {
         ordered: tagName === "OL",
         children: Array.from(el.childNodes).map((node) => ({
           type: "listItem",
-          children: [createFragmentWithParentNodes(node)],
+          children: [createFragmentWithParentNodes(node, undefined, doc)],
           data,
         })),
       };
@@ -491,12 +530,12 @@ const processDOMNode = (el: HTMLElement | SVGElement): BlockContent => {
       return {
         type: "blockquote",
         children: Array.from(el.childNodes).map((node) =>
-          createFragmentWithParentNodes(node),
+          createFragmentWithParentNodes(node, undefined, doc),
         ),
         data,
       };
     case "TABLE": {
-      const children = createRows(el as HTMLElement);
+      const children = createRows(el as HTMLElement, undefined, doc);
       return {
         type: "table",
         children,
@@ -512,17 +551,21 @@ const processDOMNode = (el: HTMLElement | SVGElement): BlockContent => {
         data: { ...data, pre: true, border: defaultBorder },
       };
   }
-  return { type: "paragraph", children: [processInlineDOMNode(el)], data };
+  return {
+    type: "paragraph",
+    children: [processInlineDOMNode(el, false, doc)],
+    data,
+  };
 };
 
 /** process inline AST nodes */
-const processInlineNode = (node: HtmlNode) => {
+const processInlineNode = (node: HtmlNode, doc: DocumentLike) => {
   const value = node.value?.trim() ?? "";
   const tag = value.split(" ")[0].slice(1);
-  const el = document.createElement("div");
+  const el = doc.createElement("div") as HTMLElement;
   el.innerHTML = value.endsWith("/>") ? value : `${value}</${tag}>`;
   Object.assign(node, {
-    ...processInlineDOMNode(el.children[0]),
+    ...processInlineDOMNode(el.children[0], false, doc),
     children: node.children ?? [],
   });
 };
@@ -531,13 +574,17 @@ const processInlineNode = (node: HtmlNode) => {
  * Consolidates inline HTML tag children inside valid tag-matching groups.
  *
  * @param pNode - MDAST parent node.
+ * @param isRoot - Whether currently at the root of the AST.
+ * @param doc - DOM element creator.
  */
-const preprocess = (pNode: Parent, isRoot = true) => {
+const preprocess = (pNode: Parent, isRoot = true, doc?: DocumentLike) => {
+  if (!doc) return;
   const children: RootContent[] = [];
   const htmlNodeStack: HtmlNode[] = [];
 
   for (const node of pNode.children) {
-    if ((node as Parent).children?.length) preprocess(node as Parent, false);
+    if ((node as Parent).children?.length)
+      preprocess(node as Parent, false, doc);
     const valueRaw = (node as Literal).value;
     // node.value could be a promise too, e.g., mermaid SVG
     const value = typeof valueRaw === "string" ? valueRaw : "";
@@ -557,7 +604,7 @@ const preprocess = (pNode: Parent, isRoot = true) => {
           );
           continue;
         }
-        processInlineNode(hNode);
+        processInlineNode(hNode, doc);
         (htmlNodeStack[0]?.children ?? children).push(hNode);
       } else {
         htmlNodeStack.unshift({ ...node, children: [], tag });
@@ -575,18 +622,54 @@ const preprocess = (pNode: Parent, isRoot = true) => {
     // self closing tags
     if (isSelfClosingTag && !isRoot) {
       // @ts-expect-error -- ok
-      processInlineNode(node);
+      processInlineNode(node, doc);
     } else if (
       (isSelfClosingTag && isRoot) ||
       (node.type === "html" && !/^<[^>]*>$/.test(value))
     ) {
       // block html
-      const el = document.createElement("div");
+      const el = doc.createElement("div") as HTMLElement;
       el.innerHTML = value;
-      Object.assign(node, createFragmentWithParentNodes(el));
+      Object.assign(node, createFragmentWithParentNodes(el, undefined, doc));
     }
   }
   pNode.children = children;
+};
+
+/**
+ * Options for configuring the HTML plugin.
+ */
+export interface HtmlPluginOptions {
+  /**
+   * Custom Document or element creator for parsing HTML.
+   * Defaults to `globalThis.document`.
+   */
+  document?: DocumentLike;
+}
+
+/**
+ * Creates an HTML plugin for MDAST-to-DOCX conversion with an optional DOM provider.
+ *
+ * @param options - Configuration options, including custom `document` implementation.
+ * @returns Configured HTML plugin for MDAST parsing.
+ */
+export const createHtmlPlugin = (
+  options?: HtmlPluginOptions,
+): (() => IPlugin) => {
+  return () => ({
+    preprocess: (tree: Parent) => {
+      const doc =
+        options?.document ??
+        (typeof document !== "undefined" ? document : undefined);
+      if (!doc) {
+        console.warn(
+          "[HTML Plugin] document is not available in the current environment. To parse HTML on Node.js, use '@m2d/html-node' or pass a custom document implementation.",
+        );
+        return;
+      }
+      preprocess(tree, true, doc);
+    },
+  });
 };
 
 /**
@@ -598,9 +681,4 @@ const preprocess = (pNode: Parent, isRoot = true) => {
  *
  * @returns Configured HTML plugin for MDAST parsing.
  */
-// @ts-expect-error -- we are not using the definitions
-export const htmlPlugin: () => IPlugin = () => {
-  return {
-    preprocess,
-  };
-};
+export const htmlPlugin: () => IPlugin = createHtmlPlugin();

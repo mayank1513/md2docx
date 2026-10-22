@@ -7,7 +7,7 @@
     "access": "public",
     "provenance": true
   },
-  "description": "",
+  "description": "Server-side HTML to MDAST plugin for md2docx using linkedom. Converts HTML elements in Markdown into DOCX-compatible MDAST nodes on Node.js.",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,19 +37,34 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "@m2d/core": "workspace:*",
+    "@m2d/html": "workspace:*",
+    "linkedom": "^0.18.13"
+  },
+  "peerDependencies": {
+    "docx": "^9.3.0"
+  },
   "devDependencies": {
     "@types/node": "latest",
+    "docx": "^9.12.0",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
     "tsup": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "unified": "^11.0.5"
   },
   "forge": {
-    "aliases": [],
-    "icon": "LibraryBig",
-    "description": ""
+    "aliases": [
+      "@md2docx/html-node",
+      "@mdast2docx/html-node"
+    ],
+    "icon": "Code",
+    "description": "Server-Side HTML to MDAST Plugin"
   },
   "funding": [
     {
@@ -63,6 +78,16 @@
   ],
   "keywords": [
     "@m2d/html-node",
+    "@md2docx/html-node",
+    "@mdast2docx/html-node",
+    "html",
+    "html-in-markdown",
+    "html-to-mdast",
+    "mdast",
+    "linkedom",
+    "server-side",
+    "markdown-to-docx",
+    "md2docx",
     "turboforge"
   ]
 }
