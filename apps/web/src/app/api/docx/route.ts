@@ -1,8 +1,17 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { toDocx } from "mdast2docx";
-import { listPlugin, mathPlugin, tablePlugin } from "mdast2docx/plugins";
-import { mermaidNodePlugin, nodeImagePlugin } from "mdast2docx/plugins/node";
+import {
+  emojiPlugin,
+  listPlugin,
+  mathPlugin,
+  tablePlugin,
+} from "mdast2docx/plugins";
+import {
+  mermaidNodePlugin,
+  nodeHtmlPlugin,
+  nodeImagePlugin,
+} from "mdast2docx/plugins/node";
 import { type NextRequest, NextResponse } from "next/server";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
@@ -16,13 +25,17 @@ const docxProcessor = unified()
   .use(remarkGfm)
   .use(remarkMath);
 
-const getServerPlugins = () => [
-  listPlugin(),
-  tablePlugin(),
-  mathPlugin(),
-  mermaidNodePlugin(),
-  nodeImagePlugin(),
-];
+const getServerPlugins = (enabled?: Record<string, boolean>) => {
+  const plugins = [];
+  if (enabled?.html !== false) plugins.push(nodeHtmlPlugin());
+  if (enabled?.list !== false) plugins.push(listPlugin());
+  if (enabled?.table !== false) plugins.push(tablePlugin());
+  if (enabled?.math !== false) plugins.push(mathPlugin());
+  if (enabled?.mermaid !== false) plugins.push(mermaidNodePlugin());
+  if (enabled?.image !== false) plugins.push(nodeImagePlugin());
+  if (enabled?.emoji !== false) plugins.push(emojiPlugin());
+  return plugins;
+};
 
 /**
  * Renders Markdown AST to DOCX and returns a streaming attachment response with profiling headers.
@@ -31,13 +44,15 @@ const generateDocxResponse = async (
   markdown: string,
   filename: string,
   fileProps: Parameters<typeof toDocx>[1] = {},
+  pluginsConfig?: Record<string, boolean>,
 ): Promise<NextResponse> => {
   const start = performance.now();
   const mdast = docxProcessor.parse(markdown);
   const buffer = await toDocx(
     mdast,
     fileProps,
-    { plugins: getServerPlugins() },
+    // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
+    { plugins: getServerPlugins(pluginsConfig) as any },
     "arraybuffer",
   );
   const renderTimeMs = Math.round(performance.now() - start);
@@ -58,7 +73,7 @@ const generateDocxResponse = async (
 /**
  * Generate a docx file from markdown on server side.
  * GET: Converts monorepo root sample.md
- * POST: Converts request body { markdown }
+ * POST: Converts request body { markdown, plugins }
  */
 export const GET = async () => {
   try {
@@ -80,7 +95,8 @@ export const POST = async (req: NextRequest) => {
   try {
     const body = await req.json();
     const md = body?.markdown || "# Empty Document";
-    return await generateDocxResponse(md, "document.docx");
+    const plugins = body?.plugins as Record<string, boolean> | undefined;
+    return await generateDocxResponse(md, "document.docx", {}, plugins);
   } catch (error) {
     console.error("Error generating DOCX from body:", error);
     return NextResponse.json(

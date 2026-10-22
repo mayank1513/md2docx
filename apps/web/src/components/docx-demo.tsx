@@ -1,25 +1,37 @@
 "use client";
 
+import { md2docx } from "@m2d/md2docx";
+import { remarkDocx } from "@m2d/remark-docx";
+import katex from "katex";
 import {
   AlertCircle,
   Calculator,
+  Check,
   CheckCircle2,
   Clock,
+  Code2,
+  Copy,
   Cpu,
+  Eye,
   FileSpreadsheet,
+  FileText,
   GitBranch,
   Globe,
   ImageIcon,
+  Layers,
   ListOrdered,
   Loader2,
   RotateCcw,
   Server,
+  SlidersHorizontal,
+  Smile,
   Sparkles,
   Trash2,
   Zap,
 } from "lucide-react";
 import { toDocx } from "mdast2docx";
 import {
+  emojiPlugin,
   htmlPlugin,
   imagePlugin,
   listPlugin,
@@ -27,11 +39,12 @@ import {
   mermaidPlugin,
   tablePlugin,
 } from "mdast2docx/plugins";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
+import { highlight } from "sugar-high";
 import { unified } from "unified";
 import { Button } from "./ui/button";
 
@@ -192,6 +205,115 @@ const PRESETS = [
 
 type PresetId = (typeof PRESETS)[number]["id"];
 
+type TargetId = "md2docx" | "mdast2docx" | "remark-docx" | "server";
+
+interface TargetOption {
+  id: TargetId;
+  name: string;
+  badge: string;
+  desc: string;
+  isServer?: boolean;
+}
+
+const TARGETS: TargetOption[] = [
+  {
+    id: "md2docx",
+    name: "@m2d/md2docx",
+    badge: "All-in-One",
+    desc: "Batteries-included Markdown to DOCX converter for browser & client applications",
+  },
+  {
+    id: "mdast2docx",
+    name: "mdast2docx",
+    badge: "Core AST",
+    desc: "Low-level AST compiler for custom Unified/Remark pipelines with plugin array",
+  },
+  {
+    id: "remark-docx",
+    name: "@m2d/remark-docx",
+    badge: "Unified Plugin",
+    desc: "Unified compiler plugin that seamlessly plugs into unified().use() chains",
+  },
+  {
+    id: "server",
+    name: "@m2d/remark-docx-node",
+    badge: "Node.js API",
+    desc: "Server-side streaming API using Sharp rasterizer & Linkedom HTML parser",
+    isServer: true,
+  },
+];
+
+type PluginId =
+  | "math"
+  | "mermaid"
+  | "image"
+  | "table"
+  | "list"
+  | "html"
+  | "emoji";
+
+interface PluginDefinition {
+  id: PluginId;
+  name: string;
+  fnName: string;
+  icon: React.ComponentType<{ className?: string }>;
+  desc: string;
+}
+
+const AVAILABLE_PLUGINS: PluginDefinition[] = [
+  {
+    id: "math",
+    name: "@m2d/math",
+    fnName: "mathPlugin",
+    icon: Calculator,
+    desc: "LaTeX Equations ($...$, $$...$$)",
+  },
+  {
+    id: "mermaid",
+    name: "@m2d/mermaid",
+    fnName: "mermaidPlugin",
+    icon: GitBranch,
+    desc: "Flowcharts & Sequence diagrams",
+  },
+  {
+    id: "image",
+    name: "@m2d/image",
+    fnName: "imagePlugin",
+    icon: ImageIcon,
+    desc: "Browser Images & SVGs",
+  },
+  {
+    id: "table",
+    name: "@m2d/table",
+    fnName: "tablePlugin",
+    icon: FileSpreadsheet,
+    desc: "GFM Tables & Alignments",
+  },
+  {
+    id: "list",
+    name: "@m2d/list",
+    fnName: "listPlugin",
+    icon: ListOrdered,
+    desc: "Numbered & Bulleted Trees",
+  },
+  {
+    id: "html",
+    name: "@m2d/html",
+    fnName: "htmlPlugin",
+    icon: Globe,
+    desc: "HTML Markup (<kbd>, <mark>, etc.)",
+  },
+  {
+    id: "emoji",
+    name: "@m2d/emoji",
+    fnName: "emojiPlugin",
+    icon: Smile,
+    desc: "GitHub Shortcodes & Twemoji",
+  },
+];
+
+type ViewMode = "edit" | "preview" | "code";
+
 type TimingResult = {
   mode: "client" | "server";
   targetName: string;
@@ -200,16 +322,6 @@ type TimingResult = {
   totalTimeMs: number;
   sizeKb: number;
 };
-
-const ACTIVE_PLUGINS = [
-  { name: "@m2d/math", icon: Calculator, desc: "LaTeX Equations" },
-  { name: "@m2d/mermaid", icon: GitBranch, desc: "Mermaid Diagrams" },
-  { name: "@m2d/image", icon: ImageIcon, desc: "Browser Images & SVGs" },
-  { name: "@m2d/image-node", icon: Server, desc: "Node Sharp Rasterizer" },
-  { name: "@m2d/table", icon: FileSpreadsheet, desc: "GFM Tables" },
-  { name: "@m2d/list", icon: ListOrdered, desc: "Nested Lists" },
-  { name: "@m2d/html", icon: Globe, desc: "HTML Tags" },
-];
 
 /**
  * Triggers a client-side file download from a Blob.
@@ -230,23 +342,144 @@ const downloadBlob = (blob: Blob, filename: string): void => {
  */
 const getPresetDocxFilename = (
   preset: string,
+  target: string,
   mode: "client" | "server",
 ): string =>
   preset === "full"
-    ? `full-sample-${mode}.docx`
-    : `md2docx-${preset}-${mode}.docx`;
+    ? `full-sample-${target}-${mode}.docx`
+    : `md2docx-${preset}-${target}-${mode}.docx`;
+
+/**
+ * Simple, fast client-side markdown to HTML renderer for the Live Preview tab.
+ */
+const renderMarkdownPreviewHtml = (md: string): string => {
+  const html = md
+    // Escape standard HTML brackets for non-tag blocks
+    .replace(/&/g, "&amp;")
+    // Display Math: $$ ... $$
+    .replace(/\$\$([\s\S]*?)\$\$/g, (_, tex) => {
+      try {
+        return `<div class="my-4 text-center overflow-x-auto">${katex.renderToString(
+          tex.trim(),
+          { displayMode: true, throwOnError: false },
+        )}</div>`;
+      } catch {
+        return `<div class="text-amber-500 font-mono text-xs my-2">$$${tex}$$</div>`;
+      }
+    })
+    // Inline Math: $ ... $
+    .replace(/\$([^$\n]+?)\$/g, (_, tex) => {
+      try {
+        return katex.renderToString(tex.trim(), {
+          displayMode: false,
+          throwOnError: false,
+        });
+      } catch {
+        return `<span class="text-amber-500 font-mono text-xs">$${tex}$</span>`;
+      }
+    })
+    // Fenced Code Blocks (including mermaid)
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
+      if (lang === "mermaid") {
+        return `<div class="my-4 p-4 rounded-xl border border-primary/30 bg-primary/5">
+          <div class="flex items-center gap-2 mb-2 text-xs font-semibold text-primary">
+            <span>📊 Mermaid Diagram</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary uppercase font-mono">Rendered to Vector in DOCX</span>
+          </div>
+          <pre class="font-mono text-xs text-muted-foreground overflow-x-auto p-2 rounded bg-card/80 border border-border/50">${code.trim()}</pre>
+        </div>`;
+      }
+      return `<pre class="my-3 p-3 rounded-lg bg-muted text-foreground font-mono text-xs overflow-x-auto border border-border"><code>${code.trim()}</code></pre>`;
+    })
+    // Headings
+    .replace(
+      /^### (.*$)/gim,
+      '<h3 class="text-lg font-bold mt-5 mb-2 text-foreground">$1</h3>',
+    )
+    .replace(
+      /^## (.*$)/gim,
+      '<h2 class="text-xl font-extrabold mt-6 mb-3 text-foreground border-b border-border/40 pb-1">$1</h2>',
+    )
+    .replace(
+      /^# (.*$)/gim,
+      '<h1 class="text-2xl font-black mt-4 mb-3 text-foreground">$1</h1>',
+    )
+    // Horizontal Rule
+    .replace(/^---$/gim, '<hr class="my-6 border-border" />')
+    // Bold & Italic
+    .replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    // Inline code
+    .replace(
+      /`([^`]+)`/g,
+      '<code class="px-1.5 py-0.5 rounded text-xs font-mono bg-muted text-primary">$1</code>',
+    )
+    // Unescape safe inline HTML markup specifically showcased by @m2d/html
+    .replace(
+      /&lt;kbd&gt;(.*?)&lt;\/kbd&gt;/g,
+      '<kbd class="px-1.5 py-0.5 rounded text-xs font-mono bg-muted border border-border shadow-xs">$1</kbd>',
+    )
+    .replace(
+      /&lt;mark style="([^"]*)"&gt;(.*?)&lt;\/mark&gt;/g,
+      '<mark style="$1" class="px-1 rounded">$2</mark>',
+    )
+    .replace(
+      /&lt;span style="([^"]*)"&gt;(.*?)&lt;\/span&gt;/g,
+      '<span style="$1">$2</span>',
+    );
+
+  return html;
+};
 
 export const DocxDemo = () => {
   const [selectedPreset, setSelectedPreset] = useState<PresetId>("all");
+  const [selectedTarget, setSelectedTarget] = useState<TargetId>("md2docx");
   const [markdown, setMarkdown] = useState(ALL_PLUGINS_SAMPLE);
   const [fullSampleText, setFullSampleText] = useState<string | null>(null);
   const [loadingSample, setLoadingSample] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("edit");
+  const [copiedCode, setCopiedCode] = useState(false);
+
+  // Plugin toggles state (default all true)
+  const [enabledPlugins, setEnabledPlugins] = useState<
+    Record<PluginId, boolean>
+  >({
+    math: true,
+    mermaid: true,
+    image: true,
+    table: true,
+    list: true,
+    html: true,
+    emoji: true,
+  });
 
   const [clientLoading, setClientLoading] = useState(false);
   const [serverLoading, setServerLoading] = useState(false);
   const [timing, setTiming] = useState<TimingResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [cacheCleared, setCacheCleared] = useState(false);
+
+  const activePluginCount = useMemo(
+    () => Object.values(enabledPlugins).filter(Boolean).length,
+    [enabledPlugins],
+  );
+
+  const togglePlugin = (id: PluginId) => {
+    setEnabledPlugins((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const setAllPlugins = (enable: boolean) => {
+    setEnabledPlugins({
+      math: enable,
+      mermaid: enable,
+      image: enable,
+      table: enable,
+      list: enable,
+      html: enable,
+      emoji: enable,
+    });
+  };
 
   const handleClearCache = () => {
     try {
@@ -284,50 +517,84 @@ export const DocxDemo = () => {
     }
   }, [selectedPreset, fullSampleText]);
 
-  /** Client-Side Generation: All plugins run 100% inside the browser */
+  /** Helper to instantiate only the active client plugins */
+  const getActiveClientPlugins = () => {
+    const list = [];
+    if (enabledPlugins.mermaid) list.push(mermaidPlugin());
+    if (enabledPlugins.html) list.push(htmlPlugin());
+    if (enabledPlugins.list) list.push(listPlugin());
+    if (enabledPlugins.math) list.push(mathPlugin());
+    if (enabledPlugins.table) list.push(tablePlugin());
+    if (enabledPlugins.emoji) list.push(emojiPlugin());
+    if (enabledPlugins.image) list.push(imagePlugin());
+    return list;
+  };
+
+  /** Client-Side Generation using the selected Target */
   const handleClientGenerate = async () => {
     setClientLoading(true);
     setErrorMsg(null);
     const start = performance.now();
     try {
-      const processor = unified()
-        .use(remarkParse)
-        .use(remarkGfm)
-        .use(remarkMath)
-        .use(remarkFrontmatter);
-      const mdast = processor.parse(markdown);
+      const plugins = getActiveClientPlugins();
+      const docxProps = {
+        title:
+          selectedPreset === "full"
+            ? "Markdown Syntax Showcase"
+            : "md2docx Feature Showcase",
+        creator: `${selectedTarget} Browser Engine`,
+      };
 
-      // Instantiate all plugins for client compilation
-      const plugins = [
-        htmlPlugin(),
-        mermaidPlugin(),
-        imagePlugin(),
-        listPlugin(),
-        tablePlugin(),
-        mathPlugin(),
-      ];
+      let docxBlob: Blob;
 
-      const docxBlob = (await toDocx(
-        mdast,
-        {
-          title:
-            selectedPreset === "full"
-              ? "Markdown Syntax Showcase"
-              : "md2docx Feature Showcase",
-          creator: "md2docx Browser Engine",
-        },
-        { plugins },
-        "blob",
-      )) as Blob;
+      if (selectedTarget === "md2docx") {
+        // High-level @m2d/md2docx
+        docxBlob = (await md2docx(
+          markdown,
+          docxProps,
+          // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
+          { plugins: plugins as any },
+          "blob",
+        )) as Blob;
+      } else if (selectedTarget === "remark-docx") {
+        // Unified remarkDocx compiler
+        const processor = unified()
+          .use(remarkParse)
+          .use(remarkGfm)
+          .use(remarkMath)
+          .use(remarkFrontmatter)
+          // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
+          .use(remarkDocx, "blob", docxProps, { plugins: plugins as any });
+        const res = await processor.process(markdown);
+        docxBlob = res.result as Blob;
+      } else {
+        // Core AST mdast2docx
+        const processor = unified()
+          .use(remarkParse)
+          .use(remarkGfm)
+          .use(remarkMath)
+          .use(remarkFrontmatter);
+        const mdast = processor.parse(markdown);
+        docxBlob = (await toDocx(
+          mdast,
+          docxProps,
+          // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
+          { plugins: plugins as any },
+          "blob",
+        )) as Blob;
+      }
 
       const renderTimeMs = Math.round(performance.now() - start);
       const sizeKb = Number((docxBlob.size / 1024).toFixed(1));
 
       // Trigger instant download
-      downloadBlob(docxBlob, getPresetDocxFilename(selectedPreset, "client"));
+      downloadBlob(
+        docxBlob,
+        getPresetDocxFilename(selectedPreset, selectedTarget, "client"),
+      );
 
       const targetLabel =
-        PRESETS.find((p) => p.id === selectedPreset)?.label || "Custom Doc";
+        TARGETS.find((t) => t.id === selectedTarget)?.name || "Client Engine";
 
       setTiming({
         mode: "client",
@@ -355,18 +622,14 @@ export const DocxDemo = () => {
     setErrorMsg(null);
     const roundtripStart = performance.now();
     try {
-      let response: Response;
-      if (selectedPreset === "full") {
-        // GET /api/docx converts sample.md directly on server
-        response = await fetch("/api/docx");
-      } else {
-        // POST /api/docx converts provided markdown on server
-        response = await fetch("/api/docx", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ markdown }),
-        });
-      }
+      const response = await fetch("/api/docx", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          markdown,
+          plugins: enabledPlugins,
+        }),
+      });
 
       if (!response.ok) throw new Error("Server conversion failed");
       const blob = await response.blob();
@@ -381,14 +644,14 @@ export const DocxDemo = () => {
       const sizeKb = Number((blob.size / 1024).toFixed(1));
 
       // Trigger download
-      downloadBlob(blob, getPresetDocxFilename(selectedPreset, "server"));
-
-      const targetLabel =
-        PRESETS.find((p) => p.id === selectedPreset)?.label || "Custom Doc";
+      downloadBlob(
+        blob,
+        getPresetDocxFilename(selectedPreset, "node-server", "server"),
+      );
 
       setTiming({
         mode: "server",
-        targetName: targetLabel,
+        targetName: "@m2d/remark-docx-node (Server API)",
         renderTimeMs: serverRenderMs,
         networkTimeMs,
         totalTimeMs,
@@ -406,6 +669,128 @@ export const DocxDemo = () => {
     }
   };
 
+  /** Dynamically generated code snippet tailored to the user's selected Target & Plugins */
+  const generatedCode = useMemo(() => {
+    const activeFns = AVAILABLE_PLUGINS.filter((p) => enabledPlugins[p.id]).map(
+      (p) => `${p.fnName}()`,
+    );
+
+    if (selectedTarget === "md2docx") {
+      return `import { md2docx } from "@m2d/md2docx";
+import {
+  ${AVAILABLE_PLUGINS.filter((p) => enabledPlugins[p.id])
+    .map((p) => p.fnName)
+    .join(",\n  ")}
+} from "mdast2docx/plugins";
+
+// Fast, all-in-one Markdown to DOCX conversion
+const docxBlob = await md2docx(
+  markdown,
+  {
+    title: "My Document",
+    creator: "md2docx Browser Engine"
+  },
+  {
+    plugins: [
+      ${activeFns.join(",\n      ")}
+    ]
+  },
+  "blob"
+);`;
+    }
+
+    if (selectedTarget === "mdast2docx") {
+      return `import { toDocx } from "mdast2docx";
+import {
+  ${AVAILABLE_PLUGINS.filter((p) => enabledPlugins[p.id])
+    .map((p) => p.fnName)
+    .join(",\n  ")}
+} from "mdast2docx/plugins";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+
+// 1. Parse Markdown into MDAST tree
+const mdast = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath)
+  .parse(markdown);
+
+// 2. Compile MDAST tree into Word OpenXML document (.docx)
+const docxBlob = await toDocx(
+  mdast,
+  { title: "My Document" },
+  {
+    plugins: [
+      ${activeFns.join(",\n      ")}
+    ]
+  },
+  "blob"
+);`;
+    }
+
+    if (selectedTarget === "remark-docx") {
+      return `import { remarkDocx } from "@m2d/remark-docx";
+import {
+  ${AVAILABLE_PLUGINS.filter((p) => enabledPlugins[p.id])
+    .map((p) => p.fnName)
+    .join(",\n  ")}
+} from "mdast2docx/plugins";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+
+// Unified compiler pipeline
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath)
+  .use(
+    remarkDocx,
+    "blob",
+    { title: "My Document" },
+    {
+      plugins: [
+        ${activeFns.join(",\n        ")}
+      ]
+    }
+  );
+
+const result = await processor.process(markdown);
+const docxBlob = result.result;`;
+    }
+
+    // Node Server / CLI Target
+    return `import { remarkDocxNode } from "@m2d/remark-docx-node";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+import fs from "node:fs/promises";
+
+// Server-side Node.js / CLI workflow
+// Powered by Linkedom (DOM-less HTML) and Sharp (Native Image/SVG)
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkDocxNode, "buffer", { title: "Architecture Report" });
+
+const file = await processor.process(markdown);
+await fs.writeFile("document.docx", Buffer.from(file.result));`;
+  }, [selectedTarget, enabledPlugins]);
+
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(generatedCode);
+      setCopiedCode(true);
+      setTimeout(() => setCopiedCode(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy code:", err);
+    }
+  };
+
   return (
     <section id="demo" className="py-20 border-y border-border/40 bg-muted/20">
       <div className="container mx-auto px-4 max-w-5xl">
@@ -413,88 +798,151 @@ export const DocxDemo = () => {
         <div className="text-center max-w-2xl mx-auto mb-8">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-4">
             <Cpu className="w-3.5 h-3.5" />
-            Interactive Playground
+            Interactive Playground & Engine Showcase
           </div>
           <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">
             Universal Client & Server DOCX Generation
           </h2>
           <p className="text-muted-foreground mt-3 text-base">
-            Test the complete plugin ecosystem rendered 100% locally in your
-            browser or streamed on demand from a Node.js server API.
+            Select your compilation target, configure active ecosystem plugins,
+            and export native Microsoft Word (.docx) documents in real-time.
           </p>
         </div>
 
-        {/* Active Plugins Strip */}
-        <div className="mb-6 p-4 rounded-xl border border-border/70 bg-card/70 backdrop-blur-sm">
-          <div className="flex items-center gap-2 mb-3 text-xs font-semibold text-foreground">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            Active Ecosystem Plugins Loaded in Pipeline:
+        {/* Target Selector Bar */}
+        <div className="mb-6 p-4 rounded-2xl border border-border/80 bg-card/70 backdrop-blur-sm shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <Layers className="w-4 h-4 text-primary" />
+              <span>Compilation Target:</span>
+            </div>
+            <span className="text-xs text-muted-foreground">
+              Select which API package drives the DOCX generation pipeline
+            </span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
-            {ACTIVE_PLUGINS.map((plugin) => {
-              const Icon = plugin.icon;
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {TARGETS.map((target) => {
+              const isSelected = selectedTarget === target.id;
               return (
-                <div
-                  key={plugin.name}
-                  className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 border border-border/60 text-xs"
+                <button
+                  key={target.id}
+                  type="button"
+                  onClick={() => setSelectedTarget(target.id)}
+                  className={`text-left p-3.5 rounded-xl border transition-all cursor-pointer ${
+                    isSelected
+                      ? "bg-primary/10 border-primary shadow-xs ring-1 ring-primary/30"
+                      : "bg-muted/40 border-border/60 hover:bg-muted/80 hover:border-border"
+                  }`}
                 >
-                  <Icon className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span
+                      className={`font-mono text-xs font-bold ${
+                        isSelected ? "text-primary" : "text-foreground"
+                      }`}
+                    >
+                      {target.name}
+                    </span>
+                    <span
+                      className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                        isSelected
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      {target.badge}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+                    {target.desc}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Plugin Toggles Section */}
+        <div className="mb-6 p-4 rounded-2xl border border-border/70 bg-card/70 backdrop-blur-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-xs font-bold text-foreground">
+                Active Plugin Ecosystem Pipeline:
+              </span>
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
+                {activePluginCount} of {AVAILABLE_PLUGINS.length} Active
+              </span>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex items-center gap-2 text-xs">
+              <button
+                type="button"
+                onClick={() => setAllPlugins(true)}
+                className="text-xs px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-medium"
+              >
+                Enable All
+              </button>
+              <span className="text-border">|</span>
+              <button
+                type="button"
+                onClick={() => setAllPlugins(false)}
+                className="text-xs px-2 py-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors font-medium"
+              >
+                Disable All
+              </button>
+            </div>
+          </div>
+
+          {/* Clickable Plugin Toggle Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2">
+            {AVAILABLE_PLUGINS.map((plugin) => {
+              const Icon = plugin.icon;
+              const isEnabled = enabledPlugins[plugin.id];
+              return (
+                <button
+                  key={plugin.id}
+                  type="button"
+                  onClick={() => togglePlugin(plugin.id)}
+                  className={`flex flex-col text-left p-2.5 rounded-xl border transition-all cursor-pointer select-none ${
+                    isEnabled
+                      ? "bg-primary/5 border-primary/40 shadow-xs"
+                      : "bg-muted/30 border-border/40 opacity-50 hover:opacity-80"
+                  }`}
+                  title={`Click to ${isEnabled ? "disable" : "enable"} ${plugin.name}`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <Icon
+                      className={`w-4 h-4 ${
+                        isEnabled ? "text-primary" : "text-muted-foreground"
+                      }`}
+                    />
+                    <div
+                      className={`w-4 h-4 rounded-md flex items-center justify-center text-[10px] font-bold ${
+                        isEnabled
+                          ? "bg-primary text-primary-foreground"
+                          : "border border-border text-transparent"
+                      }`}
+                    >
+                      {isEnabled ? <Check className="w-2.5 h-2.5" /> : null}
+                    </div>
+                  </div>
                   <div className="overflow-hidden">
-                    <div className="font-medium text-foreground truncate">
+                    <div
+                      className={`font-semibold text-xs truncate ${
+                        isEnabled ? "text-foreground" : "text-muted-foreground"
+                      }`}
+                    >
                       {plugin.name}
                     </div>
                     <div className="text-[10px] text-muted-foreground truncate">
                       {plugin.desc}
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
-          </div>
-        </div>
-
-        {/* Comparison Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <div className="p-4 rounded-xl border border-border/80 bg-card/60 backdrop-blur-sm flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-amber-500/10 text-amber-500 shrink-0 mt-0.5">
-              <Zap className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground text-sm">
-                  Client-Side (Browser)
-                </span>
-                <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500">
-                  0ms Network
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                6 client plugins active: Mermaid diagrams to SVG, LaTeX to
-                MathRuns, GFM tables, and browser image rasterization.
-              </p>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl border border-border/80 bg-card/60 backdrop-blur-sm flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 shrink-0 mt-0.5">
-              <Server className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-foreground text-sm">
-                  Server-Side (Node API)
-                </span>
-                <span className="text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500">
-                  HTTP Streaming
-                </span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                Rendered on demand via <code>/api/docx</code> with{" "}
-                <code>@m2d/image-node</code> (Sharp) and server-timing
-                diagnostics. Ideal for CLI exports, webhooks, and automated
-                batch runs.
-              </p>
-            </div>
           </div>
         </div>
 
@@ -525,17 +973,49 @@ export const DocxDemo = () => {
               ))}
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={handleClearCache}
-                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-                title="Clear browser IndexedDB diagram/image cache"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>{cacheCleared ? "Cache Cleared!" : "Clear Cache"}</span>
-              </button>
+            {/* View Mode Toggle & Reset Toolbar */}
+            <div className="flex items-center gap-2">
+              {/* View Switcher: Edit | Preview | Code */}
+              <div className="inline-flex items-center p-0.5 rounded-lg bg-muted border border-border/60">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("edit")}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                    viewMode === "edit"
+                      ? "bg-card text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Markdown</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("preview")}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                    viewMode === "preview"
+                      ? "bg-card text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Live Preview</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("code")}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                    viewMode === "code"
+                      ? "bg-card text-foreground shadow-xs font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Code2 className="w-3.5 h-3.5" />
+                  <span>Implementation Code</span>
+                </button>
+              </div>
+
+              {/* Reset Text */}
               <button
                 type="button"
                 onClick={() => {
@@ -546,24 +1026,105 @@ export const DocxDemo = () => {
                     if (match) setMarkdown(match.sample);
                   }
                 }}
-                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors p-1.5"
                 title="Reset editor text to preset"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset</span>
+              </button>
+
+              {/* Clear Cache */}
+              <button
+                type="button"
+                onClick={handleClearCache}
+                className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors p-1.5"
+                title={
+                  cacheCleared
+                    ? "Cache Cleared!"
+                    : "Clear browser IndexedDB diagram/image cache"
+                }
+              >
+                <Trash2
+                  className={`w-3.5 h-3.5 ${
+                    cacheCleared ? "text-emerald-500" : ""
+                  }`}
+                />
+                {cacheCleared && (
+                  <span className="text-[11px] text-emerald-500 font-medium">
+                    Cleared!
+                  </span>
+                )}
               </button>
             </div>
           </div>
 
-          {/* Editor */}
+          {/* Main Content Area: Editor, Preview, or Code */}
           <div className="p-5">
-            <textarea
-              value={markdown}
-              onChange={(e) => setMarkdown(e.target.value)}
-              rows={selectedPreset === "full" ? 14 : 10}
-              className="w-full font-mono text-xs md:text-sm p-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y leading-relaxed"
-              placeholder="Write Markdown here..."
-            />
+            {viewMode === "edit" && (
+              <textarea
+                value={markdown}
+                onChange={(e) => setMarkdown(e.target.value)}
+                rows={selectedPreset === "full" ? 14 : 11}
+                className="w-full font-mono text-xs md:text-sm p-4 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 resize-y leading-relaxed"
+                placeholder="Write Markdown here..."
+              />
+            )}
+
+            {viewMode === "preview" && (
+              <div
+                className="w-full min-h-[260px] max-h-[500px] overflow-y-auto p-5 rounded-xl border border-border bg-background text-foreground prose prose-sm dark:prose-invert max-w-none leading-relaxed"
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: preview render
+                dangerouslySetInnerHTML={{
+                  __html: renderMarkdownPreviewHtml(markdown),
+                }}
+              />
+            )}
+
+            {viewMode === "code" && (
+              <div className="relative rounded-xl border border-border bg-muted/40 p-4">
+                <div className="flex items-center justify-between pb-3 mb-3 border-b border-border/50 text-xs">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-primary" />
+                    <span>
+                      Generated for Target{" "}
+                      <strong className="text-foreground">
+                        {TARGETS.find((t) => t.id === selectedTarget)?.name}
+                      </strong>{" "}
+                      with{" "}
+                      <strong className="text-foreground">
+                        {activePluginCount}
+                      </strong>{" "}
+                      plugins
+                    </span>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCopyCode}
+                    className="h-7 text-xs gap-1.5"
+                  >
+                    {copiedCode ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-500" />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>Copy Code</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <pre className="font-mono text-xs overflow-x-auto leading-relaxed text-foreground">
+                  <code
+                    // biome-ignore lint/security/noDangerouslySetInnerHtml: syntax highlighted code
+                    dangerouslySetInnerHTML={{
+                      __html: highlight(generatedCode),
+                    }}
+                  />
+                </pre>
+              </div>
+            )}
           </div>
 
           {/* Error Banner */}
@@ -576,17 +1137,14 @@ export const DocxDemo = () => {
 
           {/* Action Bar & Performance Metrics */}
           <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 px-5 py-4 border-t border-border bg-muted/30">
-            {/* Detailed Latency Breakdown */}
+            {/* Latency Breakdown */}
             <div className="text-xs text-muted-foreground">
               {timing ? (
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <div className="inline-flex items-center gap-1.5 text-emerald-500 font-semibold">
                     <CheckCircle2 className="w-4 h-4 shrink-0" />
                     <span>
-                      {timing.mode === "client"
-                        ? "Browser (Local)"
-                        : "Server API"}
-                      : {timing.sizeKb} KB
+                      {timing.targetName}: {timing.sizeKb} KB
                     </span>
                   </div>
                   <span className="text-border">|</span>
@@ -597,12 +1155,11 @@ export const DocxDemo = () => {
                     <>
                       <span className="text-border">|</span>
                       <span>
-                        Network/Transfer:{" "}
-                        <strong>{timing.networkTimeMs}ms</strong>
+                        Network: <strong>{timing.networkTimeMs}ms</strong>
                       </span>
                       <span className="text-border">|</span>
                       <span>
-                        Total Roundtrip: <strong>{timing.totalTimeMs}ms</strong>
+                        Roundtrip: <strong>{timing.totalTimeMs}ms</strong>
                       </span>
                     </>
                   )}
@@ -610,7 +1167,7 @@ export const DocxDemo = () => {
                     <>
                       <span className="text-border">|</span>
                       <span className="text-emerald-500 font-medium">
-                        0ms Network
+                        0ms Network (100% In-Browser)
                       </span>
                     </>
                   )}
@@ -618,19 +1175,22 @@ export const DocxDemo = () => {
               ) : (
                 <div className="inline-flex items-center gap-1.5">
                   <Clock className="w-3.5 h-3.5" />
-                  <span>Choose an environment to compile and download</span>
+                  <span>
+                    Click compile below to execute with selected target &
+                    plugins
+                  </span>
                 </div>
               )}
             </div>
 
-            {/* Symmetrical Action Buttons for both Client & Server */}
+            {/* Symmetrical Action Buttons for Client & Server */}
             <div className="flex items-center gap-3 self-end md:self-auto">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleServerGenerate}
                 disabled={serverLoading || clientLoading || !markdown.trim()}
-                className="text-xs font-medium border-blue-500/30 text-blue-500 hover:bg-blue-500/10 hover:text-blue-500"
+                className="text-xs font-medium border-blue-500/30 text-blue-500 hover:bg-blue-500/10 hover:text-blue-500 cursor-pointer"
               >
                 {serverLoading ? (
                   <>
@@ -639,8 +1199,8 @@ export const DocxDemo = () => {
                   </>
                 ) : (
                   <>
-                    <Globe className="w-3.5 h-3.5 mr-1.5" />
-                    Render on Server (API)
+                    <Server className="w-3.5 h-3.5 mr-1.5" />
+                    Render on Server (Node API)
                   </>
                 )}
               </Button>
@@ -649,7 +1209,7 @@ export const DocxDemo = () => {
                 size="sm"
                 onClick={handleClientGenerate}
                 disabled={clientLoading || serverLoading || !markdown.trim()}
-                className="text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
+                className="text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
               >
                 {clientLoading ? (
                   <>
@@ -659,7 +1219,8 @@ export const DocxDemo = () => {
                 ) : (
                   <>
                     <Zap className="w-3.5 h-3.5 mr-1.5" />
-                    Render in Browser (Client)
+                    Compile in Browser (
+                    {TARGETS.find((t) => t.id === selectedTarget)?.name})
                   </>
                 )}
               </Button>

@@ -237,6 +237,15 @@ importers:
 
   apps/web:
     dependencies:
+      '@m2d/md2docx':
+        specifier: workspace:*
+        version: link:../../packages/md2docx
+      '@m2d/remark-docx':
+        specifier: workspace:*
+        version: link:../../packages/remark-docx
+      '@m2d/remark-docx-node':
+        specifier: workspace:*
+        version: link:../../packages/remark-docx-node
       '@mayank1513/fork-me':
         specifier: ^2.1.3
         version: 2.1.3(@types/react@19.3.0)(next@16.4.2(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)
