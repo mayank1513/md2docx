@@ -10,6 +10,7 @@
         "@m2d/cli",
         "@m2d/core",
         "@m2d/html",
+        "@m2d/html-node",
         "@m2d/image",
         "@m2d/image-node",
         "@m2d/list",
