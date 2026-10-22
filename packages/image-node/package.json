@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@m2d/core": "workspace:*",
+    "@m2d/image": "workspace:*",
     "sharp": "^0.35.5"
   },
   "peerDependencies": {

@@ -42,6 +42,8 @@ export interface IImageErrorOptions {
   placeholder?: string;
 }
 
+export type INodeImageErrorOptions = IImageErrorOptions;
+
 /**
  * Generates fallback docx runs for failed image or diagram resolution.
  */

@@ -23,6 +23,26 @@
         "default": "./dist/index.js"
       }
     },
+    "./fallback": {
+      "import": {
+        "types": "./dist/fallback.d.mts",
+        "default": "./dist/fallback.mjs"
+      },
+      "require": {
+        "types": "./dist/fallback.d.ts",
+        "default": "./dist/fallback.js"
+      }
+    },
+    "./dist/fallback": {
+      "import": {
+        "types": "./dist/fallback.d.mts",
+        "default": "./dist/fallback.mjs"
+      },
+      "require": {
+        "types": "./dist/fallback.d.ts",
+        "default": "./dist/fallback.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "repository": {
