@@ -70,11 +70,9 @@ describe.concurrent("toDocx", () => {
 
   it("should handle placeholder", async ({ expect }) => {
     const options = {
-      // @ts-expect-error -- ok
       imageResolver: () => getPlaceHolderImage(options),
       placeholder: "some-url",
     };
-    // @ts-expect-error -- ok
     const placeholderImg = await getPlaceHolderImage(options);
     expect(placeholderImg.data).toBeInstanceOf(ArrayBuffer);
     expect((placeholderImg.data as ArrayBuffer).byteLength).toBe(43);

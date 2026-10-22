@@ -23,24 +23,24 @@
         "default": "./dist/index.js"
       }
     },
-    "./fallback": {
+    "./utils": {
       "import": {
-        "types": "./dist/fallback.d.mts",
-        "default": "./dist/fallback.mjs"
+        "types": "./dist/utils.d.mts",
+        "default": "./dist/utils.mjs"
       },
       "require": {
-        "types": "./dist/fallback.d.ts",
-        "default": "./dist/fallback.js"
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
       }
     },
-    "./dist/fallback": {
+    "./dist/utils": {
       "import": {
-        "types": "./dist/fallback.d.mts",
-        "default": "./dist/fallback.mjs"
+        "types": "./dist/utils.d.mts",
+        "default": "./dist/utils.mjs"
       },
       "require": {
-        "types": "./dist/fallback.d.ts",
-        "default": "./dist/fallback.js"
+        "types": "./dist/utils.d.ts",
+        "default": "./dist/utils.js"
       }
     },
     "./package.json": "./package.json"

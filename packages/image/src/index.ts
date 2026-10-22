@@ -6,7 +6,6 @@ import {
   simpleCleanup,
 } from "@m2d/cache";
 import type {
-  EmptyNode,
   Image,
   ImageReference,
   IPlugin,
@@ -19,14 +18,15 @@ import type {
 } from "@m2d/core";
 import type { Definitions } from "@m2d/core/utils";
 import type { IImageOptions } from "docx";
+import { fixGeneratedSvg, handleSvg } from "./svg-utils";
 import {
-  createFallbackRuns,
+  createImageInlineHook,
+  getImageMimeType,
+  handleImageErrorFallback,
   type ImageErrorMode,
   type MermaidFallbackMode,
   type SvgFallbackMode,
-} from "./fallback";
-import { fixGeneratedSvg, handleSvg } from "./svg-utils";
-import { getImageMimeType } from "./utils";
+} from "./utils";
 
 export type { ImageErrorMode, MermaidFallbackMode, SvgFallbackMode };
 
@@ -479,103 +479,14 @@ export const imagePlugin: (options?: IImagePluginOptions) => IPlugin = (
               },
             };
 
-            const isError = Boolean(
-              (resolved as { isError?: boolean })?.isError,
+            handleImageErrorFallback(
+              node as Image | SVG,
+              parent,
+              grandparent,
+              options,
+              resolved,
+              existingData,
             );
-            if (isError && parent && grandparent?.children) {
-              const isMermaid = Boolean(
-                (existingData as { mermaid?: string } | undefined)?.mermaid ||
-                  (node as SVG).data?.mermaid,
-              );
-              const mermaidFallback =
-                options?.mermaidFallback ??
-                (options?.errorMode === "silent" ? "silent" : "code");
-              const svgFallback = options?.svgFallback ?? "warn";
-              const isSoloParagraph =
-                parent.type === "paragraph" && parent.children?.length === 1;
-
-              if (isMermaid && isSoloParagraph) {
-                const mermaidCode = String(
-                  (existingData as { mermaid?: string } | undefined)?.mermaid ??
-                    (node as SVG).data?.mermaid ??
-                    "",
-                );
-                if (mermaidFallback === "code") {
-                  const replacement: RootContent[] = [];
-                  if (options?.collapsibleHeading !== false) {
-                    const headingText =
-                      typeof options?.collapsibleHeading === "string"
-                        ? options.collapsibleHeading
-                        : "⚠️ Mermaid Diagram Source (Render Fallback)";
-                    replacement.push({
-                      type: "heading",
-                      depth: 6,
-                      children: [{ type: "text", value: headingText }],
-                    });
-                  }
-                  replacement.push({
-                    type: "code",
-                    lang: "mermaid",
-                    value: mermaidCode,
-                  });
-                  const idx = grandparent.children.indexOf(
-                    parent as RootContent,
-                  );
-                  if (idx !== -1) {
-                    grandparent.children.splice(idx, 1, ...replacement);
-                  }
-                } else if (mermaidFallback === "silent") {
-                  const idx = grandparent.children.indexOf(
-                    parent as RootContent,
-                  );
-                  if (idx !== -1) {
-                    grandparent.children.splice(idx, 1);
-                  }
-                }
-              } else if (node.type === "svg" && !isMermaid && isSoloParagraph) {
-                if (svgFallback === "code") {
-                  const svgVal =
-                    typeof (node as SVG).value === "string"
-                      ? (node as SVG).value
-                      : "";
-                  const replacement: RootContent[] = [];
-                  if (options?.collapsibleHeading !== false) {
-                    const headingText =
-                      typeof options?.collapsibleHeading === "string"
-                        ? options.collapsibleHeading
-                        : "⚠️ SVG Source (Render Fallback)";
-                    replacement.push({
-                      type: "heading",
-                      depth: 6,
-                      children: [{ type: "text", value: headingText }],
-                    });
-                  }
-                  replacement.push({
-                    type: "code",
-                    lang: "xml",
-                    value: svgVal as string,
-                  });
-                  const idx = grandparent.children.indexOf(
-                    parent as RootContent,
-                  );
-                  if (idx !== -1) {
-                    grandparent.children.splice(idx, 1, ...replacement);
-                  }
-                } else if (svgFallback === "silent") {
-                  const idx = grandparent.children.indexOf(
-                    parent as RootContent,
-                  );
-                  if (idx !== -1) {
-                    grandparent.children.splice(idx, 1);
-                  }
-                }
-              } else if (options?.errorMode === "silent" && isSoloParagraph) {
-                const idx = grandparent.children.indexOf(parent as RootContent);
-                if (idx !== -1) {
-                  grandparent.children.splice(idx, 1);
-                }
-              }
-            }
           })(),
         );
       }
@@ -590,20 +501,7 @@ export const imagePlugin: (options?: IImagePluginOptions) => IPlugin = (
     preprocess,
 
     /** Renderer step: injects resolved image data into the final DOCX AST */
-    inline: (docx, node, runProps) => {
-      if (/^(image|svg)/.test(node.type)) {
-        (node as EmptyNode)._type = node.type;
-        node.type = "";
-        const data = (node as Image).data as
-          | (Record<string, unknown> & Partial<IImageOptions>)
-          | undefined;
-        if (data && "isError" in data && data.isError) {
-          return createFallbackRuns(docx, data, options, runProps);
-        }
-        return [new docx.ImageRun({ ...(data as IImageOptions), ...runProps })];
-      }
-      return [];
-    },
+    inline: createImageInlineHook(options),
     /** clean up IndexedDB once the document is packed */
     postprocess: () => {
       if (
