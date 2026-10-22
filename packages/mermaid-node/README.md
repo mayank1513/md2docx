@@ -117,7 +117,7 @@ export interface IMermaidNodePluginOptions {
 ## ❓ FAQ & Limitations
 
 ### Why not use a headless browser (Puppeteer / Chromium) in Node?
-If you're already spinning up and managing a 300MB headless browser process on your server, **why not run the entire conversion in the browser engine directly?** With [`@m2d/mermaid`](https://npmjs.com/package/@m2d/mermaid) in a browser context, you get 100% diagram support and native DOM/canvas rendering. `@m2d/mermaid-node` exists specifically to provide an ultra-lightweight, edge-compatible alternative (<10ms rendering, zero browser binaries, pure TypeScript).
+If you're already spinning up and managing a 300MB headless browser process on your server, **why not run the entire conversion in the browser engine directly?** With [`@m2d/mermaid`](https://npmjs.com/package/@m2d/mermaid) in a browser context, you get 100% diagram support and native DOM/canvas rendering. `@m2d/mermaid-node` exists specifically to provide an ultra-lightweight, edge-compatible alternative (&lt;10ms rendering, zero browser binaries, pure TypeScript).
 
 ### What diagram types does `beautiful-mermaid` support?
 - **Supported (6 Core Types)**: Flowcharts (`graph TD`, `flowchart LR`), Sequence Diagrams (`sequenceDiagram`), Class Diagrams (`classDiagram`), State Diagrams (`stateDiagram-v2`), Entity Relationship Diagrams (`erDiagram`), and XY Charts (`xychart-beta`).
