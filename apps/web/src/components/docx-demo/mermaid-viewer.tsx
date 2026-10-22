@@ -106,7 +106,7 @@ export const MermaidViewer = ({ chart }: MermaidViewerProps) => {
           <span>Mermaid Diagram Syntax Error:</span>
         </div>
         <pre className="font-mono text-[11px] p-2 rounded bg-background/50 border border-destructive/20 overflow-x-auto text-foreground">
-          {trimmedChart}
+          <code>{highlightCode(trimmedChart, "mermaid")}</code>
         </pre>
       </div>
     );

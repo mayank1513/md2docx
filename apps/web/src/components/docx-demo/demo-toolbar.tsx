@@ -1,4 +1,11 @@
-import { Code2, Eye, FileText, RotateCcw, Trash2 } from "lucide-react";
+import {
+  Code2,
+  Eye,
+  FileText,
+  RotateCcw,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react";
 import { PRESETS } from "./constants";
 import type { PresetId, ViewMode } from "./types";
 
@@ -75,6 +82,18 @@ export const DemoToolbar = ({
           >
             <Eye className="w-3.5 h-3.5" />
             <span>Live Preview</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onChangeViewMode("tiptap")}
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+              viewMode === "tiptap"
+                ? "bg-card text-foreground shadow-xs font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+            <span>WYSIWYG (Tiptap)</span>
           </button>
           <button
             type="button"

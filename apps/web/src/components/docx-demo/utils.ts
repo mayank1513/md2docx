@@ -94,8 +94,10 @@ const docxBlob = await toDocx(
 );`;
   }
 
-  if (selectedTarget === "remark-docx") {
-    return `import { remarkDocx } from "@m2d/remark-docx";
+  // Remark Plugin (Unified Pipeline - Browser & Node.js)
+  return `// Browser: import { remarkDocx } from "@m2d/remark-docx";
+// Node.js: import { remarkDocxNode as remarkDocx } from "@m2d/remark-docx-node";
+import { remarkDocx } from "@m2d/remark-docx";
 import {
   ${AVAILABLE_PLUGINS.filter((p) => enabledPlugins[p.id])
     .map((p) => p.fnName)
@@ -113,7 +115,7 @@ const processor = unified()
   .use(remarkMath)
   .use(
     remarkDocx,
-    "blob",
+    "blob", // use "buffer" or "uint8array" in Node.js
     { title: "My Document" },
     {
       plugins: [
@@ -124,22 +126,4 @@ const processor = unified()
 
 const result = await processor.process(markdown);
 const docxBlob = result.result;`;
-  }
-
-  // Node Server / CLI Target
-  return `import { remarkDocxNode } from "@m2d/remark-docx-node";
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkGfm from "remark-gfm";
-import fs from "node:fs/promises";
-
-// Server-side Node.js / CLI workflow
-// Powered by Linkedom (DOM-less HTML) and Sharp (Native Image/SVG)
-const processor = unified()
-  .use(remarkParse)
-  .use(remarkGfm)
-  .use(remarkDocxNode, "buffer", { title: "Architecture Report" });
-
-const file = await processor.process(markdown);
-await fs.writeFile("document.docx", Buffer.from(file.result));`;
 };

@@ -2,7 +2,7 @@ import type { PRESETS } from "./constants";
 
 export type PresetId = (typeof PRESETS)[number]["id"];
 
-export type TargetId = "md2docx" | "mdast2docx" | "remark-docx" | "server";
+export type TargetId = "md2docx" | "mdast2docx" | "remark-docx";
 
 export interface TargetOption {
   id: TargetId;
@@ -29,7 +29,7 @@ export interface PluginDefinition {
   desc: string;
 }
 
-export type ViewMode = "edit" | "preview" | "code";
+export type ViewMode = "edit" | "preview" | "code" | "tiptap";
 
 export type TimingResult = {
   mode: "client" | "server";

@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { TARGETS } from "./constants";
 import { highlightCode } from "./highlight";
 import { MermaidViewer } from "./mermaid-viewer";
+import { TiptapRichEditor } from "./tiptap-rich-editor";
 import type { PresetId, TargetId, ViewMode } from "./types";
 
 interface PreviewPanelProps {
@@ -125,6 +126,8 @@ export const PreviewPanel = ({
           </Md>
         </div>
       )}
+
+      {viewMode === "tiptap" && <TiptapRichEditor />}
 
       {viewMode === "code" && (
         <div className="relative rounded-xl border border-border bg-muted/40 p-4">

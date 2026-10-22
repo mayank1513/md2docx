@@ -7,7 +7,7 @@ import {
   ListOrdered,
   Smile,
 } from "lucide-react";
-import type { PluginDefinition, TargetOption } from "./types";
+import type { PluginDefinition, PluginId, TargetOption } from "./types";
 
 export const ALL_PLUGINS_SAMPLE = `# md2docx Feature Showcase
 
@@ -179,16 +179,9 @@ export const TARGETS: TargetOption[] = [
   },
   {
     id: "remark-docx",
-    name: "@m2d/remark-docx",
+    name: "Remark Plugin",
     badge: "Unified Plugin",
-    desc: "Unified compiler plugin that seamlessly plugs into unified().use() chains",
-  },
-  {
-    id: "server",
-    name: "@m2d/remark-docx-node",
-    badge: "Node.js API",
-    desc: "Server-side streaming API using Sharp rasterizer & Linkedom HTML parser",
-    isServer: true,
+    desc: "Plugs into unified().use() chains (@m2d/remark-docx for browser, @m2d/remark-docx-node for Node.js)",
   },
 ];
 
@@ -243,3 +236,54 @@ export const AVAILABLE_PLUGINS: PluginDefinition[] = [
     desc: "GitHub Shortcodes & Twemoji",
   },
 ];
+
+export const PRESET_PLUGINS: Record<
+  (typeof PRESETS)[number]["id"],
+  Record<PluginId, boolean>
+> = {
+  all: {
+    math: true,
+    mermaid: true,
+    image: true,
+    table: true,
+    list: true,
+    html: true,
+    emoji: true,
+  },
+  full: {
+    math: true,
+    mermaid: true,
+    image: true,
+    table: true,
+    list: true,
+    html: true,
+    emoji: true,
+  },
+  math: {
+    math: true,
+    mermaid: false,
+    image: false,
+    table: false,
+    list: false,
+    html: false,
+    emoji: false,
+  },
+  mermaid: {
+    math: false,
+    mermaid: true,
+    image: true,
+    table: false,
+    list: false,
+    html: false,
+    emoji: false,
+  },
+  table: {
+    math: false,
+    mermaid: false,
+    image: false,
+    table: true,
+    list: false,
+    html: false,
+    emoji: false,
+  },
+};

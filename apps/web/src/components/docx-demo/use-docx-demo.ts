@@ -16,7 +16,12 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
-import { ALL_PLUGINS_SAMPLE, PRESETS, TARGETS } from "./constants";
+import {
+  ALL_PLUGINS_SAMPLE,
+  PRESET_PLUGINS,
+  PRESETS,
+  TARGETS,
+} from "./constants";
 import type {
   PluginId,
   PresetId,
@@ -36,15 +41,7 @@ export const useDocxDemo = () => {
 
   const [enabledPlugins, setEnabledPlugins] = useState<
     Record<PluginId, boolean>
-  >({
-    math: true,
-    mermaid: true,
-    image: true,
-    table: true,
-    list: true,
-    html: true,
-    emoji: true,
-  });
+  >(PRESET_PLUGINS.all);
 
   const [clientLoading, setClientLoading] = useState(false);
   const [serverLoading, setServerLoading] = useState(false);
@@ -86,6 +83,7 @@ export const useDocxDemo = () => {
   };
 
   const handleResetText = () => {
+    setEnabledPlugins(PRESET_PLUGINS[selectedPreset]);
     if (selectedPreset === "full" && fullSampleText) {
       setMarkdown(fullSampleText);
     } else {
@@ -94,8 +92,9 @@ export const useDocxDemo = () => {
     }
   };
 
-  // Lazy-load full sample text when switched to "full"
+  // Sync active plugins and lazy-load full sample text when preset changes
   useEffect(() => {
+    setEnabledPlugins(PRESET_PLUGINS[selectedPreset]);
     if (selectedPreset === "full") {
       if (!fullSampleText) {
         setLoadingSample(true);
