@@ -1,5 +1,12 @@
 # @m2d/md2docx
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`327f0e9`](https://github.com/md2docx/md2docx/commit/327f0e940566bd04fcd9035a7b3d2673729c6e77)]:
+  - @m2d/remark-docx@1.4.0
+
 ## 0.1.0
 
 ### Minor Changes

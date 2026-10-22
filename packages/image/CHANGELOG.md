@@ -1,5 +1,11 @@
 # @m2d/image
 
+## 1.6.0
+
+### Minor Changes
+
+- [`3c13b5c`](https://github.com/md2docx/md2docx/commit/3c13b5c081d49989d229afdc762e924c77c2101c) Thanks [@mayank1513](https://github.com/mayank1513)! - Export `@m2d/image/utils` subpath and share fallback run generation across `@m2d/image` and `@m2d/image-node`.
+
 ## 1.5.1
 
 ### Patch Changes
