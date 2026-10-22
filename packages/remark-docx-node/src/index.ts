@@ -1,18 +1,14 @@
+import { type IDocxProps, type ISectionProps, toDocx } from "@m2d/core";
+import { DEFAULT_SECTION_PROPS } from "@m2d/core/utils";
+import { emojiPlugin } from "@m2d/emoji";
+import { nodeHtmlPlugin } from "@m2d/html-node";
+import { nodeImagePlugin } from "@m2d/image-node";
+import { listPlugin } from "@m2d/list";
+import { mathPlugin } from "@m2d/math";
+import { nodeMermaidPlugin } from "@m2d/mermaid-node";
+import { tablePlugin } from "@m2d/table";
 import type { OutputByType, OutputType } from "docx";
 import type { Root } from "mdast";
-import { type IDocxProps, type ISectionProps, toDocx } from "mdast2docx";
-import {
-  emojiPlugin,
-  listPlugin,
-  mathPlugin,
-  tablePlugin,
-} from "mdast2docx/plugins";
-import {
-  nodeHtmlPlugin,
-  nodeImagePlugin,
-  nodeMermaidPlugin,
-} from "mdast2docx/plugins/node";
-import { DEFAULT_SECTION_PROPS } from "mdast2docx/utils";
 import type { Plugin } from "unified";
 
 export interface Mdast2DocxNodePluginProps {

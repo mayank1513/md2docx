@@ -741,15 +741,9 @@ importers:
       '@m2d/html':
         specifier: workspace:*
         version: link:../html
-      '@m2d/html-node':
-        specifier: workspace:*
-        version: link:../html-node
       '@m2d/image':
         specifier: workspace:*
         version: link:../image
-      '@m2d/image-node':
-        specifier: workspace:*
-        version: link:../image-node
       '@m2d/list':
         specifier: workspace:*
         version: link:../list
@@ -759,9 +753,6 @@ importers:
       '@m2d/mermaid':
         specifier: workspace:*
         version: link:../mermaid
-      '@m2d/mermaid-node':
-        specifier: workspace:*
-        version: link:../mermaid-node
       '@m2d/table':
         specifier: workspace:*
         version: link:../table
@@ -769,6 +760,15 @@ importers:
         specifier: ^9.12.0
         version: 9.12.0
     devDependencies:
+      '@m2d/html-node':
+        specifier: workspace:*
+        version: link:../html-node
+      '@m2d/image-node':
+        specifier: workspace:*
+        version: link:../image-node
+      '@m2d/mermaid-node':
+        specifier: workspace:*
+        version: link:../mermaid-node
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
@@ -913,12 +913,33 @@ importers:
 
   packages/remark-docx:
     dependencies:
+      '@m2d/core':
+        specifier: workspace:*
+        version: link:../core
+      '@m2d/emoji':
+        specifier: ^0.1.3
+        version: 0.1.3(docx@9.12.0)
+      '@m2d/html':
+        specifier: workspace:*
+        version: link:../html
+      '@m2d/image':
+        specifier: workspace:*
+        version: link:../image
+      '@m2d/list':
+        specifier: workspace:*
+        version: link:../list
+      '@m2d/math':
+        specifier: workspace:*
+        version: link:../math
+      '@m2d/mermaid':
+        specifier: workspace:*
+        version: link:../mermaid
+      '@m2d/table':
+        specifier: workspace:*
+        version: link:../table
       docx:
         specifier: ^9.12.0
         version: 9.12.0
-      mdast2docx:
-        specifier: workspace:*
-        version: link:../mdast2docx
     devDependencies:
       '@types/mdast':
         specifier: ^4.0.4
@@ -944,12 +965,33 @@ importers:
 
   packages/remark-docx-node:
     dependencies:
+      '@m2d/core':
+        specifier: workspace:*
+        version: link:../core
+      '@m2d/emoji':
+        specifier: ^0.1.3
+        version: 0.1.3(docx@9.12.0)
+      '@m2d/html-node':
+        specifier: workspace:*
+        version: link:../html-node
+      '@m2d/image-node':
+        specifier: workspace:*
+        version: link:../image-node
+      '@m2d/list':
+        specifier: workspace:*
+        version: link:../list
+      '@m2d/math':
+        specifier: workspace:*
+        version: link:../math
+      '@m2d/mermaid-node':
+        specifier: workspace:*
+        version: link:../mermaid-node
+      '@m2d/table':
+        specifier: workspace:*
+        version: link:../table
       docx:
         specifier: ^9.12.0
         version: 9.12.0
-      mdast2docx:
-        specifier: workspace:*
-        version: link:../mdast2docx
     devDependencies:
       '@types/mdast':
         specifier: ^4.0.4

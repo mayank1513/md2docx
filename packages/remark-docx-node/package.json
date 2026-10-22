@@ -42,8 +42,15 @@
     "dev": "tsup --watch"
   },
   "dependencies": {
-    "docx": "^9.12.0",
-    "mdast2docx": "workspace:*"
+    "@m2d/core": "workspace:*",
+    "@m2d/emoji": "^0.1.3",
+    "@m2d/html-node": "workspace:*",
+    "@m2d/image-node": "workspace:*",
+    "@m2d/list": "workspace:*",
+    "@m2d/math": "workspace:*",
+    "@m2d/mermaid-node": "workspace:*",
+    "@m2d/table": "workspace:*",
+    "docx": "^9.12.0"
   },
   "devDependencies": {
     "@types/mdast": "^4.0.4",

@@ -1,16 +1,14 @@
+import { type IDocxProps, type ISectionProps, toDocx } from "@m2d/core";
+import { DEFAULT_SECTION_PROPS, warnOnce } from "@m2d/core/utils";
+import { emojiPlugin } from "@m2d/emoji";
+import { htmlPlugin } from "@m2d/html";
+import { imagePlugin } from "@m2d/image";
+import { listPlugin } from "@m2d/list";
+import { mathPlugin } from "@m2d/math";
+import { mermaidPlugin } from "@m2d/mermaid";
+import { tablePlugin } from "@m2d/table";
 import type { OutputByType, OutputType } from "docx";
 import type { Root } from "mdast";
-import { type IDocxProps, type ISectionProps, toDocx } from "mdast2docx";
-import {
-  emojiPlugin,
-  htmlPlugin,
-  imagePlugin,
-  listPlugin,
-  mathPlugin,
-  mermaidPlugin,
-  tablePlugin,
-} from "mdast2docx/plugins";
-import { DEFAULT_SECTION_PROPS, warnOnce } from "mdast2docx/utils";
 import type { Plugin } from "unified";
 
 export interface Mdast2DocxPluginProps {
