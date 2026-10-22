@@ -20,6 +20,15 @@ interface PackageMeta {
 
 const DEFAULT_PACKAGES: { pkgId: string; meta: PackageMeta }[] = [
   {
+    pkgId: "md2docx",
+    meta: {
+      title: "@m2d/md2docx",
+      tagLine:
+        "All-in-one batteries-included Markdown to DOCX converter for browser & client applications.",
+      icon: "LibraryBig",
+    },
+  },
+  {
     pkgId: "mdast2docx",
     meta: {
       title: "mdast2docx",
@@ -35,6 +44,15 @@ const DEFAULT_PACKAGES: { pkgId: string; meta: PackageMeta }[] = [
       tagLine:
         "Core AST-to-OpenXML compiler, plugin pipeline, and caching layer.",
       icon: "Cpu",
+    },
+  },
+  {
+    pkgId: "cli",
+    meta: {
+      title: "@m2d/cli",
+      tagLine:
+        "Universal command-line interface for terminal & batch document generation.",
+      icon: "Terminal",
     },
   },
   {
@@ -110,6 +128,15 @@ const DEFAULT_PACKAGES: { pkgId: string; meta: PackageMeta }[] = [
     },
   },
   {
+    pkgId: "html-node",
+    meta: {
+      title: "@m2d/html-node",
+      tagLine:
+        "Server-side HTML-to-MDAST parser powered by linkedom without JSDOM overhead.",
+      icon: "Globe2",
+    },
+  },
+  {
     pkgId: "remark-docx",
     meta: {
       title: "@m2d/remark-docx",
@@ -119,12 +146,38 @@ const DEFAULT_PACKAGES: { pkgId: string; meta: PackageMeta }[] = [
     },
   },
   {
+    pkgId: "remark-docx-node",
+    meta: {
+      title: "@m2d/remark-docx-node",
+      tagLine:
+        "Server-side Remark compiler plugin with native image & Mermaid diagram support.",
+      icon: "FileCheck",
+    },
+  },
+  {
     pkgId: "react-markdown",
     meta: {
       title: "@m2d/react-markdown",
       tagLine:
         "SSR-friendly React renderer that retains AST for instant Word export.",
       icon: "Layers",
+    },
+  },
+  {
+    pkgId: "cache",
+    meta: {
+      title: "@m2d/cache",
+      tagLine:
+        "High-performance in-memory and persistent caching layer for rasterized assets.",
+      icon: "Database",
+    },
+  },
+  {
+    pkgId: "mdast",
+    meta: {
+      title: "@m2d/mdast",
+      tagLine: "TypeScript types and schemas for extended MDAST OpenXML nodes.",
+      icon: "Code",
     },
   },
 ];
