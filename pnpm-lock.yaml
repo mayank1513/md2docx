@@ -300,6 +300,9 @@ importers:
       mdast2docx:
         specifier: workspace:*
         version: link:../../packages/mdast2docx
+      mermaid:
+        specifier: ^12.2.0
+        version: 12.2.0
       next:
         specifier: 16.4.2
         version: 16.4.2(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)

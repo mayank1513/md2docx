@@ -1,10 +1,11 @@
 import { Check, Copy, SlidersHorizontal } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { highlight } from "sugar-high";
 import { Button } from "../ui/button";
 import { TARGETS } from "./constants";
+import { MermaidViewer } from "./mermaid-viewer";
 import type { PresetId, TargetId, ViewMode } from "./types";
-import { renderMarkdownPreviewHtml } from "./utils";
+import { renderMarkdownPreviewHtml, splitMarkdownWithMermaid } from "./utils";
 
 interface PreviewPanelProps {
   viewMode: ViewMode;
@@ -26,6 +27,11 @@ export const PreviewPanel = ({
   onChangeMarkdown,
 }: PreviewPanelProps) => {
   const [copiedCode, setCopiedCode] = useState(false);
+
+  const segments = useMemo(
+    () => splitMarkdownWithMermaid(markdown),
+    [markdown],
+  );
 
   const handleCopyCode = async () => {
     try {
@@ -50,13 +56,26 @@ export const PreviewPanel = ({
       )}
 
       {viewMode === "preview" && (
-        <div
-          className="w-full min-h-[260px] max-h-[500px] overflow-y-auto p-5 rounded-xl border border-border bg-background text-foreground prose prose-sm dark:prose-invert max-w-none leading-relaxed"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: preview render
-          dangerouslySetInnerHTML={{
-            __html: renderMarkdownPreviewHtml(markdown),
-          }}
-        />
+        <div className="w-full min-h-[260px] max-h-[500px] overflow-y-auto p-5 rounded-xl border border-border bg-background text-foreground prose prose-sm dark:prose-invert max-w-none leading-relaxed">
+          {segments.map((segment, idx) =>
+            segment.type === "mermaid" ? (
+              <MermaidViewer
+                // biome-ignore lint/suspicious/noArrayIndexKey: fixed segments
+                key={`mermaid_${idx}`}
+                chart={segment.code}
+              />
+            ) : (
+              <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: fixed segments
+                key={`md_${idx}`}
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: preview render
+                dangerouslySetInnerHTML={{
+                  __html: renderMarkdownPreviewHtml(segment.content),
+                }}
+              />
+            ),
+          )}
+        </div>
       )}
 
       {viewMode === "code" && (

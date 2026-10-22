@@ -56,17 +56,8 @@ export const renderMarkdownPreviewHtml = (md: string): string => {
         return `<span class="text-amber-500 font-mono text-xs">$${tex}$</span>`;
       }
     })
-    // Fenced Code Blocks (including mermaid)
-    .replace(/```(\w+)?\n([\s\S]*?)```/g, (_, lang, code) => {
-      if (lang === "mermaid") {
-        return `<div class="my-4 p-4 rounded-xl border border-primary/30 bg-primary/5">
-          <div class="flex items-center gap-2 mb-2 text-xs font-semibold text-primary">
-            <span>📊 Mermaid Diagram</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary uppercase font-mono">Rendered to Vector in DOCX</span>
-          </div>
-          <pre class="font-mono text-xs text-muted-foreground overflow-x-auto p-2 rounded bg-card/80 border border-border/50">${code.trim()}</pre>
-        </div>`;
-      }
+    // Fenced Code Blocks
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, (_, _lang, code) => {
       return `<pre class="my-3 p-3 rounded-lg bg-muted text-foreground font-mono text-xs overflow-x-auto border border-border"><code>${code.trim()}</code></pre>`;
     })
     // Headings
@@ -108,6 +99,46 @@ export const renderMarkdownPreviewHtml = (md: string): string => {
     );
 
   return html;
+};
+
+/**
+ * Splits raw markdown into text segments and Mermaid code blocks for live rendering.
+ */
+export type MarkdownSegment =
+  | { type: "markdown"; content: string }
+  | { type: "mermaid"; code: string };
+
+export const splitMarkdownWithMermaid = (md: string): MarkdownSegment[] => {
+  const regex = /```mermaid\s*\n([\s\S]*?)```/g;
+  const segments: MarkdownSegment[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null = null;
+
+  while (true) {
+    match = regex.exec(md);
+    if (!match) break;
+
+    if (match.index > lastIndex) {
+      segments.push({
+        type: "markdown",
+        content: md.slice(lastIndex, match.index),
+      });
+    }
+    segments.push({
+      type: "mermaid",
+      code: match[1],
+    });
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < md.length) {
+    segments.push({
+      type: "markdown",
+      content: md.slice(lastIndex),
+    });
+  }
+
+  return segments;
 };
 
 /**
