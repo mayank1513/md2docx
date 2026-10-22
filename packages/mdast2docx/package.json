@@ -161,7 +161,7 @@
     "@m2d/math": "workspace:*",
     "@m2d/mermaid": "workspace:*",
     "@m2d/table": "workspace:*",
-    "docx": "^9.12.0"
+    "docx": "^9.13.0"
   },
   "peerDependencies": {
     "@m2d/html-node": "workspace:*",

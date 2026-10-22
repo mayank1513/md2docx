@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@types/node": "latest",
-    "docx": "^9.12.0",
+    "docx": "^9.13.0",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "tsup": "latest",

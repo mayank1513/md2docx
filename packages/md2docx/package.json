@@ -44,7 +44,7 @@
   "dependencies": {
     "@m2d/core": "workspace:*",
     "@m2d/remark-docx": "workspace:*",
-    "docx": "^9.12.0",
+    "docx": "^9.13.0",
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
