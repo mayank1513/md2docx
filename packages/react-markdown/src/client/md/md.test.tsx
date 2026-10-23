@@ -4,6 +4,10 @@ import { afterEach, describe, test } from "vitest";
 import { uuid } from "../../utils";
 import { Md } from "./md";
 
+const Fn = ({ children }: { children: React.ReactNode }) => (
+  <b data-testid="fn">{children}</b>
+);
+
 describe.concurrent("md", () => {
   afterEach(cleanup);
 
@@ -50,9 +54,6 @@ describe.concurrent("md", () => {
   });
 
   test("renders functional component children", ({ expect }) => {
-    const Fn = ({ children }: { children: React.ReactNode }) => (
-      <b data-testid="fn">{children}</b>
-    );
     render(
       <Md>
         <Fn>Bold</Fn>

@@ -208,7 +208,6 @@
 - 839e2e7: feat: add persistent caching utilities with IndexedDB support
 
   Implement a centralized caching mechanism that:
-
   - Provides both in-memory and persistent IndexedDB caching
   - Includes deterministic cache key generation with xxhash
   - Supports automatic timestamp tracking for cache entries

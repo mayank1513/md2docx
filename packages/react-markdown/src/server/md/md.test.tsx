@@ -6,6 +6,10 @@ import md from "../../../../../sample.md?raw";
 import { type AstRef, uuid } from "../../utils";
 import { Md } from "./md";
 
+const CustomP = ({ children }: { children?: React.ReactNode }) => (
+  <p data-testid="custom-p">{children}</p>
+);
+
 describe.concurrent("Md", () => {
   afterEach(cleanup);
 
@@ -42,9 +46,6 @@ describe.concurrent("Md", () => {
 
   test("renders with custom component for tag", ({ expect }) => {
     const testId = "md-root-3";
-    const CustomP = ({ children }: { children?: React.ReactNode }) => (
-      <p data-testid="custom-p">{children}</p>
-    );
     render(
       <Md
         data-testid={testId}

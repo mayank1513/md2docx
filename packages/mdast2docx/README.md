@@ -100,16 +100,20 @@ const mdast = unified()
   .parse(markdown);
 
 // 2. Compile to Word DOCX with bundled plugins
-const docxBlob = await toDocx(mdast, {}, {
-  plugins: [
-    htmlPlugin(),
-    mermaidPlugin(),
-    imagePlugin(),
-    tablePlugin(),
-    listPlugin(),
-    mathPlugin(),
-  ],
-});
+const docxBlob = await toDocx(
+  mdast,
+  {},
+  {
+    plugins: [
+      htmlPlugin(),
+      mermaidPlugin(),
+      imagePlugin(),
+      tablePlugin(),
+      listPlugin(),
+      mathPlugin(),
+    ],
+  },
+);
 ```
 
 ---
@@ -118,15 +122,15 @@ const docxBlob = await toDocx(mdast, {}, {
 
 The `mdast2docx/plugins` subpath provides instant access to all official plugins:
 
-| Plugin | Source Package | Capability |
-| :--- | :--- | :--- |
-| `tablePlugin` | [`@m2d/table`](https://npmjs.com/package/@m2d/table) | Rich borders, repeating headers, cell fills, and column alignment |
-| `listPlugin` | [`@m2d/list`](https://npmjs.com/package/@m2d/list) | Hierarchical decimal numbering (`1.1.1`) and multi-tier bullet glyphs |
-| `imagePlugin` | [`@m2d/image`](https://npmjs.com/package/@m2d/image) | SVG and URL image resolution, rasterization, and dimensions |
-| `mermaidPlugin` | [`@m2d/mermaid`](https://npmjs.com/package/@m2d/mermaid) | Client-side Mermaid diagrams with auto-healing syntax |
-| `mathPlugin` | [`@m2d/math`](https://npmjs.com/package/@m2d/math) | LaTeX math translated to native editable Word MathML equations |
-| `htmlPlugin` | [`@m2d/html`](https://npmjs.com/package/@m2d/html) | Embedded HTML tag parsing and inline CSS styles |
-| `emojiPlugin` | [`@m2d/emoji`](https://npmjs.com/package/@m2d/emoji) | GitHub emoji shortcodes to Unicode characters |
+| Plugin          | Source Package                                           | Capability                                                            |
+| :-------------- | :------------------------------------------------------- | :-------------------------------------------------------------------- |
+| `tablePlugin`   | [`@m2d/table`](https://npmjs.com/package/@m2d/table)     | Rich borders, repeating headers, cell fills, and column alignment     |
+| `listPlugin`    | [`@m2d/list`](https://npmjs.com/package/@m2d/list)       | Hierarchical decimal numbering (`1.1.1`) and multi-tier bullet glyphs |
+| `imagePlugin`   | [`@m2d/image`](https://npmjs.com/package/@m2d/image)     | SVG and URL image resolution, rasterization, and dimensions           |
+| `mermaidPlugin` | [`@m2d/mermaid`](https://npmjs.com/package/@m2d/mermaid) | Client-side Mermaid diagrams with auto-healing syntax                 |
+| `mathPlugin`    | [`@m2d/math`](https://npmjs.com/package/@m2d/math)       | LaTeX math translated to native editable Word MathML equations        |
+| `htmlPlugin`    | [`@m2d/html`](https://npmjs.com/package/@m2d/html)       | Embedded HTML tag parsing and inline CSS styles                       |
+| `emojiPlugin`   | [`@m2d/emoji`](https://npmjs.com/package/@m2d/emoji)     | GitHub emoji shortcodes to Unicode characters                         |
 
 ---
 

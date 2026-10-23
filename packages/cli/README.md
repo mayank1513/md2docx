@@ -37,6 +37,7 @@
 ## 📦 Installation
 
 ### Global CLI
+
 ```bash
 # with pnpm
 $ pnpm add -g @m2d/cli
@@ -46,6 +47,7 @@ $ npm install -g @m2d/cli
 ```
 
 ### Local Project Dependency
+
 ```bash
 $ pnpm add @m2d/cli
 ```
@@ -66,6 +68,7 @@ $ md2docx-node README.md -o document.docx
 ```
 
 ### Options
+
 ```text
 Usage:
   $ md2docx <input.md> [options]

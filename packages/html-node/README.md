@@ -66,7 +66,12 @@ const markdown = `
 `;
 
 const mdast = unified().use(remarkParse).parse(markdown);
-const docxBuffer = await toDocx(mdast, {}, { plugins: [nodeHtmlPlugin()] }, "nodebuffer");
+const docxBuffer = await toDocx(
+  mdast,
+  {},
+  { plugins: [nodeHtmlPlugin()] },
+  "nodebuffer",
+);
 ```
 
 ---

@@ -6,6 +6,14 @@ import md from "../../../../../sample.md?raw";
 import { type AstRef, uuid } from "../../utils";
 import { Mdx } from "./mdx";
 
+const CustomP = ({ children }: { children?: React.ReactNode }) => (
+  <p data-testid="custom-p">{children}</p>
+);
+
+const CustomComponent = ({ children }: { children?: React.ReactNode }) => (
+  <div>{children}</div>
+);
+
 describe.concurrent("Md", () => {
   afterEach(cleanup);
 
@@ -42,9 +50,6 @@ describe.concurrent("Md", () => {
 
   test("renders with custom component for tag", ({ expect }) => {
     const testId = "md-root-3";
-    const CustomP = ({ children }: { children?: React.ReactNode }) => (
-      <p data-testid="custom-p">{children}</p>
-    );
     render(
       <Mdx
         data-testid={testId}
@@ -120,9 +125,6 @@ describe.concurrent("Md", () => {
 
   test("Handle children tree containing custom components", ({ expect }) => {
     const testId = `md-root-${crypto.randomUUID()}`;
-    const CustomComponent = ({ children }: { children?: React.ReactNode }) => (
-      <div>{children}</div>
-    );
     render(
       <Mdx data-testid={testId}>
         <CustomComponent>

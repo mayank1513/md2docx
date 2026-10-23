@@ -44,7 +44,7 @@
   "dependencies": {
     "@m2d/core": "workspace:*",
     "@m2d/html": "workspace:*",
-    "linkedom": "^0.18.13"
+    "linkedom": "^0.18.14"
   },
   "peerDependencies": {
     "docx": "^9.3.0"

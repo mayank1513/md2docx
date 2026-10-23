@@ -78,12 +78,16 @@ graph TD
 
 const mdast = unified().use(remarkParse).parse(markdown);
 
-const docxBlob = await toDocx(mdast, {}, {
-  plugins: [
-    mermaidPlugin(), // Generates SVG nodes
-    imagePlugin(),   // Converts images and diagram SVGs to DOCX ImageRuns
-  ],
-});
+const docxBlob = await toDocx(
+  mdast,
+  {},
+  {
+    plugins: [
+      mermaidPlugin(), // Generates SVG nodes
+      imagePlugin(), // Converts images and diagram SVGs to DOCX ImageRuns
+    ],
+  },
+);
 ```
 
 > ⚠️ **Plugin Ordering**: When combining with diagram plugins like `@m2d/mermaid` or HTML plugins like `@m2d/html`, place `imagePlugin()` **after** them in the `plugins` array.
@@ -159,7 +163,6 @@ export interface IImagePluginOptions {
 ## 📚 Deep Dive Guides
 
 Explore our detailed documentation guides:
-
 - 🛡️ **[Error Handling & Fallbacks Guide](./docs/error-handling-and-fallbacks.mdx)**: Comprehensive guide on error modes, collapsible headings, and Word TOC safety.
 - 🔌 **[Custom Resolvers & Caching Guide](./docs/custom-resolvers-and-caching.mdx)**: Authenticated image fetching, custom headers, and multi-tier IndexedDB cache configuration.
 

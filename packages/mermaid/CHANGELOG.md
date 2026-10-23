@@ -42,7 +42,6 @@
 ### Minor Changes
 
 - 439b541: Added support for optimized in-memory caching of resolved mermaid data.
-
   - Introduced `cacheConfig.cache` option to share or inject a memory cache instance across multiple plugin invocations.
   - Consumers can now fine-tune cache behavior using `cacheConfig.parallel` (to avoid redundant parallel resolutions) and `cacheConfig.cacheMode` (choose between `"memory"`, `"idb"`, or `"both"`).
   - Enhances mermaid resolution performance in multi-page or repeated mermaid scenarios, especially when used across sessions or documents.
@@ -58,7 +57,6 @@
 ### Patch Changes
 
 - 84bc24b: Optimize cache cleanup by moving it to postprocess hook
-
   - Move cache cleanup from initialization to postprocess hook
   - Only run cleanup once per session with cleanupDone flag
   - Prevent unnecessary cleanups on multiple renders
@@ -82,7 +80,6 @@
 ### Patch Changes
 
 - 13df583: fix: account for mermaid config in the cache-key
-
   - moving low cost mermaid clean up outside cache, avoiding duplicate data caching to IndexedDB
 
 ## 1.1.0

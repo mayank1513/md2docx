@@ -1,4 +1,5 @@
 ---
+
 title: "Markdown Syntax Showcase"
 description: "A comprehensive reference document demonstrating all Markdown and extended MDAST syntax supported by md2docx."
 author: "Mayank Kumar Chaudhari"
@@ -12,6 +13,7 @@ tags: [md2docx, mdast, docx, unified, remark]
 A comprehensive living document showcasing standard Markdown, GitHub Flavored Markdown (GFM), math, diagrams, tables, and HTML extensions converted into DOCX.
 
 ## Table of Contents
+
 - [1. Basic Elements](#1-basic-elements)
   - [Headings](#headings)
   - [Text Formatting](#text-formatting)
@@ -69,19 +71,23 @@ A comprehensive living document showcasing standard Markdown, GitHub Flavored Ma
 ### Headings
 
 # Heading 1
+
 ## Heading 2
+
 ### Heading 3
+
 #### Heading 4
+
 ##### Heading 5
+
 ###### Heading 6
 
 ### Text Formatting
 
-You can emphasize text using **bold**, *italic*, ***bold and italic***, ~~strikethrough~~, `inline code`, and ==highlighted text==.
-
+You can emphasize text using **bold**, _italic_, **_bold and italic_**, ~~strikethrough~~, `inline code`, and ==highlighted text==.
 - **Bold text**: `**bold**` or `__bold__`
-- *Italic text*: `*italic*` or `_italic_`
-- ***Bold and Italic***: `***bold and italic***`
+- _Italic text_: `*italic*` or `_italic_`
+- _**Bold and Italic**_: `***bold and italic***`
 - ~~Strikethrough~~: `~~strikethrough~~`
 - Subscript: H~2~O
 - Superscript: X^2^
@@ -91,12 +97,12 @@ You can emphasize text using **bold**, *italic*, ***bold and italic***, ~~strike
 
 > "The Markdown to DOCX engine preserves formatting, layout hierarchy, and typographic fidelity across multiple document sections."
 >
-> — *md2docx Design Philosophy*
+> — _md2docx Design Philosophy_
 
 Nested blockquote:
 > Outer quote level 1
->> Nested quote level 2
->>> Deeply nested quote level 3
+> > Nested quote level 2
+> > > Deeply nested quote level 3
 
 ### Horizontal Rules
 
@@ -154,6 +160,7 @@ Three or more hyphens, asterisks, or underscores:
 ### Complex Hierarchies
 
 #### 🗂 Project Roadmap
+
 - Q1 Goals:
   1. Engine Modernization
      - Tree-shaking support
@@ -215,28 +222,28 @@ def transform_ast(node):
 
 ### Standard GFM Table
 
-| Package | Purpose | Category | Status |
-| :--- | :--- | :---: | ---: |
-| `@m2d/core` | Core MDAST to DOCX engine | Engine | Stable |
-| `@m2d/mdast` | Extended AST type declarations | Types | Stable |
-| `@m2d/html` | Raw HTML to MDAST nodes | Plugin | Active |
-| `@m2d/image` | Image download & embedding | Plugin | Active |
-| `@m2d/table` | Advanced table formatting | Plugin | Active |
+| Package      | Purpose                        | Category | Status |
+| :----------- | :----------------------------- | :------: | -----: |
+| `@m2d/core`  | Core MDAST to DOCX engine      |  Engine  | Stable |
+| `@m2d/mdast` | Extended AST type declarations |  Types   | Stable |
+| `@m2d/html`  | Raw HTML to MDAST nodes        |  Plugin  | Active |
+| `@m2d/image` | Image download & embedding     |  Plugin  | Active |
+| `@m2d/table` | Advanced table formatting      |  Plugin  | Active |
 
 ### Column Alignments
 
 | Left Aligned | Centered Content | Right Aligned |
 | :----------- | :--------------: | ------------: |
-| Item Alpha   |       42         |      \$19.99 |
-| Item Beta    |      128         |     \$149.50 |
-| Item Gamma   |     1024         |   \$1,200.00 |
+| Item Alpha   |        42        |       \$19.99 |
+| Item Beta    |       128        |      \$149.50 |
+| Item Gamma   |       1024       |    \$1,200.00 |
 
 ### Multi-line and Formatted Cells
 
-| Metric | Details | Target |
-| :--- | :--- | :--- |
-| Test Coverage | Unit test coverage for AST conversions.<br>- Core Engine: >95%<br>- Plugin modules: >90% | **95%** |
-| Bundle Size | Pure tree-shakeable dual ESM/CJS build.<br><em>Optimized with esbuild/tsup</em> | **< 10KB** |
+| Metric        | Details                                                                                  | Target     |
+| :------------ | :--------------------------------------------------------------------------------------- | :--------- |
+| Test Coverage | Unit test coverage for AST conversions.<br>- Core Engine: >95%<br>- Plugin modules: >90% | **95%**    |
+| Bundle Size   | Pure tree-shakeable dual ESM/CJS build.<br><em>Optimized with esbuild/tsup</em>          | **< 10KB** |
 
 ### Nested HTML Tables
 
@@ -376,7 +383,7 @@ $$
 $$
 \begin{aligned}
 f(x) &= (x + 3)^2 \\
-     &= x^2 + 6x + 9
+&= x^2 + 6x + 9
 \end{aligned}
 $$
 
@@ -585,7 +592,7 @@ You can use raw HTML tags such as:
 
 <details>
   <summary><strong>Click to expand advanced technical details</strong></summary>
-  
+
   <p>The core converter iterates through the Markdown AST, converts phrasing elements to docx <code>TextRun</code> instances, groups block content into <code>Paragraph</code> instances, and organizes sections into a <code>Document</code>.</p>
 </details>
 
