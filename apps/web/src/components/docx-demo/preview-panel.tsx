@@ -103,7 +103,8 @@ export const PreviewPanel = ({
 
   return (
     <div className="p-5">
-      {viewMode === "edit" && (
+      {/* 1. Raw Markdown Editor */}
+      <div className={viewMode === "edit" ? "block" : "hidden"}>
         <textarea
           value={markdown}
           onChange={(e) => onChangeMarkdown(e.target.value)}
@@ -112,9 +113,10 @@ export const PreviewPanel = ({
           placeholder="Write Markdown here..."
           spellCheck={false}
         />
-      )}
+      </div>
 
-      {viewMode === "preview" && (
+      {/* 2. Live Document Preview via @m2d/react-markdown */}
+      <div className={viewMode === "preview" ? "block" : "hidden"}>
         <div className="w-full min-h-[260px] max-h-[500px] overflow-y-auto p-5 rounded-xl border border-border bg-background text-foreground prose prose-sm dark:prose-invert max-w-none leading-relaxed">
           <Md
             remarkPlugins={[remarkGfm, remarkMath]}
@@ -125,12 +127,18 @@ export const PreviewPanel = ({
             {markdown}
           </Md>
         </div>
-      )}
+      </div>
 
-      {viewMode === "tiptap" && (
-        <TiptapRichEditor value={markdown} onChange={onChangeMarkdown} />
-      )}
+      {/* 3. WYSIWYG Rich Text Editor via Tiptap 3 */}
+      <div className={viewMode === "tiptap" ? "block" : "hidden"}>
+        <TiptapRichEditor
+          value={markdown}
+          onChange={onChangeMarkdown}
+          isActive={viewMode === "tiptap"}
+        />
+      </div>
 
+      {/* 4. Implementation Code Snippet */}
       {viewMode === "code" && (
         <div className="relative rounded-xl border border-border bg-muted/40 p-4">
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-border/50 text-xs">

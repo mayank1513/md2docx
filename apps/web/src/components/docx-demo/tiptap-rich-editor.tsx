@@ -28,11 +28,13 @@ import { lowlight } from "./highlight";
 interface TiptapRichEditorProps {
   value: string;
   onChange: (value: string) => void;
+  isActive?: boolean;
 }
 
 export const TiptapRichEditor = ({
   value,
   onChange,
+  isActive = true,
 }: TiptapRichEditorProps) => {
   const [cleanedCount, setCleanedCount] = useState(0);
 
@@ -108,6 +110,16 @@ export const TiptapRichEditor = ({
       }
     }
   }, [value, editor]);
+
+  // Ensure latest external markdown is loaded when this tab becomes active
+  useEffect(() => {
+    if (editor && isActive) {
+      const currentMd = editor.getMarkdown();
+      if (value !== currentMd) {
+        editor.commands.setContent(value, { contentType: "markdown" });
+      }
+    }
+  }, [isActive, value, editor]);
 
   if (!editor) return null;
 
