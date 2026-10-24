@@ -16,7 +16,9 @@ import type {
   BlockNodeChildrenProcessor,
   Definitions,
   DocxSection,
+  FooterAst,
   FootnoteDefinitions,
+  HeaderAst,
   IDefaultMdastToDocxSectionProps,
   IDocxProps,
   InlineChildrenProcessor,
@@ -195,7 +197,14 @@ export const toSection = async (
   props?: ISectionProps,
   docxProps?: IDocxProps,
 ): Promise<DocxSection> => {
-  const { plugins, useTitle, trimInnerSpaces, ...sectionProps } = {
+  const {
+    plugins,
+    useTitle,
+    trimInnerSpaces,
+    headerAst,
+    footerAst,
+    ...sectionProps
+  } = {
     ...DEFAULT_SECTION_PROPS,
     ...props,
   } as IDefaultMdastToDocxSectionProps;
@@ -401,9 +410,48 @@ export const toSection = async (
       }
     });
 
+  const compileHeaderFooter = async <T extends docx.Header | docx.Footer>(
+    astInput: HeaderAst | FooterAst | undefined,
+    Constructor: new (options: {
+      children: (docx.Paragraph | docx.Table)[];
+    }) => T,
+  ): Promise<{ default?: T; first?: T; even?: T } | undefined> => {
+    if (!astInput) return undefined;
+    const astMap =
+      "type" in astInput ? { default: astInput as Root } : astInput;
+    const result: { default?: T; first?: T; even?: T } = {};
+
+    for (const key of ["default", "first", "even"] as const) {
+      const ast = astMap[key];
+      if (ast) {
+        const subSection = await toSection(
+          ast,
+          definitions,
+          {},
+          { ...props, headerAst: undefined, footerAst: undefined },
+        );
+        result[key] = new Constructor({
+          children: subSection.children as (docx.Paragraph | docx.Table)[],
+        });
+      }
+    }
+    return result;
+  };
+
+  const [generatedHeaders, generatedFooters] = await Promise.all([
+    compileHeaderFooter(headerAst, docx.Header),
+    compileHeaderFooter(footerAst, docx.Footer),
+  ]);
+
+  const headers = { ...sectionProps.headers, ...generatedHeaders };
+
+  const footers = { ...sectionProps.footers, ...generatedFooters };
+
   warnOnce.reset();
   return {
     ...sectionProps,
+    ...(Object.keys(headers).length ? { headers } : {}),
+    ...(Object.keys(footers).length ? { footers } : {}),
     children: processBlockNodeChildren(node, props?.footnoteProps || {}),
   };
 };

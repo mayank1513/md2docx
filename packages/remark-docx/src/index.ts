@@ -12,6 +12,20 @@ import type { OutputByType, OutputType } from "docx";
 import type { Root } from "mdast";
 import type { Plugin } from "unified";
 
+export interface HeaderFooterMarkdownOptions {
+  readonly default?: string;
+  readonly first?: string;
+  readonly even?: string;
+}
+
+export type HeaderMarkdown = string | HeaderFooterMarkdownOptions;
+export type FooterMarkdown = string | HeaderFooterMarkdownOptions;
+
+export interface RemarkSectionProps extends ISectionProps {
+  headerMarkdown?: HeaderMarkdown;
+  footerMarkdown?: FooterMarkdown;
+}
+
 export interface Mdast2DocxPluginProps {
   mermaid?: Parameters<typeof mermaidPlugin>[0];
   list?: Parameters<typeof listPlugin>[0];
@@ -34,7 +48,7 @@ export const remarkDocx: Plugin<
   [
     outputType?: OutputType,
     docxProps?: IDocxProps,
-    sectionProps?: ISectionProps,
+    sectionProps?: RemarkSectionProps,
     pluginProps?: Mdast2DocxPluginProps,
   ],
   Root
@@ -75,7 +89,49 @@ export const remarkDocx: Plugin<
       }
     }
 
-    return toDocx(node as Root, docxProps, sectionProps, outputType);
+    let headerAst = sectionProps.headerAst;
+    let footerAst = sectionProps.footerAst;
+
+    if (sectionProps.headerMarkdown && !headerAst) {
+      const hm = sectionProps.headerMarkdown;
+      headerAst =
+        typeof hm === "string"
+          ? (this.parse(hm) as Root)
+          : {
+              default: hm.default
+                ? (this.parse(hm.default) as Root)
+                : undefined,
+              first: hm.first ? (this.parse(hm.first) as Root) : undefined,
+              even: hm.even ? (this.parse(hm.even) as Root) : undefined,
+            };
+    }
+
+    if (sectionProps.footerMarkdown && !footerAst) {
+      const fm = sectionProps.footerMarkdown;
+      footerAst =
+        typeof fm === "string"
+          ? (this.parse(fm) as Root)
+          : {
+              default: fm.default
+                ? (this.parse(fm.default) as Root)
+                : undefined,
+              first: fm.first ? (this.parse(fm.first) as Root) : undefined,
+              even: fm.even ? (this.parse(fm.even) as Root) : undefined,
+            };
+    }
+
+    const {
+      headerMarkdown: _,
+      footerMarkdown: __,
+      ...restSectionProps
+    } = sectionProps;
+    const finalSectionProps: ISectionProps = {
+      ...restSectionProps,
+      headerAst,
+      footerAst,
+    };
+
+    return toDocx(node as Root, docxProps, finalSectionProps, outputType);
   };
   return (node) => node;
 };

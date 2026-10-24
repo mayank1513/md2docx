@@ -78,6 +78,15 @@ export const getTextContent = (node: ExtendedRootContent): string => {
   return (node as { value?: string }).value ?? "";
 };
 
+export interface HeaderFooterAstOptions {
+  readonly default?: Root;
+  readonly first?: Root;
+  readonly even?: Root;
+}
+
+export type HeaderAst = Root | HeaderFooterAstOptions;
+export type FooterAst = Root | HeaderFooterAstOptions;
+
 /**
  * Default configuration for converting MDAST to DOCX, including title handling and plugin extensions.
  */
@@ -103,6 +112,16 @@ export interface IDefaultMdastToDocxSectionProps
    * Configures paragraph and run styling options specifically for footnote content rendering
    */
   footnoteProps?: MutableParaOptions & MutableRunOptions;
+
+  /**
+   * Pre-parsed MDAST Root for section headers.
+   */
+  headerAst?: HeaderAst;
+
+  /**
+   * Pre-parsed MDAST Root for section footers.
+   */
+  footerAst?: FooterAst;
 }
 
 /**

@@ -1,3 +1,17 @@
+# Agent Rules & Guidelines
+
+## ⚠️ Critical Behavioral Rules
+
+1. **PROPOSE AND CONFIRM BEFORE IMPLEMENTING**:
+   - Always propose your design or architecture idea first and get explicit confirmation before implementing.
+   - Never overengineer, assume, or add unconfirmed features/syntaxes out of scope.
+   - If in doubt about requirements, design, or scope, ask first.
+2. **Git Operations Policy**:
+   - All Git operations that make any changes (`git add`, `git commit`, `git push`, `git reset`, `git checkout`, `git restore`, `git stash`, etc.) are **risky operations**. Never execute them without explicit confirmation from the user.
+   - Read-only Git inspection commands (`git status`, `git log`, `git diff`) are safe.
+
+---
+
 # Commit Message Rules
 
 When asked to generate a commit message, you MUST follow these rules.
