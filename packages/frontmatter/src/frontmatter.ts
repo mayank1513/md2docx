@@ -1,5 +1,7 @@
 import type { IDocxProps, IPlugin, Root, RootContent } from "@m2d/core";
 
+import { DOCX_METADATA_MAP } from "@m2d/core/utils";
+
 export interface FrontmatterData {
   title?: string;
   subject?: string;
@@ -43,27 +45,6 @@ export interface FrontmatterPluginOptions {
    */
   transform?: (frontmatter: FrontmatterData, docxProps: IDocxProps) => void;
 }
-
-type StringMetadataKey =
-  | "title"
-  | "creator"
-  | "description"
-  | "subject"
-  | "keywords"
-  | "lastModifiedBy";
-
-const DOCX_METADATA_MAP: Record<string, StringMetadataKey> = {
-  title: "title",
-  author: "creator",
-  creator: "creator",
-  description: "description",
-  subject: "subject",
-  keywords: "keywords",
-  tags: "keywords",
-  categories: "keywords",
-  lastmodifiedby: "lastModifiedBy",
-  modifiedby: "lastModifiedBy",
-};
 
 const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 

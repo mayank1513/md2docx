@@ -26,7 +26,12 @@ import type {
   IPlugin,
   ISectionProps,
 } from "./utils";
-import { DEFAULT_SECTION_PROPS, getTextContent, warnOnce } from "./utils";
+import {
+  DEFAULT_SECTION_PROPS,
+  DOCX_METADATA_MAP,
+  getTextContent,
+  warnOnce,
+} from "./utils";
 
 /**
  * Creates an inline content processor that converts MDAST inline elements to DOCX-compatible runs.
@@ -162,24 +167,6 @@ const createInlineProcessor = (
     ).flat();
 
   return processInlineNodeChildren;
-};
-
-type StringMetadataKey =
-  | "title"
-  | "creator"
-  | "description"
-  | "subject"
-  | "keywords"
-  | "lastModifiedBy";
-
-const DOCX_METADATA_MAP: Record<string, StringMetadataKey> = {
-  title: "title",
-  author: "creator",
-  creator: "creator",
-  description: "description",
-  subject: "subject",
-  keywords: "keywords",
-  tags: "keywords",
 };
 
 /**

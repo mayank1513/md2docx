@@ -1,5 +1,4 @@
-import { Fragment } from "react";
-import { Markdown, type MdProps } from "../../utils";
+import { Markdown, type MdProps, renderWithWrapper } from "../../utils";
 
 /**
  * The Markdown renderer component.
@@ -9,34 +8,7 @@ import { Markdown, type MdProps } from "../../utils";
  * - Component overrides
  * - Optional raw HTML stripping
  */
-export const Md = ({
-  children,
-  wrapper,
-  remarkPlugins,
-  rehypePlugins,
-  remarkRehypeOptions,
-  astRef,
-  components,
-  skipHtml,
-  ...props
-}: MdProps) => {
-  const Wrapper = wrapper ?? (Object.keys(props).length ? "div" : Fragment);
-
-  return (
-    // @ts-expect-error - props are valid for HTML elements but cannot be statically inferred on Fragment
-    <Wrapper {...props}>
-      <Markdown
-        {...{
-          remarkPlugins,
-          rehypePlugins,
-          remarkRehypeOptions,
-          astRef,
-          components,
-          skipHtml,
-        }}
-      >
-        {children}
-      </Markdown>
-    </Wrapper>
-  );
-};
+export const Md = ({ children, ...props }: MdProps) =>
+  renderWithWrapper(props, (markdownProps) => (
+    <Markdown {...markdownProps}>{children}</Markdown>
+  ));

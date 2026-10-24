@@ -1,11 +1,11 @@
 import equal from "fast-deep-equal";
 import { isValidElement, memo, type ReactNode } from "react";
-import { Fragment } from "react/jsx-runtime";
 import {
   type IntrinsicProps,
   Markdown,
   type MdProps,
   type MdxProps,
+  renderWithWrapper,
 } from "../../utils";
 
 const OptimizedMarkdown = memo(Markdown, equal);
@@ -50,34 +50,9 @@ const MarkdownRecursive = ({
  * - Component overrides
  * - Optional raw HTML stripping
  */
-export const Md = ({
-  children,
-  wrapper,
-  remarkPlugins,
-  rehypePlugins,
-  remarkRehypeOptions,
-  astRef,
-  components,
-  skipHtml,
-  ...props
-}: MdxProps) => {
-  const Wrapper = wrapper ?? (Object.keys(props).length ? "div" : Fragment);
-
-  return (
-    // @ts-expect-error – dynamic wrapper ('div' | Fragment) is type-safe at runtime but not inferable statically
-    <Wrapper {...props}>
-      <MarkdownRecursive
-        markdownProps={{
-          remarkPlugins,
-          rehypePlugins,
-          remarkRehypeOptions,
-          astRef,
-          components,
-          skipHtml,
-        }}
-      >
-        {children}
-      </MarkdownRecursive>
-    </Wrapper>
-  );
-};
+export const Md = ({ children, ...props }: MdxProps) =>
+  renderWithWrapper(props, (markdownProps) => (
+    <MarkdownRecursive markdownProps={markdownProps}>
+      {children}
+    </MarkdownRecursive>
+  ));

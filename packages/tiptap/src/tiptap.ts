@@ -139,6 +139,15 @@ export const downloadDocx = async (
   }
 };
 
+const getDocxOptions = (
+  editor: CommandProps["editor"],
+): DocxExtensionOptions | undefined =>
+  (
+    editor.extensionManager.extensions.find((ext) => ext.name === "docx") as
+      | { options?: DocxExtensionOptions }
+      | undefined
+  )?.options;
+
 /**
  * Tiptap extension to export rich-text editor content directly to Word (.docx) documents.
  */
@@ -152,36 +161,13 @@ export const DocxExtension = Extension.create<DocxExtensionOptions>({
   addCommands: () => ({
     getDocxBlob:
       (options?: DocxExportOptions) =>
-      ({ editor }: CommandProps) => {
-        const extOptions = (
-          editor.extensionManager.extensions.find(
-            (ext) => ext.name === "docx",
-          ) as { options?: DocxExtensionOptions } | undefined
-        )?.options;
-
-        return getDocxBlob(
-          editor,
-          options,
-          extOptions,
-        ) as unknown as ReturnType;
-      },
+      ({ editor }: CommandProps) =>
+        getDocxBlob(editor, options, getDocxOptions(editor)),
 
     downloadDocx:
       (filename?: string, options?: DocxExportOptions) =>
-      ({ editor }: CommandProps) => {
-        const extOptions = (
-          editor.extensionManager.extensions.find(
-            (ext) => ext.name === "docx",
-          ) as { options?: DocxExtensionOptions } | undefined
-        )?.options;
-
-        return downloadDocx(
-          editor,
-          filename,
-          options,
-          extOptions,
-        ) as unknown as ReturnType;
-      },
+      ({ editor }: CommandProps) =>
+        downloadDocx(editor, filename, options, getDocxOptions(editor)),
   }),
 });
 

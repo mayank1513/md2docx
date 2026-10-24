@@ -1,7 +1,7 @@
 import type { Element, Root as HastRoot } from "hast";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import type { Root } from "mdast";
-import type { FC, HTMLProps, JSX } from "react";
+import type { FC, HTMLProps, JSX, ReactNode } from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import remarkParse from "remark-parse";
 import remarkRehype, { type Options } from "remark-rehype";
@@ -133,4 +133,39 @@ export const Markdown = ({
     passKeys: true,
     passNode: true,
   });
+};
+
+/**
+ * Renders markdown content inside a dynamic wrapper element ('div' or Fragment).
+ */
+export const renderWithWrapper = <T extends MdxProps>(
+  props: T,
+  renderContent: (markdownProps: Omit<T, "wrapper" | "children">) => ReactNode,
+): ReactNode => {
+  const {
+    wrapper,
+    remarkPlugins,
+    rehypePlugins,
+    remarkRehypeOptions,
+    astRef,
+    components,
+    skipHtml,
+    children: _,
+    ...restProps
+  } = props;
+  const Wrapper = wrapper ?? (Object.keys(restProps).length ? "div" : Fragment);
+
+  return (
+    // @ts-expect-error - props are valid for HTML elements but cannot be statically inferred on Fragment
+    <Wrapper {...restProps}>
+      {renderContent({
+        remarkPlugins,
+        rehypePlugins,
+        remarkRehypeOptions,
+        astRef,
+        components,
+        skipHtml,
+      } as Omit<T, "wrapper" | "children">)}
+    </Wrapper>
+  );
 };

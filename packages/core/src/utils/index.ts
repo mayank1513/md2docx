@@ -286,10 +286,10 @@ export interface IPlugin<T extends Node = EmptyNode> {
  * @param defaultOptions - Default values.
  * @returns A deeply merged object.
  */
-export function mergeOptions<T>(
+export const mergeOptions = <T>(
   options?: Partial<T>,
   defaultOptions?: Partial<T>,
-): T {
+): T => {
   // biome-ignore lint/suspicious/noExplicitAny: required for dynamically adding/removing keys from object
   const result: any = { ...defaultOptions, ...options };
 
@@ -311,7 +311,28 @@ export function mergeOptions<T>(
   }
 
   return result as T;
-}
+};
+
+export type StringMetadataKey =
+  | "title"
+  | "creator"
+  | "description"
+  | "subject"
+  | "keywords"
+  | "lastModifiedBy";
+
+export const DOCX_METADATA_MAP: Record<string, StringMetadataKey> = {
+  title: "title",
+  author: "creator",
+  creator: "creator",
+  description: "description",
+  subject: "subject",
+  keywords: "keywords",
+  tags: "keywords",
+  categories: "keywords",
+  lastmodifiedby: "lastModifiedBy",
+  modifiedby: "lastModifiedBy",
+};
 
 const warnedSet = new Set<string>();
 

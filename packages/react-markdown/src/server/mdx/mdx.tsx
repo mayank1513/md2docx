@@ -1,8 +1,9 @@
-import { Fragment, isValidElement, type ReactNode } from "react";
+import { isValidElement, type ReactNode } from "react";
 import {
   type IntrinsicProps,
   Markdown,
   type MdxProps,
+  renderWithWrapper,
   uuid,
 } from "../../utils";
 
@@ -57,34 +58,9 @@ const MarkdownRecursive = ({
  * - Component overrides
  * - Optional raw HTML stripping
  */
-export const Mdx = ({
-  children,
-  wrapper,
-  remarkPlugins,
-  rehypePlugins,
-  remarkRehypeOptions,
-  astRef,
-  components,
-  skipHtml,
-  ...props
-}: MdxProps) => {
-  const Wrapper = wrapper ?? (Object.keys(props).length ? "div" : Fragment);
-
-  return (
-    // @ts-expect-error - props are valid for HTML elements but cannot be statically inferred on Fragment
-    <Wrapper {...props}>
-      <MarkdownRecursive
-        markdownProps={{
-          remarkPlugins,
-          rehypePlugins,
-          remarkRehypeOptions,
-          astRef,
-          components,
-          skipHtml,
-        }}
-      >
-        {children}
-      </MarkdownRecursive>
-    </Wrapper>
-  );
-};
+export const Mdx = ({ children, ...props }: MdxProps) =>
+  renderWithWrapper(props, (markdownProps) => (
+    <MarkdownRecursive markdownProps={markdownProps}>
+      {children}
+    </MarkdownRecursive>
+  ));
