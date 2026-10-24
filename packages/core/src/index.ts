@@ -80,10 +80,10 @@ export const toDocx = async (
     plugin?.root?.(finalDocxProps);
   });
 
-  // Convert MDAST trees into document sections
+  // Convert MDAST trees into document sections (and update docxProps during section traversal)
   const sections = await Promise.all(
     processedAstInputs.map(({ ast, props, definitions, footnoteDefinitions }) =>
-      toSection(ast, definitions, footnoteDefinitions, props),
+      toSection(ast, definitions, footnoteDefinitions, props, finalDocxProps),
     ),
   );
 

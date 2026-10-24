@@ -236,13 +236,21 @@ export interface IPlugin<T extends Node = EmptyNode> {
   /**
    * Modifies document-level DOCX properties, such as styles, numbering, headers, or footers.
    * Useful for applying global formatting customizations.
+   * @deprecated Use `preprocess(tree, definitions, docxProps)` instead.
    */
-  root?: (props: IDocxProps) => void;
+  root?: (
+    props: IDocxProps,
+    astInputs?: Root | { ast: Root; props?: ISectionProps }[],
+  ) => void;
 
   /**
    * Preprocesses the MDAST tree before the DOCX conversion begins.
    */
-  preprocess?: (tree: Root, definitions: Definitions) => void | Promise<void>;
+  preprocess?: (
+    tree: Root,
+    definitions: Definitions,
+    docxProps?: IDocxProps,
+  ) => void | Promise<void>;
 
   /**
    * Post-processes the final DOCX document after conversion.

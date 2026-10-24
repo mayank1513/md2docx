@@ -18,6 +18,7 @@ import type {
   DocxSection,
   FootnoteDefinitions,
   IDefaultMdastToDocxSectionProps,
+  IDocxProps,
   InlineChildrenProcessor,
   InlineDocxNodes,
   IPlugin,
@@ -161,6 +162,24 @@ const createInlineProcessor = (
   return processInlineNodeChildren;
 };
 
+type StringMetadataKey =
+  | "title"
+  | "creator"
+  | "description"
+  | "subject"
+  | "keywords"
+  | "lastModifiedBy";
+
+const DOCX_METADATA_MAP: Record<string, StringMetadataKey> = {
+  title: "title",
+  author: "creator",
+  creator: "creator",
+  description: "description",
+  subject: "subject",
+  keywords: "keywords",
+  tags: "keywords",
+};
+
 /**
  * Converts an MDAST tree to a DOCX document section.
  * @param node - The root MDAST node
@@ -174,13 +193,15 @@ export const toSection = async (
   definitions: Definitions,
   footnoteDefinitions: FootnoteDefinitions,
   props?: ISectionProps,
+  docxProps?: IDocxProps,
 ): Promise<DocxSection> => {
   const { plugins, useTitle, trimInnerSpaces, ...sectionProps } = {
     ...DEFAULT_SECTION_PROPS,
     ...props,
   } as IDefaultMdastToDocxSectionProps;
 
-  for (const plugin of plugins) await plugin.preprocess?.(node, definitions);
+  for (const plugin of plugins)
+    await plugin.preprocess?.(node, definitions, docxProps);
 
   const processInlineNodeChildren = createInlineProcessor(
     definitions,
@@ -345,9 +366,31 @@ export const toSection = async (
           ];
         case "":
           return docxNodes;
-        case "yaml":
-        case "html":
+        case "yaml": {
+          if (
+            docxProps &&
+            typeof (node as { value?: unknown }).value === "string"
+          ) {
+            node.value.split(/\r?\n/).forEach((line) => {
+              const colonIdx = line.indexOf(":");
+              if (colonIdx === -1) return;
+
+              const key = line.slice(0, colonIdx).trim().toLowerCase();
+              const value = line
+                .slice(colonIdx + 1)
+                .trim()
+                .replace(/^(['"])(.*)\1$/, "$2");
+
+              if (!key || !value) return;
+              const prop = DOCX_METADATA_MAP[key];
+
+              if (!docxProps[prop]) {
+                docxProps[prop] = value;
+              }
+            });
+          }
           return docxNodes;
+        }
         default:
           warnOnce(
             `block:${node.type}`,
