@@ -127,7 +127,9 @@ export const PreviewPanel = ({
         </div>
       )}
 
-      {viewMode === "tiptap" && <TiptapRichEditor />}
+      {viewMode === "tiptap" && (
+        <TiptapRichEditor value={markdown} onChange={onChangeMarkdown} />
+      )}
 
       {viewMode === "code" && (
         <div className="relative rounded-xl border border-border bg-muted/40 p-4">

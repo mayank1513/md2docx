@@ -1,13 +1,16 @@
 "use client";
 
 import { applyAllFixesToEditor, PromptShield } from "@promptshield/tiptap";
+import { Markdown } from "@tiptap/markdown";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {
   Bold,
   Code,
+  GitBranch,
   Heading1,
   Heading2,
+  Heading3,
   Italic,
   List,
   ListOrdered,
@@ -17,17 +20,62 @@ import {
   Strikethrough,
   Undo,
 } from "lucide-react";
-import { useState } from "react";
+import mermaid from "mermaid";
+import { useEffect, useState } from "react";
+import { CodeBlockLowlightMermaid } from "tiptap-extension-mermaid";
+import { lowlight } from "./highlight";
 
-const INITIAL_PROSE_SAMPLE = `<h2>Tiptap Rich Text Editor</h2><p>This is a live WYSIWYG editor integrated with <strong>@promptshield/tiptap</strong>.</p><p>Try writing, formatting, or testing prompt injection phrases to see real-time security scanning.</p><blockquote>"OpenXML formatting that is secure, universal, and accessible."</blockquote>`;
+interface TiptapRichEditorProps {
+  value: string;
+  onChange: (value: string) => void;
+}
 
-export const TiptapRichEditor = () => {
+export const TiptapRichEditor = ({
+  value,
+  onChange,
+}: TiptapRichEditorProps) => {
   const [cleanedCount, setCleanedCount] = useState(0);
+
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "neutral",
+      securityLevel: "loose",
+      fontFamily: "inherit",
+    });
+  }, []);
 
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: { levels: [1, 2] },
+        codeBlock: false,
+        heading: { levels: [1, 2, 3] },
+      }),
+      CodeBlockLowlightMermaid.configure({
+        lowlight,
+        debounce: 300,
+        classList: [
+          "mermaid-container",
+          "my-3",
+          "p-3",
+          "rounded-xl",
+          "border",
+          "border-border",
+          "bg-card/60",
+          "backdrop-blur-sm",
+          "shadow-xs",
+          "flex",
+          "justify-center",
+          "overflow-x-auto",
+        ],
+        mermaidConfig: {
+          theme: "neutral",
+        },
+      }),
+      Markdown.configure({
+        markedOptions: {
+          gfm: true,
+        },
       }),
       PromptShield.configure({
         scanOnUpdate: true,
@@ -36,15 +84,30 @@ export const TiptapRichEditor = () => {
         hoverUi: true,
       }),
     ],
-    content: INITIAL_PROSE_SAMPLE,
+    content: value,
+    contentType: "markdown",
     immediatelyRender: false,
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[240px] max-h-[460px] overflow-y-auto p-5 leading-relaxed",
+          "prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[260px] max-h-[500px] overflow-y-auto p-5 leading-relaxed font-sans",
       },
     },
+    onUpdate: ({ editor: currentEditor }) => {
+      const md = currentEditor.getMarkdown();
+      onChange(md);
+    },
   });
+
+  // Keep editor content in sync when preset or external markdown changes
+  useEffect(() => {
+    if (editor && !editor.isFocused) {
+      const currentMd = editor.getMarkdown();
+      if (value !== currentMd) {
+        editor.commands.setContent(value, { contentType: "markdown" });
+      }
+    }
+  }, [value, editor]);
 
   if (!editor) return null;
 
@@ -53,9 +116,20 @@ export const TiptapRichEditor = () => {
     setCleanedCount((prev) => prev + 1);
   };
 
+  const handleInsertMermaid = () => {
+    editor
+      .chain()
+      .focus()
+      .insertContent(
+        "\n```mermaid\ngraph TD\n  A[Start] --> B[Process]\n  B --> C[End]\n```\n",
+        { contentType: "markdown" },
+      )
+      .run();
+  };
+
   return (
     <div className="flex flex-col rounded-xl border border-border bg-background overflow-hidden">
-      {/* Toolbar */}
+      {/* Editor Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-1.5 p-2 bg-muted/40 border-b border-border/60 text-xs">
         <div className="flex items-center flex-wrap gap-1">
           <button
@@ -137,6 +211,20 @@ export const TiptapRichEditor = () => {
           >
             <Heading2 className="w-3.5 h-3.5" />
           </button>
+          <button
+            type="button"
+            onClick={() =>
+              editor.chain().focus().toggleHeading({ level: 3 }).run()
+            }
+            className={`p-1.5 rounded hover:bg-muted cursor-pointer ${
+              editor.isActive("heading", { level: 3 })
+                ? "bg-primary/20 text-primary font-bold"
+                : "text-muted-foreground"
+            }`}
+            title="Heading 3"
+          >
+            <Heading3 className="w-3.5 h-3.5" />
+          </button>
 
           <span className="w-px h-4 bg-border/60 mx-1" />
 
@@ -179,6 +267,21 @@ export const TiptapRichEditor = () => {
 
           <span className="w-px h-4 bg-border/60 mx-1" />
 
+          {/* Insert Mermaid Diagram */}
+          <button
+            type="button"
+            onClick={handleInsertMermaid}
+            className="flex items-center gap-1 p-1.5 rounded hover:bg-muted text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+            title="Insert Mermaid Diagram"
+          >
+            <GitBranch className="w-3.5 h-3.5 text-primary" />
+            <span className="text-[11px] font-medium hidden sm:inline">
+              Mermaid
+            </span>
+          </button>
+
+          <span className="w-px h-4 bg-border/60 mx-1" />
+
           <button
             type="button"
             onClick={() => editor.chain().focus().undo().run()}
@@ -204,7 +307,7 @@ export const TiptapRichEditor = () => {
           type="button"
           onClick={handleCleanThreats}
           className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors cursor-pointer"
-          title="Clean Prompt Threats"
+          title="Clean Prompt Injection & Safety Threats"
         >
           <ShieldCheck className="w-3.5 h-3.5" />
           <span>Scan & Sanitize</span>
