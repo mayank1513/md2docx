@@ -48,34 +48,60 @@ export interface FrontmatterPluginOptions {
 
 const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
+interface QuoteState {
+  inDouble: boolean;
+  inSingle: boolean;
+  backslashCount: number;
+}
+
+const updateQuoteState = (
+  char: string,
+  nextChar: string | undefined,
+  state: QuoteState,
+): { handledEscape: boolean; skipNext: boolean } => {
+  if (char === "\\") {
+    state.backslashCount++;
+    return { handledEscape: true, skipNext: false };
+  }
+  const isEscaped = state.backslashCount % 2 === 1;
+  state.backslashCount = 0;
+
+  if (char === '"' && !state.inSingle && !isEscaped) {
+    state.inDouble = !state.inDouble;
+  } else if (char === "'" && !state.inDouble) {
+    if (state.inSingle && nextChar === "'") {
+      return { handledEscape: false, skipNext: true };
+    }
+    state.inSingle = !state.inSingle;
+  }
+  return { handledEscape: false, skipNext: false };
+};
+
 /**
  * Strips comments from a line while preserving '#' within quotes or URLs.
  * Tracks backslash parity to correctly identify escaped quotes.
  */
 const stripComment = (line: string): string => {
-  let inDouble = false;
-  let inSingle = false;
-  let backslashCount = 0;
+  const state: QuoteState = {
+    inDouble: false,
+    inSingle: false,
+    backslashCount: 0,
+  };
 
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
-
-    if (char === "\\") {
-      backslashCount++;
+    const { handledEscape, skipNext } = updateQuoteState(
+      char,
+      line[i + 1],
+      state,
+    );
+    if (handledEscape) continue;
+    if (skipNext) {
+      i++;
       continue;
     }
-    const isEscaped = backslashCount % 2 === 1;
-    backslashCount = 0;
 
-    if (char === '"' && !inSingle && !isEscaped) {
-      inDouble = !inDouble;
-    } else if (char === "'" && !inDouble) {
-      if (inSingle && line[i + 1] === "'") {
-        i++;
-        continue;
-      }
-      inSingle = !inSingle;
-    } else if (char === "#" && !inDouble && !inSingle) {
+    if (char === "#" && !state.inDouble && !state.inSingle) {
       if (i === 0 || /\s/.test(line[i - 1])) {
         return line.slice(0, i).trimEnd();
       }
@@ -90,31 +116,30 @@ const stripComment = (line: string): string => {
 const splitQuotedArray = (str: string): string[] => {
   const items: string[] = [];
   let current = "";
-  let inDouble = false;
-  let inSingle = false;
-  let backslashCount = 0;
+  const state: QuoteState = {
+    inDouble: false,
+    inSingle: false,
+    backslashCount: 0,
+  };
 
   for (let i = 0; i < str.length; i++) {
     const char = str[i];
-
-    if (char === "\\") {
-      backslashCount++;
+    const { handledEscape, skipNext } = updateQuoteState(
+      char,
+      str[i + 1],
+      state,
+    );
+    if (handledEscape) {
       current += char;
       continue;
     }
-    const isEscaped = backslashCount % 2 === 1;
-    backslashCount = 0;
+    if (skipNext) {
+      current += "''";
+      i++;
+      continue;
+    }
 
-    if (char === '"' && !inSingle && !isEscaped) {
-      inDouble = !inDouble;
-    } else if (char === "'" && !inDouble) {
-      if (inSingle && str[i + 1] === "'") {
-        current += "''";
-        i++;
-        continue;
-      }
-      inSingle = !inSingle;
-    } else if (char === "," && !inDouble && !inSingle) {
+    if (char === "," && !state.inDouble && !state.inSingle) {
       if (current.trim()) items.push(current.trim());
       current = "";
       continue;
