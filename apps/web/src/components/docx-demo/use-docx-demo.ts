@@ -3,6 +3,7 @@ import { remarkDocx } from "@m2d/remark-docx";
 import { toDocx } from "mdast2docx";
 import {
   emojiPlugin,
+  frontmatterPlugin,
   htmlPlugin,
   imagePlugin,
   listPlugin,
@@ -60,6 +61,7 @@ export const useDocxDemo = () => {
 
   const setAllPlugins = (enable: boolean) => {
     setEnabledPlugins({
+      frontmatter: enable,
       math: enable,
       mermaid: enable,
       image: enable,
@@ -120,6 +122,7 @@ export const useDocxDemo = () => {
   /** Helper to instantiate only the active client plugins */
   const getActiveClientPlugins = () => {
     const list = [];
+    if (enabledPlugins.frontmatter) list.push(frontmatterPlugin());
     if (enabledPlugins.mermaid) list.push(mermaidPlugin());
     if (enabledPlugins.html) list.push(htmlPlugin());
     if (enabledPlugins.list) list.push(listPlugin());

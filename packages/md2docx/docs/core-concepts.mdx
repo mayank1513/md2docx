@@ -1,0 +1,111 @@
+---
+title: Core Concepts
+description: Understand the compilation pipeline, MDAST tree transformation, and OpenXML packaging architecture.
+---
+
+# Core Concepts
+
+`md2docx` bridges the gap between the Markdown/Unified ecosystem and Microsoft Word OpenXML (`.docx`). Understanding its core pipeline helps when customizing styles, writing plugins, or diagnosing document output.
+
+---
+
+## 🏗️ The Compilation Pipeline
+
+```
+Markdown String
+      │
+      ▼
+Unified / remark-parse  ─────────► Tokenizes text into standard MDAST
+      │
+      ▼
+Remark Syntax Plugins   ─────────► remark-gfm (tables), remark-math ($$), remark-frontmatter (---)
+      │
+      ▼
+Extended MDAST Tree     ─────────► Unist tree with custom AST nodes (svg, math, yaml, html)
+      │
+      ▼
+@m2d Plugin Pipeline    ─────────► Preprocesses AST & registers block/inline handlers
+      │
+      ▼
+@m2d/core Compiler      ─────────► Translates MDAST nodes into native Word Sections & Paragraphs
+      │
+      ▼
+docx.js Packer Engine   ─────────► Compresses XML parts into a valid OPC/ZIP OpenXML container
+      │
+      ▼
+Binary Output (.docx)   ─────────► Blob, Uint8Array Buffer, or Stream
+```
+
+---
+
+## 🌳 What is MDAST?
+
+MDAST (Markdown Abstract Syntax Tree) represents Markdown as a structured hierarchical tree conforming to the [Unist](https://github.com/syntax-tree/unist) specification.
+
+For example, this Markdown:
+
+```markdown
+# Welcome
+A paragraph with **bold** text.
+```
+
+Becomes this MDAST JSON:
+
+```json
+{
+  "type": "root",
+  "children": [
+    {
+      "type": "heading",
+      "depth": 1,
+      "children": [{ "type": "text", "value": "Welcome" }]
+    },
+    {
+      "type": "paragraph",
+      "children": [
+        { "type": "text", "value": "A paragraph with " },
+        {
+          "type": "strong",
+          "children": [{ "type": "text", "value": "bold" }]
+        },
+        { "type": "text", "value": " text." }
+      ]
+    }
+  ]
+}
+```
+
+`@m2d/core` traverses this tree, converting:
+- **Block nodes** (`heading`, `paragraph`, `table`, `blockquote`) $\to$ Word `Paragraph` and `Table` instances.
+- **Inline nodes** (`text`, `strong`, `emphasis`, `link`, `image`) $\to$ Word `TextRun`, `ImageRun`, and `Hyperlink` instances.
+
+---
+
+## 🌐 Dual Execution: Client vs. Server
+
+`md2docx` provides specialized packages optimized for two distinct environments:
+
+### 1. Browser (Client-Side)
+- **Primary Package:** `@m2d/md2docx` or `@m2d/remark-docx`
+- **Image/Diagram Rasterization:** In-memory browser Canvas API and DOMParser.
+- **Benefits:** Zero server compute costs, 100% offline privacy, instant client downloads.
+
+### 2. Node.js (Server-Side)
+- **Primary Package:** `@m2d/remark-docx-node` or `@m2d/cli`
+- **Image/Diagram Rasterization:** Server-side `sharp` (libvips) and `beautiful-mermaid` (zero DOM dependencies).
+- **Benefits:** Headless CLI batch exports, high-concurrency API streaming, resilient background jobs.
+
+---
+
+## 🔄 Plugin Lifecycle Stages
+
+Every plugin attached to `md2docx` can hook into 4 deterministic lifecycle stages:
+
+1. **`preprocess(tree, definitions, docxProps)`**:
+   Runs before section conversion begins. Plugins can traverse the AST, replace custom nodes, pre-rasterize SVGs, or mutate document-level metadata (`docxProps.title`, `docxProps.styles`).
+2. **`block(docx, node, paraProps, processChildren)`**:
+   Transforms custom block AST nodes into Word `Paragraph` or `Table` instances.
+3. **`inline(docx, node, runProps, defs, fnDefs, processChildren)`**:
+   Transforms custom inline AST nodes into Word `TextRun`, `ImageRun`, or `ExternalHyperlink` instances.
+4. **`postprocess(sections)`**:
+   Runs after all document sections are generated, allowing inspection, reordering, or cleanup before ZIP packaging.

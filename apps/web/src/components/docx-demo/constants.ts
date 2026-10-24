@@ -1,6 +1,7 @@
 import {
   Calculator,
   FileSpreadsheet,
+  FileText,
   GitBranch,
   Globe,
   ImageIcon,
@@ -9,7 +10,14 @@ import {
 } from "lucide-react";
 import type { PluginDefinition, PluginId, TargetOption } from "./types";
 
-export const ALL_PLUGINS_SAMPLE = `# md2docx Feature Showcase
+export const ALL_PLUGINS_SAMPLE = `---
+title: "md2docx Feature Showcase"
+author: "Mayank Chaudhari"
+description: "A complete demonstration of Markdown to native DOCX conversion"
+keywords: "docx, markdown, openxml, remark"
+---
+
+# md2docx Feature Showcase
 
 A balanced, complete demonstration of standard Markdown, GitHub Flavored Markdown (GFM), math formulas, diagrams, tables, and rich HTML tags converted into a native Microsoft Word (.docx) document.
 
@@ -187,6 +195,13 @@ export const TARGETS: TargetOption[] = [
 
 export const AVAILABLE_PLUGINS: PluginDefinition[] = [
   {
+    id: "frontmatter",
+    name: "@m2d/frontmatter",
+    fnName: "frontmatterPlugin",
+    icon: FileText,
+    desc: "YAML/TOML Document Properties",
+  },
+  {
     id: "math",
     name: "@m2d/math",
     fnName: "mathPlugin",
@@ -242,6 +257,7 @@ export const PRESET_PLUGINS: Record<
   Record<PluginId, boolean>
 > = {
   all: {
+    frontmatter: true,
     math: true,
     mermaid: true,
     image: true,
@@ -251,6 +267,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   full: {
+    frontmatter: true,
     math: true,
     mermaid: true,
     image: true,
@@ -260,6 +277,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   math: {
+    frontmatter: false,
     math: true,
     mermaid: false,
     image: false,
@@ -269,6 +287,7 @@ export const PRESET_PLUGINS: Record<
     emoji: false,
   },
   mermaid: {
+    frontmatter: false,
     math: false,
     mermaid: true,
     image: true,
@@ -278,6 +297,7 @@ export const PRESET_PLUGINS: Record<
     emoji: false,
   },
   table: {
+    frontmatter: false,
     math: false,
     mermaid: false,
     image: false,

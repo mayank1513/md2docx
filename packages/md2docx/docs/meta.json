@@ -1,3 +1,10 @@
 {
-  "pages": ["overview", "api"]
+  "pages": [
+    "overview",
+    "quick-start",
+    "core-concepts",
+    "plugin-authoring",
+    "frontmatter-and-metadata",
+    "api"
+  ]
 }

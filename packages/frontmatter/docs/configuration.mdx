@@ -1,0 +1,58 @@
+---
+title: Configuration & Parsers
+description: Configure YAML/TOML frontmatter parsing, metadata field mappings, and custom third-party parser engines.
+---
+
+# Configuration & Parsers
+
+`@m2d/frontmatter` provides zero-dependency metadata parsing and extraction for markdown documents, translating frontmatter headers directly into Microsoft Word document properties.
+
+---
+
+## 🛠️ Options Reference
+
+The `frontmatterPlugin(options)` factory accepts an optional configuration object:
+
+```typescript
+export interface FrontmatterPluginOptions {
+  /**
+   * Whether to remove the frontmatter block from the document body.
+   * @default true
+   */
+  strip?: boolean;
+
+  /**
+   * Custom parser function to override the built-in YAML/TOML parser.
+   * Useful when full YAML 1.2 or TOML specifications are required.
+   */
+  parser?: (raw: string, type: "yaml" | "toml") => Record<string, unknown>;
+
+  /**
+   * Custom transform function to map raw metadata to OpenXML document properties.
+   */
+  transform?: (
+    raw: Record<string, unknown>,
+    defaultProps: Partial<IDocxProps>,
+  ) => Partial<IDocxProps>;
+}
+```
+
+---
+
+## 🔌 Custom Parser Integration
+
+To use standard parsers such as `yaml` or `smol-toml`:
+
+```typescript
+import YAML from "yaml";
+import { frontmatterPlugin } from "@m2d/frontmatter";
+
+export const configuredFrontmatter = frontmatterPlugin({
+  parser: (raw, type) => {
+    if (type === "yaml") {
+      return YAML.parse(raw);
+    }
+    return {};
+  },
+});
+```
