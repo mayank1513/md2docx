@@ -14,6 +14,7 @@
     "@m2d/react-markdown": "workspace:*",
     "@m2d/remark-docx": "workspace:*",
     "@m2d/remark-docx-node": "workspace:*",
+    "@m2d/tiptap": "workspace:*",
     "@mayank1513/fork-me": "^2.1.3",
     "@promptshield/tiptap": "latest",
     "@radix-ui/react-slot": "^1.5.0",

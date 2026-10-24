@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: Use of any is ok for test files */
+
 import "./setup";
 import fs from "node:fs";
 import path from "node:path";
@@ -58,6 +60,68 @@ describe("remarkDocx compiler plugin", () => {
       .process(
         "- Item 1\n- Item 2\n\n| Col A | Col B |\n| --- | --- |\n| 1 | 2 |",
       )
+      .then((res) => res.result);
+
+    expect(result).toBeInstanceOf(Blob);
+  });
+
+  it("compiles headerMarkdown and footerMarkdown into section headers and footers", async () => {
+    const processor = unified().use(remarkParse).use(
+      remarkDocx,
+      "blob",
+      {},
+      {
+        headerMarkdown: "**Confidential Document** | Acme Inc",
+        footerMarkdown: "Page 1 of 5",
+      },
+    );
+
+    const result = await processor
+      .process("# Document Body")
+      .then((res) => res.result);
+
+    expect(result).toBeInstanceOf(Blob);
+  });
+
+  it("extracts header and footer from YAML frontmatter node in AST", async () => {
+    const processor = unified()
+      .use(remarkParse)
+      .use(() => (tree: any) => {
+        tree.children.unshift({
+          type: "yaml",
+          value: 'header: "Acme Header"\nfooter: "Page 1"',
+        });
+      })
+      .use(remarkDocx, "blob");
+
+    const result = await processor
+      .process("# Main Body")
+      .then((res) => res.result);
+
+    expect(result).toBeInstanceOf(Blob);
+  });
+
+  it("prefers explicit headerMarkdown and footerMarkdown over frontmatter header/footer", async () => {
+    const processor = unified()
+      .use(remarkParse)
+      .use(() => (tree: any) => {
+        tree.children.unshift({
+          type: "yaml",
+          value: 'header: "Frontmatter Header"\nfooter: "Frontmatter Footer"',
+        });
+      })
+      .use(
+        remarkDocx,
+        "blob",
+        {},
+        {
+          headerMarkdown: "Explicit Header",
+          footerMarkdown: "Explicit Footer",
+        },
+      );
+
+    const result = await processor
+      .process("# Main Body")
       .then((res) => res.result);
 
     expect(result).toBeInstanceOf(Blob);

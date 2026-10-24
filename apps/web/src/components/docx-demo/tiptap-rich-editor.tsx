@@ -1,5 +1,6 @@
 "use client";
 
+import { DocxExtension } from "@m2d/tiptap";
 import { applyAllFixesToEditor, PromptShield } from "@promptshield/tiptap";
 import { Markdown } from "@tiptap/markdown";
 import { EditorContent, useEditor } from "@tiptap/react";
@@ -7,6 +8,7 @@ import StarterKit from "@tiptap/starter-kit";
 import {
   Bold,
   Code,
+  FileDown,
   GitBranch,
   Heading1,
   Heading2,
@@ -84,6 +86,9 @@ export const TiptapRichEditor = ({
         scanOnPaste: true,
         debounceMs: 200,
         hoverUi: true,
+      }),
+      DocxExtension.configure({
+        defaultFilename: "tiptap-export.docx",
       }),
     ],
     content: value,
@@ -314,21 +319,34 @@ export const TiptapRichEditor = ({
           </button>
         </div>
 
-        {/* PromptShield Security Action */}
-        <button
-          type="button"
-          onClick={handleCleanThreats}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors cursor-pointer"
-          title="Clean Prompt Injection & Safety Threats"
-        >
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Scan & Sanitize</span>
-          {cleanedCount > 0 && (
-            <span className="ml-1 px-1 rounded-full bg-emerald-500 text-white text-[9px]">
-              {cleanedCount}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-1.5">
+          {/* PromptShield Security Action */}
+          <button
+            type="button"
+            onClick={handleCleanThreats}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors cursor-pointer"
+            title="Clean Prompt Injection & Safety Threats"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Scan & Sanitize</span>
+            {cleanedCount > 0 && (
+              <span className="ml-1 px-1 rounded-full bg-emerald-500 text-white text-[9px]">
+                {cleanedCount}
+              </span>
+            )}
+          </button>
+
+          {/* Tiptap Extension DOCX Export Action */}
+          <button
+            type="button"
+            onClick={() => editor.commands.downloadDocx("tiptap-export.docx")}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 transition-colors cursor-pointer"
+            title="Export directly to Word (.docx) using @m2d/tiptap"
+          >
+            <FileDown className="w-3.5 h-3.5" />
+            <span>Export DOCX</span>
+          </button>
+        </div>
       </div>
 
       {/* Editor Content Surface */}

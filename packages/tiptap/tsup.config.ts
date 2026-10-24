@@ -12,6 +12,7 @@ export default defineConfig(
       clean: !options.watch,
       bundle: true,
       minify: !options.watch,
+      external: ["@tiptap/core"],
       ...options,
     }) as Options,
 );

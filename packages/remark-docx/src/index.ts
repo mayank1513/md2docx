@@ -1,7 +1,7 @@
 import { type IDocxProps, type ISectionProps, toDocx } from "@m2d/core";
 import { DEFAULT_SECTION_PROPS, warnOnce } from "@m2d/core/utils";
 import { emojiPlugin } from "@m2d/emoji";
-import { frontmatterPlugin } from "@m2d/frontmatter";
+import { frontmatterPlugin, parseFrontmatter } from "@m2d/frontmatter";
 import { htmlPlugin } from "@m2d/html";
 import { imagePlugin } from "@m2d/image";
 import { listPlugin } from "@m2d/list";
@@ -34,6 +34,26 @@ export interface Mdast2DocxPluginProps {
   image?: Parameters<typeof imagePlugin>[0];
   frontmatter?: Parameters<typeof frontmatterPlugin>[1];
 }
+
+const parseMarkdownToAst = (
+  parser: (md: string) => Root,
+  input: unknown,
+): ISectionProps["headerAst"] => {
+  if (!input) return undefined;
+  if (typeof input === "string") {
+    return parser(input);
+  }
+  if (typeof input === "object" && input !== null) {
+    const obj = input as Record<string, unknown>;
+    return {
+      default:
+        typeof obj.default === "string" ? parser(obj.default) : undefined,
+      first: typeof obj.first === "string" ? parser(obj.first) : undefined,
+      even: typeof obj.even === "string" ? parser(obj.even) : undefined,
+    };
+  }
+  return undefined;
+};
 
 /**
  * A unified compiler plugin to convert MDAST to DOCX output using `mdast2docx`.
@@ -89,36 +109,40 @@ export const remarkDocx: Plugin<
       }
     }
 
-    let headerAst = sectionProps.headerAst;
-    let footerAst = sectionProps.footerAst;
+    let frontmatterHeader: unknown;
+    let frontmatterFooter: unknown;
+    const needsHeader = !sectionProps.headerAst && !sectionProps.headerMarkdown;
+    const needsFooter = !sectionProps.footerAst && !sectionProps.footerMarkdown;
 
-    if (sectionProps.headerMarkdown && !headerAst) {
-      const hm = sectionProps.headerMarkdown;
-      headerAst =
-        typeof hm === "string"
-          ? (this.parse(hm) as Root)
-          : {
-              default: hm.default
-                ? (this.parse(hm.default) as Root)
-                : undefined,
-              first: hm.first ? (this.parse(hm.first) as Root) : undefined,
-              even: hm.even ? (this.parse(hm.even) as Root) : undefined,
-            };
+    if (needsHeader || needsFooter) {
+      const firstNode = node.children?.[0];
+      if (
+        firstNode &&
+        (firstNode.type === "yaml" || (firstNode.type as string) === "toml") &&
+        typeof (firstNode as { value?: unknown }).value === "string"
+      ) {
+        const parsed = parseFrontmatter(
+          (firstNode as { value: string }).value,
+          firstNode.type,
+        );
+        frontmatterHeader = parsed.header;
+        frontmatterFooter = parsed.footer;
+      }
     }
 
-    if (sectionProps.footerMarkdown && !footerAst) {
-      const fm = sectionProps.footerMarkdown;
-      footerAst =
-        typeof fm === "string"
-          ? (this.parse(fm) as Root)
-          : {
-              default: fm.default
-                ? (this.parse(fm.default) as Root)
-                : undefined,
-              first: fm.first ? (this.parse(fm.first) as Root) : undefined,
-              even: fm.even ? (this.parse(fm.even) as Root) : undefined,
-            };
-    }
+    const parseFn = (md: string) => this.parse(md) as Root;
+    const headerAst =
+      sectionProps.headerAst ??
+      parseMarkdownToAst(
+        parseFn,
+        sectionProps.headerMarkdown ?? frontmatterHeader,
+      );
+    const footerAst =
+      sectionProps.footerAst ??
+      parseMarkdownToAst(
+        parseFn,
+        sectionProps.footerMarkdown ?? frontmatterFooter,
+      );
 
     const {
       headerMarkdown: _,

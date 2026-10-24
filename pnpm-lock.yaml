@@ -293,6 +293,9 @@ importers:
       "@m2d/remark-docx-node":
         specifier: workspace:*
         version: link:../../packages/remark-docx-node
+      "@m2d/tiptap":
+        specifier: workspace:*
+        version: link:../../packages/tiptap
       "@mayank1513/fork-me":
         specifier: ^2.1.3
         version: 2.1.3(@types/react@19.3.0)(next@16.4.2(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react@19.3.1)
@@ -1146,7 +1149,17 @@ importers:
         version: 11.0.5
 
   packages/tiptap:
+    dependencies:
+      "@m2d/core":
+        specifier: workspace:*
+        version: link:../core
+      "@m2d/md2docx":
+        specifier: workspace:*
+        version: link:../md2docx
     devDependencies:
+      "@tiptap/core":
+        specifier: ^3.32.0
+        version: 3.32.0(@tiptap/pm@3.32.0)
       "@types/node":
         specifier: latest
         version: 26.6.5

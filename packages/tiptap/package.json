@@ -7,7 +7,7 @@
     "access": "public",
     "provenance": true
   },
-  "description": "",
+  "description": "Tiptap extension to export rich-text editor content directly to Word (.docx) documents.",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,19 +37,36 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "@m2d/core": "workspace:*",
+    "@m2d/md2docx": "workspace:*"
+  },
+  "peerDependencies": {
+    "@tiptap/core": "^2.0.0 || ^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tiptap/core": {
+      "optional": false
+    }
+  },
   "devDependencies": {
+    "@tiptap/core": "^3.32.0",
     "@types/node": "latest",
     "tsup": "latest",
     "typescript": "latest"
   },
   "forge": {
-    "aliases": [],
-    "icon": "LibraryBig",
-    "description": ""
+    "aliases": [
+      "tiptap-extension-docx",
+      "@md2docx/tiptap",
+      "@mdast2docx/tiptap"
+    ],
+    "icon": "FileDown",
+    "description": "Tiptap DOCX Export Extension"
   },
   "funding": [
     {
@@ -63,6 +80,11 @@
   ],
   "keywords": [
     "@m2d/tiptap",
+    "tiptap",
+    "tiptap-extension",
+    "docx",
+    "word",
+    "export",
     "turboforge"
   ]
 }
