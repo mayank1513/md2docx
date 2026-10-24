@@ -19,16 +19,17 @@
   <img alt="license" src="https://img.shields.io/npm/l/@m2d/frontmatter" />
 </p>
 
-> Front-matter plugin for md2docx to map Markdown YAML/TOML metadata to native DOCX document properties.
+> Zero-dependency front-matter plugin for md2docx to map Markdown YAML and TOML metadata to native DOCX document properties.
 
 ---
 
 ## ✨ Features
 
-- **Automatic Metadata Mapping:** Maps standard Markdown front-matter fields (`title`, `author`/`creator`, `description`, `subject`, `tags`/`keywords`, `revision`) directly to Word OpenXML document properties (`IPropertiesOptions`).
-- **Custom Properties Support:** Extra front-matter attributes (e.g. `department`, `status`, `date`) are preserved as Word custom document properties.
-- **YAML & TOML Support:** Parses both YAML (`--- ... ---`) and TOML (`+++ ... +++`) front-matter blocks.
-- **Custom Transformers:** Full control via custom parser and transform callbacks.
+- **Zero External Dependencies:** Built-in quote-aware parser for YAML (`:`) and basic TOML (`=`).
+- **Automatic Metadata Mapping:** Maps standard fields (`title`, `author`/`creator`, `description`, `subject`, `tags`/`keywords`, `revision`) directly to Word OpenXML document properties (`IPropertiesOptions`).
+- **Quote & Escape Resilient:** Correctly preserves `#` inside strings and URLs, decodes escaped double quotes (`\"`), and decodes doubled single quotes (`''`).
+- **Typed Inline Arrays:** Parses numbers, booleans, and quoted strings inside bracketed arrays (`[item1, true, 42]`).
+- **Pluggable Parsers:** Seamlessly inject dedicated parsers (e.g. `smol-toml` or `yaml`) for complex nested tables, multi-line strings, or full specifications.
 
 ---
 
@@ -42,7 +43,7 @@ pnpm add @m2d/frontmatter
 
 ## 🚀 Usage
 
-### Basic Example
+### Basic Example (Zero Configuration)
 
 ```typescript
 import { toDocx } from "@m2d/core";
@@ -57,16 +58,38 @@ const docxBlob = await toDocx(
 );
 ```
 
-### Custom Transform Example
+### Advanced TOML Support (via Custom Parser)
+
+For complex TOML documents containing tables (`[metadata]`), dates, or multi-line strings, install a dedicated parser like `smol-toml` and inject it into the plugin:
+
+```bash
+pnpm add smol-toml
+```
 
 ```typescript
+import { parse as parseToml } from "smol-toml";
+import { frontmatterPlugin, parseFrontmatter } from "@m2d/frontmatter";
+
+const plugin = frontmatterPlugin(undefined, {
+  parser: (raw, type) =>
+    type === "toml" ? parseToml(raw) : parseFrontmatter(raw, type),
+});
+```
+
+### Advanced YAML Support (via `yaml`)
+
+Similarly, if you need full YAML 1.2 spec features (anchors `&`, aliases `*`, or complex folded blocks):
+
+```bash
+pnpm add yaml
+```
+
+```typescript
+import { parse as parseYaml } from "yaml";
 import { frontmatterPlugin } from "@m2d/frontmatter";
 
 const plugin = frontmatterPlugin(undefined, {
-  transform: (data, docxProps) => {
-    docxProps.title = `[Confidential] ${data.title}`;
-    docxProps.subject = String(data.category ?? "General");
-  },
+  parser: (raw) => parseYaml(raw),
 });
 ```
 

@@ -1,5 +1,4 @@
 import type { IDocxProps, IPlugin, Root, RootContent } from "@m2d/core";
-import { warnOnce } from "@m2d/core/utils";
 
 export interface FrontmatterData {
   title?: string;
@@ -17,14 +16,25 @@ export interface FrontmatterData {
   [key: string]: unknown;
 }
 
+export type FrontmatterType = "yaml" | "toml" | (string & {});
+
 export type FrontmatterParser = (
   raw: string,
-  type?: "yaml" | "toml" | string,
+  type?: FrontmatterType,
 ) => FrontmatterData;
 
 export interface FrontmatterPluginOptions {
   /**
    * Custom parser function to parse the raw front-matter string.
+   * Enables full YAML 1.2 (e.g. via 'yaml') or full TOML (e.g. via 'smol-toml').
+   *
+   * @example
+   * ```ts
+   * import { parse as parseToml } from "smol-toml";
+   * frontmatterPlugin(undefined, {
+   *   parser: (raw, type) => type === "toml" ? parseToml(raw) : parseFrontmatter(raw, type)
+   * });
+   * ```
    */
   parser?: FrontmatterParser;
 
@@ -32,12 +42,6 @@ export interface FrontmatterPluginOptions {
    * Custom transformer to map parsed front-matter fields to DOCX document properties.
    */
   transform?: (frontmatter: FrontmatterData, docxProps: IDocxProps) => void;
-
-  /**
-   * Whether to render a visual title block at the top of the document.
-   * @default false
-   */
-  renderTitleBlock?: boolean;
 }
 
 type StringMetadataKey =
@@ -64,17 +68,33 @@ const DOCX_METADATA_MAP: Record<string, StringMetadataKey> = {
 const FORBIDDEN_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
 /**
- * Strips comments from a YAML line while preserving '#' within quotes or URLs.
+ * Strips comments from a line while preserving '#' within quotes or URLs.
+ * Tracks backslash parity to correctly identify escaped quotes.
  */
-const stripYamlComment = (line: string): string => {
+const stripComment = (line: string): string => {
   let inDouble = false;
   let inSingle = false;
+  let backslashCount = 0;
 
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
-    if (char === '"' && !inSingle) inDouble = !inDouble;
-    else if (char === "'" && !inDouble) inSingle = !inSingle;
-    else if (char === "#" && !inDouble && !inSingle) {
+
+    if (char === "\\") {
+      backslashCount++;
+      continue;
+    }
+    const isEscaped = backslashCount % 2 === 1;
+    backslashCount = 0;
+
+    if (char === '"' && !inSingle && !isEscaped) {
+      inDouble = !inDouble;
+    } else if (char === "'" && !inDouble) {
+      if (inSingle && line[i + 1] === "'") {
+        i++;
+        continue;
+      }
+      inSingle = !inSingle;
+    } else if (char === "#" && !inDouble && !inSingle) {
       if (i === 0 || /\s/.test(line[i - 1])) {
         return line.slice(0, i).trimEnd();
       }
@@ -84,20 +104,37 @@ const stripYamlComment = (line: string): string => {
 };
 
 /**
- * Splits comma-separated array items respecting quoted segments.
+ * Splits comma-separated array items respecting quoted segments and backslash escapes.
  */
 const splitQuotedArray = (str: string): string[] => {
   const items: string[] = [];
   let current = "";
   let inDouble = false;
   let inSingle = false;
+  let backslashCount = 0;
 
   for (let i = 0; i < str.length; i++) {
     const char = str[i];
-    if (char === '"' && !inSingle) inDouble = !inDouble;
-    else if (char === "'" && !inDouble) inSingle = !inSingle;
-    else if (char === "," && !inDouble && !inSingle) {
-      items.push(current.trim());
+
+    if (char === "\\") {
+      backslashCount++;
+      current += char;
+      continue;
+    }
+    const isEscaped = backslashCount % 2 === 1;
+    backslashCount = 0;
+
+    if (char === '"' && !inSingle && !isEscaped) {
+      inDouble = !inDouble;
+    } else if (char === "'" && !inDouble) {
+      if (inSingle && str[i + 1] === "'") {
+        current += "''";
+        i++;
+        continue;
+      }
+      inSingle = !inSingle;
+    } else if (char === "," && !inDouble && !inSingle) {
+      if (current.trim()) items.push(current.trim());
       current = "";
       continue;
     }
@@ -108,35 +145,36 @@ const splitQuotedArray = (str: string): string[] => {
 };
 
 /**
- * Unquotes and parses scalar YAML values (quoted strings, booleans, numbers, inline arrays).
+ * Parses scalar values (quoted strings, booleans, numbers, nulls, inline arrays).
  */
 const parseScalar = (val: string): unknown => {
   const trimmed = val.trim();
+
+  // Inline array: recursively parse each non-empty element
   if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
     const inner = trimmed.slice(1, -1).trim();
     if (!inner) return [];
-    return splitQuotedArray(inner).map((item) => {
-      const s = item.trim();
-      if (
-        (s.startsWith('"') && s.endsWith('"')) ||
-        (s.startsWith("'") && s.endsWith("'"))
-      ) {
-        return s.slice(1, -1);
-      }
-      return s;
-    });
+    return splitQuotedArray(inner).map((item) => parseScalar(item));
   }
 
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    return trimmed.slice(1, -1);
+  // Double-quoted string (decode escaped quotes and backslashes)
+  if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+    return trimmed.slice(1, -1).replace(/\\([\\"])/g, "$1");
   }
 
+  // Single-quoted string (decode doubled quotes)
+  if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+    return trimmed.slice(1, -1).replace(/''/g, "'");
+  }
+
+  // Null
+  if (trimmed === "null" || trimmed === "~") return null;
+
+  // Boolean
   if (trimmed.toLowerCase() === "true") return true;
   if (trimmed.toLowerCase() === "false") return false;
 
+  // Number
   if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
     const num = Number(trimmed);
     if (!Number.isNaN(num)) return num;
@@ -146,39 +184,19 @@ const parseScalar = (val: string): unknown => {
 };
 
 /**
- * Attempts to load optional smol-toml parser.
- */
-const tryParseToml = (raw: string): FrontmatterData | null => {
-  try {
-    // skipcq: JS-C1003
-    // biome-ignore lint/suspicious/noExplicitAny: dynamic optional dependency import
-    const toml = (globalThis as any).smolToml ?? require("smol-toml");
-    if (typeof toml?.parse === "function") {
-      return toml.parse(raw) as FrontmatterData;
-    }
-  } catch {
-    // smol-toml not installed
-  }
-  warnOnce(
-    "frontmatter-toml-missing",
-    "TOML front-matter detected. Please install 'smol-toml' or provide a custom parser in frontmatterPlugin options to enable TOML parsing.",
-  );
-  return null;
-};
-
-/**
- * Parses YAML front-matter blocks, or delegates TOML to smol-toml if available.
+ * Zero-dependency parser for basic YAML and basic TOML front-matter.
+ * Handles strings, quoted scalars, booleans, numbers, lists, and inline arrays.
+ * For advanced TOML (tables, multi-line strings) or full YAML 1.2, pass a custom `parser`.
  */
 export const parseFrontmatter: FrontmatterParser = (
   raw: string,
-  type = "yaml",
+  type: FrontmatterType = "yaml",
 ): FrontmatterData => {
   if (!raw || typeof raw !== "string") return {};
 
-  if (type === "toml") {
-    const tomlData = tryParseToml(raw);
-    return tomlData ?? {};
-  }
+  const isToml = type === "toml";
+  const separator = isToml ? "=" : ":";
+  const delimiter = isToml ? "+++" : "---";
 
   const result: FrontmatterData = Object.create(null);
   const lines = raw.split(/\r?\n/);
@@ -186,27 +204,48 @@ export const parseFrontmatter: FrontmatterParser = (
   let currentArray: unknown[] | null = null;
 
   for (const rawLine of lines) {
-    const line = stripYamlComment(rawLine);
-    if (!line.trim() || line.trim() === "---") continue;
-
-    // List item: "- value"
-    const listMatch = line.match(/^\s*-\s+(.*)$/);
-    if (listMatch && currentKey) {
-      if (!currentArray) {
-        currentArray = [];
-        result[currentKey] = currentArray;
-      }
-      currentArray.push(parseScalar(listMatch[1]));
+    const line = stripComment(rawLine);
+    const trimmedLine = line.trim();
+    if (
+      !trimmedLine ||
+      trimmedLine === delimiter ||
+      trimmedLine === "---" ||
+      trimmedLine === "+++"
+    ) {
       continue;
     }
 
-    // YAML Key-value pair (strict colon separation)
-    const colonIdx = line.indexOf(":");
-    if (colonIdx !== -1) {
-      const key = line.slice(0, colonIdx).trim();
-      const val = line.slice(colonIdx + 1).trim();
+    // Explicitly ignore TOML table headers ([table]) and array-of-tables ([[table]])
+    if (isToml && /^\[{1,2}[^=]+\]{1,2}$/.test(trimmedLine)) {
+      currentKey = null;
+      currentArray = null;
+      continue;
+    }
 
-      if (!key || FORBIDDEN_KEYS.has(key)) continue;
+    // List item (YAML): "- value"
+    const listMatch = line.match(/^\s*-\s+(.*)$/);
+    if (!isToml && listMatch) {
+      if (currentKey) {
+        if (!currentArray) {
+          currentArray = [];
+          result[currentKey] = currentArray;
+        }
+        currentArray.push(parseScalar(listMatch[1]));
+      }
+      continue;
+    }
+
+    // Key-value pair based on format separator (: for YAML, = for TOML)
+    const sepIdx = line.indexOf(separator);
+    if (sepIdx !== -1) {
+      const key = line.slice(0, sepIdx).trim();
+      const val = line.slice(sepIdx + 1).trim();
+
+      if (!key || FORBIDDEN_KEYS.has(key)) {
+        currentKey = null;
+        currentArray = null;
+        continue;
+      }
 
       if (!val) {
         currentKey = key;
@@ -217,6 +256,9 @@ export const parseFrontmatter: FrontmatterParser = (
         currentArray = null;
         result[key] = parseScalar(val);
       }
+    } else {
+      currentKey = null;
+      currentArray = null;
     }
   }
 
@@ -254,7 +296,7 @@ export const frontmatterPlugin = (
     if (!fmNode) return;
 
     const parser = options.parser ?? parseFrontmatter;
-    const data = parser(fmNode.value, fmNode.type);
+    const data = parser(fmNode.value, fmNode.type as FrontmatterType);
 
     if (options.transform) {
       options.transform(data, docxProps);
@@ -274,7 +316,7 @@ export const frontmatterPlugin = (
       const prop = DOCX_METADATA_MAP[lowerKey];
 
       if (prop) {
-        if (!docxProps[prop]) {
+        if (docxProps[prop] == null || docxProps[prop] === "") {
           docxProps[prop] = Array.isArray(rawVal)
             ? rawVal.join(", ")
             : String(rawVal);
@@ -282,7 +324,7 @@ export const frontmatterPlugin = (
       } else if (lowerKey === "revision") {
         const rev = Number(rawVal);
         if (
-          !docxProps.revision &&
+          (docxProps.revision == null || Number.isNaN(docxProps.revision)) &&
           !Number.isNaN(rev) &&
           Number.isInteger(rev)
         ) {
