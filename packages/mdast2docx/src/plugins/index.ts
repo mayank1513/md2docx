@@ -1,4 +1,5 @@
 export * from "@m2d/emoji";
+export * from "@m2d/frontmatter";
 export * from "@m2d/html";
 export * from "@m2d/image";
 export * from "@m2d/list";

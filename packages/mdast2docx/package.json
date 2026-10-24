@@ -155,6 +155,7 @@
     "@m2d/cache": "workspace:*",
     "@m2d/core": "workspace:*",
     "@m2d/emoji": "^0.1.3",
+    "@m2d/frontmatter": "workspace:*",
     "@m2d/html": "workspace:*",
     "@m2d/image": "workspace:*",
     "@m2d/list": "workspace:*",

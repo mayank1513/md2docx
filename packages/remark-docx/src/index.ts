@@ -1,6 +1,7 @@
 import { type IDocxProps, type ISectionProps, toDocx } from "@m2d/core";
 import { DEFAULT_SECTION_PROPS, warnOnce } from "@m2d/core/utils";
 import { emojiPlugin } from "@m2d/emoji";
+import { frontmatterPlugin } from "@m2d/frontmatter";
 import { htmlPlugin } from "@m2d/html";
 import { imagePlugin } from "@m2d/image";
 import { listPlugin } from "@m2d/list";
@@ -17,6 +18,7 @@ export interface Mdast2DocxPluginProps {
   table?: Parameters<typeof tablePlugin>[0];
   emoji?: Parameters<typeof emojiPlugin>[0];
   image?: Parameters<typeof imagePlugin>[0];
+  frontmatter?: Parameters<typeof frontmatterPlugin>[1];
 }
 
 /**
@@ -47,6 +49,7 @@ export const remarkDocx: Plugin<
     // If plugins are not defined in sectionProps, use the default set
     if (!sectionProps.plugins) {
       const plugins = [
+        frontmatterPlugin(undefined, pluginProps?.frontmatter),
         mermaidPlugin(pluginProps?.mermaid),
         htmlPlugin(),
         listPlugin(pluginProps?.list),
@@ -60,7 +63,13 @@ export const remarkDocx: Plugin<
           "remark-docx-client-on-node",
           "Running client-side @m2d/remark-docx in a Node.js environment. Client plugins (html, image, mermaid) are skipped. Please use '@m2d/remark-docx-node' for native image and diagram support on Node.",
         );
-        sectionProps.plugins = plugins.slice(2, -1);
+        sectionProps.plugins = [
+          frontmatterPlugin(undefined, pluginProps?.frontmatter),
+          listPlugin(pluginProps?.list),
+          mathPlugin(),
+          tablePlugin(pluginProps?.table),
+          emojiPlugin(pluginProps?.emoji),
+        ];
       } else {
         sectionProps.plugins = plugins;
       }

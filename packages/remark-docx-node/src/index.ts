@@ -1,6 +1,7 @@
 import { type IDocxProps, type ISectionProps, toDocx } from "@m2d/core";
 import { DEFAULT_SECTION_PROPS } from "@m2d/core/utils";
 import { emojiPlugin } from "@m2d/emoji";
+import { frontmatterPlugin } from "@m2d/frontmatter";
 import { nodeHtmlPlugin } from "@m2d/html-node";
 import { nodeImagePlugin } from "@m2d/image-node";
 import { listPlugin } from "@m2d/list";
@@ -18,6 +19,7 @@ export interface Mdast2DocxNodePluginProps {
   table?: Parameters<typeof tablePlugin>[0];
   emoji?: Parameters<typeof emojiPlugin>[0];
   image?: Parameters<typeof nodeImagePlugin>[0];
+  frontmatter?: Parameters<typeof frontmatterPlugin>[1];
 }
 
 /**
@@ -49,6 +51,7 @@ export const remarkDocx: Plugin<
   this.compiler = (node: Root): Promise<OutputByType[OutputType]> => {
     if (!sectionProps.plugins) {
       sectionProps.plugins = [
+        frontmatterPlugin(undefined, pluginProps?.frontmatter),
         nodeHtmlPlugin(pluginProps?.html),
         nodeMermaidPlugin(pluginProps?.mermaid),
         listPlugin(pluginProps?.list),
