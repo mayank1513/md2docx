@@ -24,6 +24,7 @@
         "@m2d/remark-docx",
         "@m2d/remark-docx-node",
         "@m2d/table",
+        "@m2d/tiptap",
         "@tool/scripts",
         "@tool/tsconfig",
         "mdast2docx"

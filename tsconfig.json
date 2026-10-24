@@ -65,6 +65,7 @@
         "./packages/remark-docx-node/dist"
       ],
       "@m2d/table": ["./packages/table/src", "./packages/table/dist"],
+      "@m2d/tiptap": ["./packages/tiptap/src", "./packages/tiptap/dist"],
       "mdast2docx": ["./packages/mdast2docx/src", "./packages/mdast2docx/dist"]
     }
   },
