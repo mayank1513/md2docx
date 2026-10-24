@@ -1,11 +1,19 @@
 #!/usr/bin/env node
 
+import { realpathSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
-import { findProjectRoot, isCLI, resolveConfig } from "@turboforge/cli-kit";
-import { DEFAULT_CONFIG, type SharedOptions, shared } from "./shared";
+import { basename, extname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  createLogger,
+  findProjectRoot,
+  isCLI,
+  type LogLevel,
+  resolveConfig,
+} from "@turboforge/cli-kit";
+import { DEFAULT_CONFIG, type ToDocxFileOptions, toDocxFile } from "./shared";
 
-export interface CliOptions extends SharedOptions {
+export interface CliOptions extends ToDocxFileOptions {
   help?: boolean;
   init?: boolean;
   config?: string;
@@ -18,54 +26,54 @@ export const parseArgs = (args: string[]): Partial<CliOptions> => {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
-    switch (arg) {
-      case "--help":
-      case "-h":
-        options.help = true;
-        break;
-      case "--version":
-      case "-v":
-        options.version = true;
-        break;
-      case "--output":
-      case "-o":
-        options.output = args[++i];
-        break;
-      case "--title":
-      case "-t":
-        options.title = args[++i];
-        break;
-      case "--author":
-      case "-a":
-        options.author = args[++i];
-        break;
-      case "--description":
-      case "-d":
-        options.description = args[++i];
-        break;
-      case "--init":
-      case "-i":
-        options.init = true;
-        if (args[i + 1] && !args[i + 1].startsWith("-")) {
-          options.config = args[++i];
-        }
-        break;
-      case "--config":
-      case "-c":
+    if (arg === "--help" || arg === "-h") {
+      options.help = true;
+    } else if (arg === "--version" || arg === "-v") {
+      options.version = true;
+    } else if (arg === "--debug" || arg === "--verbose") {
+      options.debug = true;
+      options.logLevel = "debug";
+    } else if (arg === "--log-level") {
+      options.logLevel = args[++i] as LogLevel;
+    } else if (arg.startsWith("--log-level=")) {
+      options.logLevel = arg.slice(arg.indexOf("=") + 1) as LogLevel;
+    } else if (arg === "--output" || arg === "-o") {
+      options.output = args[++i];
+    } else if (arg.startsWith("--output=") || arg.startsWith("-o=")) {
+      options.output = arg.slice(arg.indexOf("=") + 1);
+    } else if (arg === "--title" || arg === "-t") {
+      options.title = args[++i];
+    } else if (arg.startsWith("--title=") || arg.startsWith("-t=")) {
+      options.title = arg.slice(arg.indexOf("=") + 1);
+    } else if (arg === "--author" || arg === "-a") {
+      options.author = args[++i];
+    } else if (arg.startsWith("--author=") || arg.startsWith("-a=")) {
+      options.author = arg.slice(arg.indexOf("=") + 1);
+    } else if (arg === "--description" || arg === "-d") {
+      options.description = args[++i];
+    } else if (arg.startsWith("--description=") || arg.startsWith("-d=")) {
+      options.description = arg.slice(arg.indexOf("=") + 1);
+    } else if (arg === "--init" || arg === "-i") {
+      options.init = true;
+      if (args[i + 1] && !args[i + 1].startsWith("-")) {
         options.config = args[++i];
-        break;
-      default:
-        if (!arg.startsWith("-") && !options.input) {
-          options.input = arg;
-        }
-        break;
+      }
+    } else if (arg.startsWith("--init=")) {
+      options.init = true;
+      options.config = arg.slice(arg.indexOf("=") + 1);
+    } else if (arg === "--config" || arg === "-c") {
+      options.config = args[++i];
+    } else if (arg.startsWith("--config=") || arg.startsWith("-c=")) {
+      options.config = arg.slice(arg.indexOf("=") + 1);
+    } else if (!arg.startsWith("-") && !options.input) {
+      options.input = arg;
     }
   }
 
   return options;
 };
 
-export const showHelp = () => {
+export const showHelp = (): void => {
   console.log(`
 Usage:
   $ md2docx <input.md> [options]
@@ -76,17 +84,21 @@ Arguments:
 
 Options:
   -o, --output <file>      Output DOCX file path (default: <input>.docx)
-  -t, --title <title>      Document title
-  -a, --author <author>    Document author
-  -d, --description <desc> Document description
+  -t, --title <title>      Document title (metadata)
+  -a, --author <author>    Document author / creator (metadata)
+  -d, --description <desc> Document description (metadata)
   -c, --config <file>      Use custom configuration file
   -i, --init [file]        Create default config file
+      --debug              Enable verbose debug logging
+      --log-level <level>  Set log severity (debug, info, warn, error)
   -h, --help               Show this help message
   -v, --version            Show version number
 `);
 };
 
-export const main = async (args: string[] = process.argv.slice(2)) => {
+export const main = async (
+  args: string[] = process.argv.slice(2),
+): Promise<void> => {
   const {
     help,
     init,
@@ -101,18 +113,17 @@ export const main = async (args: string[] = process.argv.slice(2)) => {
   }
 
   if (version) {
-    console.log("@m2d/cli v0.0.0");
+    console.log("@m2d/cli v0.1.1");
     return;
   }
 
   if (init) {
-    await writeFile(
-      resolve(await findProjectRoot(), configFile || "md2docx.config.json"),
-      JSON.stringify(DEFAULT_CONFIG, null, 2),
-    );
-    console.log(
-      `Created default config file at ${configFile || "md2docx.config.json"}`,
-    );
+    const targetFile = configFile || "md2docx.config.json";
+    const projectRoot = await findProjectRoot();
+    const targetPath = resolve(projectRoot, targetFile);
+    await writeFile(targetPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
+    const logger = createLogger({ level: "info", name: "md2docx" });
+    logger.info(`Created default config file at ${targetFile}`);
     return;
   }
 
@@ -123,9 +134,53 @@ export const main = async (args: string[] = process.argv.slice(2)) => {
     configFile,
   });
 
-  await shared(config);
+  await toDocxFile(config);
 };
 
-if (isCLI()) {
-  main().catch(console.error);
+export const isInvokedAsCli = (): boolean => {
+  if (typeof process === "undefined" || !process.argv?.[1]) return false;
+  if (process.env.VITEST || process.env.NODE_ENV === "test") return false;
+
+  try {
+    if (typeof isCLI === "function" && isCLI(import.meta.url)) {
+      return true;
+    }
+  } catch {}
+
+  try {
+    const rawArgv = process.argv[1];
+    let resolvedArgv = rawArgv;
+    try {
+      resolvedArgv = realpathSync(rawArgv);
+    } catch {}
+
+    const normalizedArgv = resolvedArgv.replace(/\\/g, "/").toLowerCase();
+    const selfPath = fileURLToPath(import.meta.url)
+      .replace(/\\/g, "/")
+      .toLowerCase();
+    if (normalizedArgv === selfPath) return true;
+
+    const binNames = new Set(["cli", "m2d", "md2docx", "md2docx-node"]);
+    const base = basename(
+      normalizedArgv,
+      extname(normalizedArgv),
+    ).toLowerCase();
+    if (binNames.has(base)) return true;
+    if (
+      normalizedArgv.endsWith("/cli.mjs") ||
+      normalizedArgv.endsWith("/cli.js") ||
+      normalizedArgv.endsWith("/cli.ts")
+    ) {
+      return true;
+    }
+  } catch {}
+
+  return true;
+};
+
+if (isInvokedAsCli()) {
+  main().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  });
 }

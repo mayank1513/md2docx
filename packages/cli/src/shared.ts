@@ -41,7 +41,7 @@ export const md2docx = async <T extends OutputType = "nodebuffer">(
   return res.result as OutputByType[T];
 };
 
-export interface SharedOptions {
+export interface ToDocxFileOptions {
   input?: string;
   output?: string;
   title?: string;
@@ -52,9 +52,10 @@ export interface SharedOptions {
   sectionProps?: ISectionProps;
   pluginProps?: Mdast2DocxNodePluginProps;
   logLevel?: LogLevel;
+  debug?: boolean;
 }
 
-export const DEFAULT_CONFIG: Required<SharedOptions> = {
+export const DEFAULT_CONFIG: Required<ToDocxFileOptions> = {
   input: "",
   output: "",
   title: "",
@@ -65,35 +66,69 @@ export const DEFAULT_CONFIG: Required<SharedOptions> = {
   sectionProps: {},
   pluginProps: {},
   logLevel: "info",
+  debug: false,
 };
 
 /**
  * Helper to define type-safe configuration in md2docx.config.ts / md2docx.config.mjs.
  */
-export const defineConfig = (config: SharedOptions): SharedOptions => config;
+export const defineConfig = (config: ToDocxFileOptions): ToDocxFileOptions =>
+  config;
 
 /**
  * Executes a file-based Markdown to DOCX conversion for CLI invocations.
  */
-export const shared = async (options: SharedOptions): Promise<void> => {
-  const config = deepMerge(DEFAULT_CONFIG, options) as Required<SharedOptions>;
-  const logger = createLogger({ level: config.logLevel });
+export const toDocxFile = async (options: ToDocxFileOptions): Promise<void> => {
+  const config = deepMerge(
+    DEFAULT_CONFIG,
+    options,
+  ) as Required<ToDocxFileOptions>;
+  const effectiveLogLevel: LogLevel =
+    config.debug || options.debug ? "debug" : config.logLevel;
+  const logger = createLogger({ level: effectiveLogLevel, name: "md2docx" });
+
+  if (effectiveLogLevel === "debug") {
+    logger.debug("Resolved configuration:", JSON.stringify(config, null, 2));
+  }
 
   if (!config.input) {
     logger.error(
       "No input Markdown file specified. Run with --help for usage.",
     );
+    process.exitCode = 1;
     return;
   }
 
   const inputPath = resolve(config.input);
-  const markdown = await readFile(inputPath, "utf-8");
+  let markdown = "";
+  try {
+    markdown = await readFile(inputPath, "utf-8");
+  } catch (err) {
+    logger.error(
+      `Failed to read input file "${inputPath}": ${(err as Error).message}`,
+    );
+    process.exitCode = 1;
+    return;
+  }
+
   logger.info(`Converting ${config.input} to DOCX...`);
+  if (effectiveLogLevel === "debug") {
+    logger.debug(
+      `Loaded input markdown (${markdown.length} characters) from ${inputPath}`,
+    );
+  }
 
   const docxProps: IDocxProps = { ...config.docxProps };
   if (config.title) docxProps.title = config.title;
   if (config.author) docxProps.creator = config.author;
   if (config.description) docxProps.description = config.description;
+
+  if (effectiveLogLevel === "debug") {
+    logger.debug(
+      "Applying document properties:",
+      JSON.stringify(docxProps, null, 2),
+    );
+  }
 
   const sectionProps: ISectionProps = {
     ...config.sectionProps,
@@ -103,19 +138,48 @@ export const shared = async (options: SharedOptions): Promise<void> => {
         : config.sectionProps?.plugins,
   };
 
-  const buffer = await md2docx(
-    markdown,
-    docxProps,
-    sectionProps,
-    "nodebuffer",
-    config.pluginProps,
-  );
+  if (effectiveLogLevel === "debug") {
+    if (sectionProps.plugins && sectionProps.plugins.length > 0) {
+      logger.debug(
+        `Registered ${sectionProps.plugins.length} custom AST plugin(s)`,
+      );
+    }
+    logger.debug("Compiling Markdown AST to DOCX via @m2d/remark-docx-node...");
+  }
+
+  let buffer: OutputByType["nodebuffer"];
+  try {
+    buffer = await md2docx(
+      markdown,
+      docxProps,
+      sectionProps,
+      "nodebuffer",
+      config.pluginProps,
+    );
+  } catch (err) {
+    logger.error(`DOCX compilation failed: ${(err as Error).message}`);
+    if (effectiveLogLevel === "debug" && (err as Error).stack) {
+      logger.debug((err as Error).stack);
+    }
+    process.exitCode = 1;
+    return;
+  }
 
   const outputPath = resolve(
     config.output ||
       `${config.input.replace(/\.(md|markdown|mdx)$/i, "")}.docx`,
   );
 
-  await writeFile(outputPath, buffer as Buffer);
-  logger.info(`Successfully generated ${outputPath}`);
+  try {
+    await writeFile(outputPath, buffer as Buffer);
+    logger.info(`Successfully generated ${outputPath}`);
+    if (effectiveLogLevel === "debug") {
+      logger.debug(`Wrote ${(buffer as Buffer).length} bytes to ${outputPath}`);
+    }
+  } catch (err) {
+    logger.error(
+      `Failed to write output file "${outputPath}": ${(err as Error).message}`,
+    );
+    process.exitCode = 1;
+  }
 };
