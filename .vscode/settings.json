@@ -14,6 +14,7 @@
     "@m2d/cache",
     "@m2d/cli",
     "@m2d/core",
+    "@m2d/frontmatter",
     "@m2d/html",
     "@m2d/html-node",
     "@m2d/image",

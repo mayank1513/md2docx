@@ -29,6 +29,10 @@
       "@m2d/cache": ["./packages/cache/src", "./packages/cache/dist"],
       "@m2d/cli": ["./packages/cli/src", "./packages/cli/dist"],
       "@m2d/core": ["./packages/core/src", "./packages/core/dist"],
+      "@m2d/frontmatter": [
+        "./packages/frontmatter/src",
+        "./packages/frontmatter/dist"
+      ],
       "@m2d/html": ["./packages/html/src", "./packages/html/dist"],
       "@m2d/html-node": [
         "./packages/html-node/src",
