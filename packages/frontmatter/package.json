@@ -7,7 +7,7 @@
     "access": "public",
     "provenance": true
   },
-  "description": "",
+  "description": "Front-matter plugin for md2docx to map Markdown YAML/TOML metadata to native DOCX document properties.",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,19 +37,36 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "@m2d/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "docx": "^9.3.0",
+    "smol-toml": "^1.3.0"
+  },
+  "peerDependenciesMeta": {
+    "smol-toml": {
+      "optional": true
+    }
+  },
   "devDependencies": {
+    "@types/mdast": "^4.0.4",
     "@types/node": "latest",
+    "docx": "^9.13.0",
     "tsup": "latest",
     "typescript": "latest"
   },
   "forge": {
-    "aliases": [],
-    "icon": "LibraryBig",
-    "description": ""
+    "aliases": [
+      "@md2docx/frontmatter",
+      "@mdast2docx/frontmatter"
+    ],
+    "icon": "FileText",
+    "description": "Front-matter Metadata Plugin"
   },
   "funding": [
     {
@@ -63,6 +80,17 @@
   ],
   "keywords": [
     "@m2d/frontmatter",
+    "frontmatter",
+    "yaml",
+    "toml",
+    "metadata",
+    "docx",
+    "markdown-to-docx",
+    "mdast-to-docx",
+    "md2docx",
+    "mdast2docx",
+    "m2d",
+    "mayank1513",
     "turboforge"
   ]
 }

@@ -19,35 +19,58 @@
   <img alt="license" src="https://img.shields.io/npm/l/@m2d/frontmatter" />
 </p>
 
-> @m2d/frontmatter: 
+> Front-matter plugin for md2docx to map Markdown YAML/TOML metadata to native DOCX document properties.
 
 ---
 
-## ✨ Why @m2d/frontmatter?
+## ✨ Features
 
-- 
-- 
+- **Automatic Metadata Mapping:** Maps standard Markdown front-matter fields (`title`, `author`/`creator`, `description`, `subject`, `tags`/`keywords`, `revision`) directly to Word OpenXML document properties (`IPropertiesOptions`).
+- **Custom Properties Support:** Extra front-matter attributes (e.g. `department`, `status`, `date`) are preserved as Word custom document properties.
+- **YAML & TOML Support:** Parses both YAML (`--- ... ---`) and TOML (`+++ ... +++`) front-matter blocks.
+- **Custom Transformers:** Full control via custom parser and transform callbacks.
 
 ---
 
 ## 📦 Installation
 
 ```bash
-$ pnpm add @m2d/frontmatter
+pnpm add @m2d/frontmatter
 ```
 
-**_or_**
+---
 
-```bash
-$ npm install @m2d/frontmatter
+## 🚀 Usage
+
+### Basic Example
+
+```typescript
+import { toDocx } from "@m2d/core";
+import { frontmatterPlugin } from "@m2d/frontmatter";
+
+const docxBlob = await toDocx(
+  mdast,
+  {},
+  {
+    plugins: [frontmatterPlugin()],
+  },
+);
 ```
 
-**_or_**
+### Custom Transform Example
 
-```bash
-$ yarn add @m2d/frontmatter
+```typescript
+import { frontmatterPlugin } from "@m2d/frontmatter";
+
+const plugin = frontmatterPlugin(undefined, {
+  transform: (data, docxProps) => {
+    docxProps.title = `[Confidential] ${data.title}`;
+    docxProps.subject = String(data.category ?? "General");
+  },
+});
 ```
 
+---
 
 ## License
 
