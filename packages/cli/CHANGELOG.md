@@ -1,5 +1,21 @@
 # @m2d/cli
 
+## 1.0.0
+
+### Major Changes
+
+- [`d4ce59b`](https://github.com/md2docx/md2docx/commit/d4ce59bf6c2b915c70c902d1122687d31ae5f7c7) Thanks [@mayank1513](https://github.com/mayank1513)! - - **BREAKING CHANGE**: Removed `shared` and `SharedOptions` from package exports.
+  - Exported programmatic file runner as `toDocxFile` with `ToDocxFileOptions` interface.
+  - Fix CLI binary execution when invoked via `pnpx`, `npx`, or binary shims.
+  - Add `--debug` and `--log-level` flags with detailed diagnostics using `@turboforge/cli-kit` structured logger.
+  - Add support for `--flag=value` parameter syntax.
+
+### Patch Changes
+
+- Updated dependencies [[`688a94d`](https://github.com/md2docx/md2docx/commit/688a94d7f6ae5a5ff093235845c66a85bf9a87d8), [`47ac4c7`](https://github.com/md2docx/md2docx/commit/47ac4c770343ff292107d37acc9b491ab0d381a7), [`909cd94`](https://github.com/md2docx/md2docx/commit/909cd944fccf6f7befd3960049d22adf9e8a60c0), [`e4c3545`](https://github.com/md2docx/md2docx/commit/e4c3545460a04ff33fc78c37a64edf4052f1cdd8)]:
+  - @m2d/core@1.9.0
+  - @m2d/remark-docx-node@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes

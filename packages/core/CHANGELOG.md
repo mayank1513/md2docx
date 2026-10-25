@@ -1,5 +1,25 @@
 # @m2d/core
 
+## 1.9.0
+
+### Minor Changes
+
+- [`909cd94`](https://github.com/md2docx/md2docx/commit/909cd944fccf6f7befd3960049d22adf9e8a60c0) Thanks [@mayank1513](https://github.com/mayank1513)! - - Add native front-matter metadata extraction to map Markdown YAML/TOML metadata directly to Word document properties (`title`, `creator`, `description`, `subject`, `keywords`).
+  - Add dedicated zero-dependency `@m2d/frontmatter` plugin with quote-aware YAML and basic TOML parsing, prototype safety, and pluggable parser hooks.
+  - Wire `@m2d/frontmatter` into `@m2d/remark-docx`, `@m2d/remark-docx-node`, and `mdast2docx/plugins`.
+  - Deprecate `IPlugin.root`: Use `IPlugin.preprocess(tree, definitions, docxProps)` instead to inspect the AST and configure document-level properties.
+
+- [`e4c3545`](https://github.com/md2docx/md2docx/commit/e4c3545460a04ff33fc78c37a64edf4052f1cdd8) Thanks [@mayank1513](https://github.com/mayank1513)! - - Support section-level `headerAst` and `footerAst` in `@m2d/core` compiled recursively into native Word `Header` and `Footer` instances using `toSection`.
+  - Support `headerMarkdown` and `footerMarkdown` in `@m2d/remark-docx` and `@m2d/remark-docx-node` compiling Markdown headers/footers into MDAST for native Word section headers and footers.
+
+### Patch Changes
+
+- [`688a94d`](https://github.com/md2docx/md2docx/commit/688a94d7f6ae5a5ff093235845c66a85bf9a87d8) Thanks [@mayank1513](https://github.com/mayank1513)! - - Share `DOCX_METADATA_MAP` between `@m2d/core` and `@m2d/frontmatter`.
+  - Unify wrapper rendering in `@m2d/react-markdown` via `renderWithWrapper`.
+  - Eliminate duplicate command options resolution in `@m2d/tiptap`.
+
+- [`47ac4c7`](https://github.com/md2docx/md2docx/commit/47ac4c770343ff292107d37acc9b491ab0d381a7) Thanks [@mayank1513](https://github.com/mayank1513)! - Include `CheckBox` and `FootnoteReferenceRun` in `InlineDocxNodes` type union to resolve assignment error during inline children processing
+
 ## 1.8.1
 
 ### Patch Changes
