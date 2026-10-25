@@ -1,5 +1,17 @@
 # @m2d/react-markdown
 
+## 1.0.2
+
+### Patch Changes
+
+- [`688a94d`](https://github.com/md2docx/md2docx/commit/688a94d7f6ae5a5ff093235845c66a85bf9a87d8) Thanks [@mayank1513](https://github.com/mayank1513)! - - Share `DOCX_METADATA_MAP` between `@m2d/core` and `@m2d/frontmatter`.
+  - Unify wrapper rendering in `@m2d/react-markdown` via `renderWithWrapper`.
+  - Eliminate duplicate command options resolution in `@m2d/tiptap`.
+
+- [`f026e1b`](https://github.com/md2docx/md2docx/commit/f026e1b965235011c5b4afa1a376af0decf9aaa5) Thanks [@mayank1513](https://github.com/mayank1513)! - - Fix memory leak and stale AST in `astRef` across re-renders by tracking deterministic chunk indices
+  - Prevent unbounded array accumulation across re-renders in `<Md>` and `<Mdx>`
+  - Export `AstRef`, `AstArrayElement`, `MdProps`, `MdxProps`, and `ComponentProps` types from client and server entry points
+
 ## 1.0.1
 
 ### Patch Changes

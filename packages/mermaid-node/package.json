@@ -2,7 +2,7 @@
   "name": "@m2d/mermaid-node",
   "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
   "private": false,
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publishConfig": {
     "access": "public",
     "provenance": true
