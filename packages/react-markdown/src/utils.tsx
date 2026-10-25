@@ -85,7 +85,7 @@ export interface MdProps extends MdxProps {
 
 /**
  * Internal component that parses markdown string into MDAST and HAST,
- * and renders it using the `El` recursive renderer.
+ * and renders it using the JSX runtime.
  */
 export const Markdown = ({
   children,
@@ -93,9 +93,10 @@ export const Markdown = ({
   rehypePlugins = [],
   remarkRehypeOptions,
   astRef,
+  chunkIndex = 0,
   components,
   skipHtml,
-}: MdProps) => {
+}: MdProps & { chunkIndex?: number }) => {
   const processor = unified()
     .use(remarkParse)
     .use(remarkPlugins)
@@ -109,7 +110,7 @@ export const Markdown = ({
   const hast = processor.runSync(mdast);
   if (astRef) {
     if (!astRef.current) astRef.current = [];
-    astRef.current.push({ mdast, hast });
+    astRef.current[chunkIndex] = { mdast, hast };
   }
 
   visit(hast, (node, index, parent) => {

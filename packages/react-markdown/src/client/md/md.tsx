@@ -13,6 +13,7 @@ const OptimizedMarkdown = memo(Markdown, equal);
 interface MarkdownRecursiveProps {
   children: ReactNode;
   markdownProps: Omit<MdProps, "wrapper">;
+  cursor: { index: number };
 }
 
 /**
@@ -22,16 +23,22 @@ interface MarkdownRecursiveProps {
 const MarkdownRecursive = ({
   children,
   markdownProps,
+  cursor,
 }: MarkdownRecursiveProps) => {
-  if (typeof children === "string")
-    return <OptimizedMarkdown {...markdownProps}>{children}</OptimizedMarkdown>;
+  if (typeof children === "string") {
+    return (
+      <OptimizedMarkdown {...markdownProps} chunkIndex={cursor.index++}>
+        {children}
+      </OptimizedMarkdown>
+    );
+  }
 
   if (isValidElement(children)) {
     const { type: Tag, props: innerProps } = children;
 
     return (
       <Tag {...(innerProps as IntrinsicProps)}>
-        <MarkdownRecursive {...{ markdownProps }}>
+        <MarkdownRecursive {...{ markdownProps, cursor }}>
           {(innerProps as IntrinsicProps).children}
         </MarkdownRecursive>
       </Tag>
@@ -51,8 +58,15 @@ const MarkdownRecursive = ({
  * - Optional raw HTML stripping
  */
 export const Md = ({ children, ...props }: MdxProps) =>
-  renderWithWrapper(props, (markdownProps) => (
-    <MarkdownRecursive markdownProps={markdownProps}>
-      {children}
-    </MarkdownRecursive>
-  ));
+  renderWithWrapper(props, (markdownProps) => {
+    const cursor = { index: 0 };
+    const content = (
+      <MarkdownRecursive markdownProps={markdownProps} cursor={cursor}>
+        {children}
+      </MarkdownRecursive>
+    );
+    if (props.astRef?.current) {
+      props.astRef.current.length = cursor.index;
+    }
+    return content;
+  });

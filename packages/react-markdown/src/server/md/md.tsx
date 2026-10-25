@@ -9,6 +9,14 @@ import { Markdown, type MdProps, renderWithWrapper } from "../../utils";
  * - Optional raw HTML stripping
  */
 export const Md = ({ children, ...props }: MdProps) =>
-  renderWithWrapper(props, (markdownProps) => (
-    <Markdown {...markdownProps}>{children}</Markdown>
-  ));
+  renderWithWrapper(props, (markdownProps) => {
+    const content = (
+      <Markdown {...markdownProps} chunkIndex={0}>
+        {children}
+      </Markdown>
+    );
+    if (props.astRef?.current) {
+      props.astRef.current.length = 1;
+    }
+    return content;
+  });

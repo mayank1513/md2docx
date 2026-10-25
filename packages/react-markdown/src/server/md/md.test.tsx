@@ -102,4 +102,25 @@ describe.concurrent("Md", () => {
     const md = screen.getByTestId(testId);
     expect(md.textContent).toContain("plugin!");
   });
+
+  test("re-renders update astRef without accumulating memory leak", ({
+    expect,
+  }) => {
+    const ref: AstRef = {};
+    const { rerender } = render(<Md astRef={ref}>Initial text</Md>);
+
+    expect(ref.current?.length).toBe(1);
+    expect(ref.current?.[0]?.mdast.children[0]).toMatchObject({
+      type: "paragraph",
+    });
+
+    // Re-render with updated content
+    rerender(<Md astRef={ref}># Updated Title</Md>);
+
+    expect(ref.current?.length).toBe(1);
+    expect(ref.current?.[0]?.mdast.children[0]).toMatchObject({
+      type: "heading",
+      depth: 1,
+    });
+  });
 });

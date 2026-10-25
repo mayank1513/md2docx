@@ -135,4 +135,54 @@ describe.concurrent("Md", () => {
     const md = screen.getByTestId(testId);
     expect(md.querySelector("code")?.textContent).toBe("test");
   });
+
+  test("captures all chunks at variable depth in astRef without collisions or leak across re-renders", ({
+    expect,
+  }) => {
+    const ref: AstRef = {};
+    const { rerender } = render(
+      <Mdx astRef={ref}>
+        <div>
+          <span># Chunk 1</span>
+        </div>
+        <div>
+          <p>
+            <strong>Chunk 2</strong>
+          </p>
+          <span># Chunk 3</span>
+        </div>
+      </Mdx>,
+    );
+
+    expect(ref.current?.length).toBe(3);
+    expect(ref.current?.[0]?.mdast.children[0]).toMatchObject({
+      type: "heading",
+    });
+    expect(ref.current?.[1]?.mdast.children[0]).toMatchObject({
+      type: "paragraph",
+    });
+    expect(ref.current?.[2]?.mdast.children[0]).toMatchObject({
+      type: "heading",
+    });
+
+    // Re-render: update content, length remains 3 (no accumulation leak)
+    rerender(
+      <Mdx astRef={ref}>
+        <div>
+          <span>Updated Chunk 1</span>
+        </div>
+        <div>
+          <p>
+            <strong>Updated Chunk 2</strong>
+          </p>
+          <span>Updated Chunk 3</span>
+        </div>
+      </Mdx>,
+    );
+
+    expect(ref.current?.length).toBe(3);
+    expect(ref.current?.[0]?.mdast.children[0]).toMatchObject({
+      type: "paragraph",
+    });
+  });
 });

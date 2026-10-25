@@ -6,5 +6,12 @@
  * i.e., server component re-exported from file with "use client" will behave as client component
  */
 
+export type {
+  AstArrayElement,
+  AstRef,
+  ComponentProps,
+  MdProps,
+  MdxProps,
+} from "../utils";
 // client component exports
 export * from "./md";

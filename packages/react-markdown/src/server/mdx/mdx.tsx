@@ -4,12 +4,12 @@ import {
   Markdown,
   type MdxProps,
   renderWithWrapper,
-  uuid,
 } from "../../utils";
 
 interface MarkdownRecursiveProps {
   children: ReactNode;
   markdownProps: Omit<MdxProps, "wrapper">;
+  cursor: { index: number };
 }
 
 /**
@@ -19,18 +19,25 @@ interface MarkdownRecursiveProps {
 const MarkdownRecursive = ({
   children,
   markdownProps,
+  cursor,
 }: MarkdownRecursiveProps) => {
-  if (typeof children === "string")
-    return <Markdown {...markdownProps}>{children}</Markdown>;
+  if (typeof children === "string") {
+    return (
+      <Markdown {...markdownProps} chunkIndex={cursor.index++}>
+        {children}
+      </Markdown>
+    );
+  }
 
   if (Array.isArray(children)) {
-    const prefix = uuid();
-    return children.map((child, id) => (
-      // biome-ignore lint/suspicious/noArrayIndexKey: deterministic prefix + index key
-      <MarkdownRecursive markdownProps={markdownProps} key={prefix + id}>
-        {child}
-      </MarkdownRecursive>
-    ));
+    return children.map((child, id) => {
+      const childKey = `${cursor.index}-${id}`;
+      return (
+        <MarkdownRecursive key={childKey} {...{ markdownProps, cursor }}>
+          {child}
+        </MarkdownRecursive>
+      );
+    });
   }
 
   if (isValidElement(children)) {
@@ -39,7 +46,7 @@ const MarkdownRecursive = ({
 
     return (
       <Tag {...(innerProps as IntrinsicProps)}>
-        <MarkdownRecursive markdownProps={markdownProps}>
+        <MarkdownRecursive {...{ markdownProps, cursor }}>
           {(innerProps as IntrinsicProps).children}
         </MarkdownRecursive>
       </Tag>
@@ -59,8 +66,15 @@ const MarkdownRecursive = ({
  * - Optional raw HTML stripping
  */
 export const Mdx = ({ children, ...props }: MdxProps) =>
-  renderWithWrapper(props, (markdownProps) => (
-    <MarkdownRecursive markdownProps={markdownProps}>
-      {children}
-    </MarkdownRecursive>
-  ));
+  renderWithWrapper(props, (markdownProps) => {
+    const cursor = { index: 0 };
+    const content = (
+      <MarkdownRecursive markdownProps={markdownProps} cursor={cursor}>
+        {children}
+      </MarkdownRecursive>
+    );
+    if (props.astRef?.current) {
+      props.astRef.current.length = cursor.index;
+    }
+    return content;
+  });
