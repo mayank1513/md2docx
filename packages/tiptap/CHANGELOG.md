@@ -1,5 +1,21 @@
 # @m2d/tiptap
 
+## 0.2.0
+
+### Minor Changes
+
+- [`4772ff7`](https://github.com/md2docx/md2docx/commit/4772ff79116aa815cb43c739f995ff9f565406f4) Thanks [@mayank1513](https://github.com/mayank1513)! - - Add automated YAML/TOML frontmatter delimiter preservation and recovery to `DocxExtension`
+  - Configure `DocxExtension` at `priority: 1000` to intercept and isolate frontmatter before ProseMirror or Markdown parsers
+  - Split and preserve frontmatter during editor initialization (`onBeforeCreate`) and via `setDocxContent`
+  - Add `repairFrontmatter` and `splitFrontmatter` utilities to recover unclosed frontmatter
+  - Add `getDocxMarkdown`, `getFrontmatter`, and `setFrontmatter` commands and helpers
+  - Automatically reattach preserved frontmatter during DOCX generation (`getDocxBlob`, `downloadDocx`)
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @m2d/md2docx@0.1.3
+
 ## 0.1.0
 
 ### Minor Changes

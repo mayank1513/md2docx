@@ -1,5 +1,12 @@
 # @m2d/react-markdown
 
+## 1.0.3
+
+### Patch Changes
+
+- [`c0002b1`](https://github.com/md2docx/md2docx/commit/c0002b1df041ddbfb1f7189d3a5742398037d273) Thanks [@mayank1513](https://github.com/mayank1513)! - - Deduplicate recursive JSX element traversal and `astRef` cursor sizing logic across client `Md` and server `Mdx` components
+  - Extract reusable `createMarkdownRecursive` and `renderRecursiveMarkdown` helpers in `@m2d/react-markdown` utils
+
 ## 1.0.2
 
 ### Patch Changes

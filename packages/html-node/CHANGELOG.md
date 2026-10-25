@@ -1,5 +1,20 @@
 # @m2d/html-node
 
+## 0.2.0
+
+### Minor Changes
+
+- [`657e9e3`](https://github.com/md2docx/md2docx/commit/657e9e319a2dcd72abb35ed99ec8e539ff93372f) Thanks [@mayank1513](https://github.com/mayank1513)! - - Support HTML `<style>` blocks in Markdown and HTML fragments, extracting CSS rules and stripping raw style elements from document flow
+  - Cascade CSS rules across document AST nodes: `table`, `th`, `td`, `tr`, `h1`–`h6`, `p`, `blockquote`, `code`, `hr`, and lists
+  - Support `background-color` extraction into docx shading fills and cell margins/padding
+  - Full compatibility across browser DOM and server-side LinkeDOM (`@m2d/html-node`)
+  - Deduplicate four-sided border mapping and rule style merging logic
+
+### Patch Changes
+
+- Updated dependencies [[`657e9e3`](https://github.com/md2docx/md2docx/commit/657e9e319a2dcd72abb35ed99ec8e539ff93372f)]:
+  - @m2d/html@1.3.0
+
 ## 0.1.1
 
 ### Patch Changes

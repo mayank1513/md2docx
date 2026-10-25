@@ -1,5 +1,12 @@
 # @m2d/cli
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @m2d/remark-docx-node@0.2.1
+
 ## 1.0.0
 
 ### Major Changes
