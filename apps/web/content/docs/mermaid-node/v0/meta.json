@@ -1,5 +1,5 @@
 {
-  "title": "Version 0.1.2",
+  "title": "Version 0.1.3",
   "description": "Server-side Node.js Mermaid diagram plugin for @m2d/core using beautiful-mermaid.",
   "pages": [
     "overview",

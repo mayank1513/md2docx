@@ -1,0 +1,73 @@
+[**@m2d/frontmatter**](../index.mdx)
+
+***
+
+[@m2d/frontmatter](../index.mdx) / FrontmatterPluginOptions
+
+# Interface: FrontmatterPluginOptions
+
+Defined in: [frontmatter.ts:62](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L62)
+
+## Properties
+
+### coverPage?
+
+> `optional` **coverPage?**: `boolean` \| [`CoverPageOptions`](CoverPageOptions.mdx)
+
+Defined in: [frontmatter.ts:85](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L85)
+
+Automatically generate a cover page from frontmatter metadata.
+
+***
+
+### infoBox?
+
+> `optional` **infoBox?**: `boolean` \| [`InfoBoxOptions`](InfoBoxOptions.mdx)
+
+Defined in: [frontmatter.ts:90](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L90)
+
+Automatically generate a styled info-box / callout banner from frontmatter metadata.
+
+***
+
+### parser?
+
+> `optional` **parser?**: [`FrontmatterParser`](../type-aliases/FrontmatterParser.mdx)
+
+Defined in: [frontmatter.ts:75](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L75)
+
+Custom parser function to parse the raw front-matter string.
+Enables full YAML 1.2 (e.g. via 'yaml') or full TOML (e.g. via 'smol-toml').
+
+#### Example
+
+```ts
+import { parse as parseToml } from "smol-toml";
+frontmatterPlugin(undefined, {
+  parser: (raw, type) => type === "toml" ? parseToml(raw) : parseFrontmatter(raw, type)
+});
+```
+
+***
+
+### transform?
+
+> `optional` **transform?**: (`frontmatter`, `docxProps`) => `void`
+
+Defined in: [frontmatter.ts:80](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L80)
+
+Custom transformer to map parsed front-matter fields to DOCX document properties.
+
+#### Parameters
+
+##### frontmatter
+
+[`FrontmatterData`](FrontmatterData.mdx)
+
+##### docxProps
+
+`IDocxProps`
+
+#### Returns
+
+`void`

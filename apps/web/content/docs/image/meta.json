@@ -2,8 +2,8 @@
   "title": "@m2d/image",
   "description": "MDAST Image Resolution Plugin",
   "tagLine": "MDAST to DOCX plugin for resolving and embedding images. Supports base64, URLs, and custom resolvers for seamless DOCX image integration.",
-  "lastModified": "2026-10-22T09:39:45.075Z",
-  "version": "1.6.0",
+  "lastModified": "2026-10-25T07:16:01.010Z",
+  "version": "1.6.1",
   "root": true,
   "icon": "Image",
   "pages": [

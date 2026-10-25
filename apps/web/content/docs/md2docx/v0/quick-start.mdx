@@ -1,0 +1,117 @@
+---
+title: Quick Start
+description: Get up and running with md2docx in under 2 minutes across Browser, Node.js, and Full-Stack frameworks.
+---
+
+# Quick Start
+
+`@m2d/md2docx` is the all-in-one, batteries-included Markdown to DOCX converter. It packages the core OpenXML compiler alongside the full suite of diagram, math, table, and list plugins with zero setup required.
+
+---
+
+## 📦 Installation
+
+```bash
+pnpm add @m2d/md2docx docx
+```
+
+```bash
+npm install @m2d/md2docx docx
+```
+
+---
+
+## 🌐 1. Browser & Client-Side Usage
+
+Generate and download Microsoft Word documents directly in the browser with **100% client-side privacy** — no document text ever leaves the user's machine.
+
+```typescript
+import { md2docx } from "@m2d/md2docx";
+
+const exportToWord = async (markdown: string) => {
+  // Compiles Markdown (GFM, math, tables, diagrams) into a Blob
+  const blob = await md2docx(markdown, {
+    title: "Quarterly Engineering Report",
+    creator: "Frontend Application",
+  });
+
+  // Trigger download in browser
+  const url = URL.createObjectURL(blob as Blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "report.docx";
+  anchor.click();
+  URL.revokeObjectURL(url);
+};
+```
+
+---
+
+## ⚡ 2. Next.js App Router (Server API Route)
+
+To generate DOCX on the server and stream it directly to clients with caching and native rasterization, use the server package `@m2d/remark-docx-node`:
+
+```typescript
+// app/api/docx/route.ts
+import { NextResponse } from "next/server";
+import { remarkDocxNode } from "@m2d/remark-docx-node";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import remarkParse from "remark-parse";
+import { unified } from "unified";
+
+export async function POST(req: Request) {
+  const { markdown } = await req.json();
+
+  const processor = unified().use([
+    remarkParse,
+    remarkGfm,
+    remarkMath,
+    remarkFrontmatter,
+    [remarkDocxNode, "buffer"],
+  ]);
+
+  const file = await processor.process(markdown);
+  const buffer = file.result as Buffer;
+
+  return new NextResponse(buffer, {
+    headers: {
+      "Content-Type":
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "Content-Disposition": 'attachment; filename="document.docx"',
+    },
+  });
+}
+```
+
+---
+
+## 🖥️ 3. Node.js CLI & Headless Scripts
+
+For automated CI/CD pipelines, documentation export scripts, or batch conversions, use `@m2d/cli`:
+
+```bash
+pnpm add -D @m2d/cli
+```
+
+```bash
+# Convert a single file
+npx md2docx input.md -o output.docx
+
+# Convert with custom theme and options
+npx md2docx report.md --landscape --title "Annual Audit"
+```
+
+---
+
+## 🧩 Supported Syntax Out-of-the-Box
+
+With `@m2d/md2docx`, all standard and extended Markdown features work immediately:
+
+- **Headings & Hierarchy:** `# Title` down to `###### Heading 6` mapped to Word native outline levels.
+- **GFM Tables:** Percentage-width tables with column alignments (`:---`, `:---:`, `---:`).
+- **Mathematical LaTeX:** Inline `$E = mc^2$` and display blocks `$$\int ...$$` converted to native Word MathRuns (`<m:oMath>`).
+- **Mermaid Diagrams:** Flowcharts, sequence diagrams, state machines, and mindmaps compiled into raster images.
+- **Hierarchical Lists:** Multi-level bulleted and numbered sequences with authentic indentations.
+- **Front-matter Metadata:** Document properties (`title`, `author`, `description`) populated from YAML/TOML front-matter blocks.

@@ -68,7 +68,9 @@ const processor = unified()
   .use(remarkGfm)
   .use(remarkDocx, "blob");
 
-const file = await processor.process("# Hello World\n\nExported directly to Word!");
+const file = await processor.process(
+  "# Hello World\n\nExported directly to Word!",
+);
 const blob = (await file.result) as Blob;
 
 // Trigger browser download
@@ -96,7 +98,9 @@ const processor = unified()
   .use(remarkGfm)
   .use(remarkDocx, "buffer");
 
-const file = await processor.process("# Server Report\n\nWritten via Node.js with native image and Mermaid rasterization.");
+const file = await processor.process(
+  "# Server Report\n\nWritten via Node.js with native image and Mermaid rasterization.",
+);
 const buffer = (await file.result) as Buffer;
 
 await fs.writeFile("report.docx", buffer);

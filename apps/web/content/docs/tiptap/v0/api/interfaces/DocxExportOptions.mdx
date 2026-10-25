@@ -1,0 +1,59 @@
+[**@m2d/tiptap**](../index.mdx)
+
+***
+
+[@m2d/tiptap](../index.mdx) / DocxExportOptions
+
+# Interface: DocxExportOptions
+
+Defined in: [tiptap.ts:6](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L6)
+
+## Extended by
+
+- [`DocxExtensionOptions`](DocxExtensionOptions.mdx)
+
+## Properties
+
+### docxProps?
+
+> `optional` **docxProps?**: `IDocxProps`
+
+Defined in: [tiptap.ts:16](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L16)
+
+Document metadata properties (e.g., title, creator, description, keywords).
+
+***
+
+### filename?
+
+> `optional` **filename?**: `string`
+
+Defined in: [tiptap.ts:11](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L11)
+
+Filename to use when downloading the document.
+
+#### Default
+
+```ts
+"document.docx"
+```
+
+***
+
+### pluginProps?
+
+> `optional` **pluginProps?**: `Mdast2DocxPluginProps`
+
+Defined in: [tiptap.ts:26](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L26)
+
+Sub-plugin options (mermaid, math, table, emoji, image, frontmatter).
+
+***
+
+### sectionProps?
+
+> `optional` **sectionProps?**: `Optional`\<`IDefaultMdastToDocxSectionProps`\>
+
+Defined in: [tiptap.ts:21](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L21)
+
+Section properties (e.g., margins, page orientation, headerAst, footerAst).

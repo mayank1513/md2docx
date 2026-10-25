@@ -2,7 +2,7 @@
   "title": "@m2d/cache",
   "description": "Persistent Caching Engine",
   "tagLine": "High-performance persistent caching engine for md2docx using xxhash-wasm and IndexedDB.",
-  "lastModified": "2026-10-22T09:39:23.906Z",
+  "lastModified": "2026-10-25T07:15:51.631Z",
   "version": "0.1.0",
   "root": true,
   "icon": "Database",

@@ -2,8 +2,8 @@
   "title": "@m2d/html",
   "description": "HTML to MDAST Plugin",
   "tagLine": "Extend MDAST by parsing embedded HTML in Markdown. Converts HTML into structured MDAST nodes compatible with @m2d/core for DOCX generation.",
-  "lastModified": "2026-10-22T09:39:38.696Z",
-  "version": "1.2.0",
+  "lastModified": "2026-10-25T07:15:58.030Z",
+  "version": "1.2.1",
   "root": true,
   "icon": "Code",
   "pages": [

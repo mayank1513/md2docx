@@ -1,0 +1,145 @@
+---
+title: Frontmatter & Document Metadata
+description: Extract YAML and TOML frontmatter headers from Markdown to populate native Microsoft Word document properties.
+---
+
+# Frontmatter & Document Metadata
+
+Modern technical documents and markdown files commonly include metadata headers (frontmatter) for titles, authors, keywords, and publication dates.
+
+`md2docx` includes first-class frontmatter extraction powered by `@m2d/frontmatter`. When enabled, frontmatter headers are parsed, removed from the generated Word document body, and written directly into native **OpenXML Document Properties** (Core & Extended file properties).
+
+---
+
+## 🚀 Quick Example
+
+```markdown
+---
+title: System Architecture Specification
+author: Jane Doe
+subject: Microservices Migration Plan
+keywords: [cloud, architecture, kubernetes, openxml]
+company: Acme Corp
+category: Engineering Specs
+---
+
+# 1. Executive Summary
+
+This document outlines the proposed system architecture...
+```
+
+When compiled:
+1. The frontmatter block is stripped from the document body so it does not render as raw text.
+2. The Word document file properties (visible in File → Info in Microsoft Word) are automatically populated:
+   - **Title**: `System Architecture Specification`
+   - **Author / Creator**: `Jane Doe`
+   - **Subject**: `Microservices Migration Plan`
+   - **Keywords**: `cloud, architecture, kubernetes, openxml`
+   - **Company**: `Acme Corp`
+
+---
+
+## 📋 Standard Metadata Key Mappings
+
+The plugin automatically maps common Markdown and SSG metadata keys to Microsoft Word OpenXML properties:
+
+| Frontmatter Key | Word OpenXML Property | Description |
+| :--- | :--- | :--- |
+| `title` | `title` | Document title |
+| `author`, `authors`, `creator` | `creator` | Document primary author |
+| `subject`, `description` | `subject` | Subject or brief description |
+| `keywords`, `tags` | `keywords` | Search tags or comma-separated keywords |
+| `description` | `description` | Core document abstract/comments |
+| `lastModifiedBy` | `lastModifiedBy` | User who last updated the file |
+| `revision` | `revision` | Document revision counter |
+| `category` | `category` | Document classification |
+| `company` | `company` | Organization or corporation name |
+| `manager` | `manager` | Department manager |
+
+---
+
+## ⚙️ Configuration & Options
+
+`frontmatterPlugin` accepts options to customize parsing and mapping behavior:
+
+```typescript
+import { md2docx } from "@m2d/md2docx";
+import { frontmatterPlugin } from "@m2d/frontmatter";
+
+const docxBlob = await md2docx(markdown, {
+  plugins: [
+    frontmatterPlugin({
+      // Strip frontmatter from output document (default: true)
+      strip: true,
+
+      // Custom metadata transformer
+      transform: (rawMetadata, defaultProps) => {
+        return {
+          ...defaultProps,
+          title: `[CONFIDENTIAL] ${defaultProps.title ?? "Untitled"}`,
+          company: rawMetadata.org ?? defaultProps.company,
+        };
+      },
+    }),
+  ],
+});
+```
+
+---
+
+## 🧩 Advanced Parsers (Full YAML & TOML Specs)
+
+By default, `@m2d/frontmatter` includes a **lightweight, zero-dependency parser** that handles:
+- Basic and quoted scalars (including double quotes and doubled single quotes `''`).
+- Comments (`#`) with quote-awareness.
+- Flow arrays (`keywords: [alpha, beta, "gamma delta"]`).
+- Indented list sequences (`- item1\n- item2`).
+- Basic TOML key-value pairs (`=`).
+
+If your project uses complex YAML anchors, multi-line folded blocks (`>`), or advanced TOML tables, you can inject full-spec parsers via `options.parser`:
+
+### Using `yaml` (Full YAML 1.2 Support)
+
+```bash
+pnpm add yaml
+```
+
+```typescript
+import YAML from "yaml";
+import { frontmatterPlugin } from "@m2d/frontmatter";
+
+const plugin = frontmatterPlugin({
+  parser: (raw: string, type: "yaml" | "toml") => {
+    if (type === "yaml") {
+      return YAML.parse(raw);
+    }
+    return {};
+  },
+});
+```
+
+### Using `smol-toml` (Full TOML Support)
+
+```bash
+pnpm add smol-toml
+```
+
+```typescript
+import { parse as parseToml } from "smol-toml";
+import { frontmatterPlugin } from "@m2d/frontmatter";
+
+const plugin = frontmatterPlugin({
+  parser: (raw: string, type: "yaml" | "toml") => {
+    if (type === "toml") {
+      return parseToml(raw);
+    }
+    return {};
+  },
+});
+```
+
+---
+
+## 🔒 Security & Prototype Pollution Protection
+
+`@m2d/frontmatter` strictly protects against object prototype poisoning. Keys matching `__proto__`, `constructor`, or `prototype` are discarded during extraction, ensuring untrusted markdown inputs cannot pollute global runtime scopes.

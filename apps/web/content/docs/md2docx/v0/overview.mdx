@@ -80,28 +80,28 @@ md2docx(
 ): Promise<OutputTypeResult>;
 ```
 
-| Param | Description |
-| --- | --- |
-| `md` | Markdown string input. |
-| `docxProps` | Passed directly to `@m2d/core` → document metadata, styles, etc. |
-| `defaultSectionProps` | Defaults for sections — page size, margins, plugins. |
-| `outputType` | `"blob"` (browser default) — or `"buffer"`, `"base64"`, `"stream"`. |
-| `pluginProps` | Optional config passed to specific `@m2d/*` plugins. |
+| Param                 | Description                                                         |
+| --------------------- | ------------------------------------------------------------------- |
+| `md`                  | Markdown string input.                                              |
+| `docxProps`           | Passed directly to `@m2d/core` → document metadata, styles, etc.    |
+| `defaultSectionProps` | Defaults for sections — page size, margins, plugins.                |
+| `outputType`          | `"blob"` (browser default) — or `"buffer"`, `"base64"`, `"stream"`. |
+| `pluginProps`         | Optional config passed to specific `@m2d/*` plugins.                |
 
 ---
 
 ## 🧠 What’s Included Under the Hood
 
-| Feature | Plugin |
-| --- | --- |
-| Markdown parsing | `remark-parse`, `remark-gfm`, `remark-frontmatter` |
-| Math (inline & block) | `remark-math`, `@m2d/math` |
-| HTML inside Markdown | `@m2d/html` _(client-only)_ |
-| Emoji support | `@m2d/emoji` |
-| Tables | `@m2d/table` |
-| Lists + task lists | `@m2d/list` |
-| Images (URL, base64, SVG) | `@m2d/image` _(client-only)_ |
-| Mermaid diagrams | `@m2d/mermaid` |
+| Feature                   | Plugin                                             |
+| ------------------------- | -------------------------------------------------- |
+| Markdown parsing          | `remark-parse`, `remark-gfm`, `remark-frontmatter` |
+| Math (inline & block)     | `remark-math`, `@m2d/math`                         |
+| HTML inside Markdown      | `@m2d/html` _(client-only)_                        |
+| Emoji support             | `@m2d/emoji`                                       |
+| Tables                    | `@m2d/table`                                       |
+| Lists + task lists        | `@m2d/list`                                        |
+| Images (URL, base64, SVG) | `@m2d/image` _(client-only)_                       |
+| Mermaid diagrams          | `@m2d/mermaid`                                     |
 
 ---
 

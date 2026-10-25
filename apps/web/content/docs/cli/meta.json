@@ -2,11 +2,12 @@
   "title": "@m2d/cli",
   "description": "Command-line interface and programmatic Node.js engine for Markdown to DOCX conversion",
   "tagLine": "Command-line interface and programmatic Node.js engine for Markdown to DOCX conversion.",
-  "lastModified": "2026-10-22T09:39:28.966Z",
-  "version": "0.1.1",
+  "lastModified": "2026-10-25T07:15:53.211Z",
+  "version": "1.0.0",
   "root": true,
   "icon": "Terminal",
   "pages": [
+    "v1",
     "v0"
   ]
 }

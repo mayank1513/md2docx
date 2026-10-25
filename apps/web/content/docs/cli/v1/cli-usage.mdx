@@ -1,0 +1,106 @@
+---
+title: CLI Usage & Commands
+description: Command-line interface guide, executable binaries, and CI/CD automation.
+---
+
+# Command-Line Interface (`@m2d/cli`)
+
+`@m2d/cli` provides a zero-config terminal workflow to compile Markdown files into styled Microsoft Word documents (`.docx`) with native image rasterization and Mermaid diagrams.
+
+---
+
+## 🚀 Running Without Installation
+
+You can run `@m2d/cli` directly using `npx`:
+
+```bash
+$ npx @m2d/cli input.md -o output.docx
+```
+
+---
+
+## 📦 Global or Local Installation
+
+```bash
+# Global installation (recommended for CLI-first workflows)
+$ pnpm add -g @m2d/cli
+# or npm install -g @m2d/cli
+
+# Local installation (recommended for project scripts & CI)
+$ pnpm add -D @m2d/cli
+```
+
+### Registered Executable Binaries
+
+Once installed, `@m2d/cli` registers multiple binary aliases:
+
+| Binary Command | Example |
+| --- | --- |
+| `md2docx` | `md2docx README.md -o docs.docx` |
+| `md2docx-node` | `md2docx-node README.md` |
+| `m2d` | `m2d input.md` |
+| `cli` | `cli input.md` |
+
+---
+
+## ⚙️ Command-Line Flags
+
+```text
+Usage:
+  $ md2docx <input.md> [options]
+
+Arguments:
+  <input.md>               Path to Markdown file to convert
+
+Options:
+  -o, --output <file>      Output DOCX file path (default: <input>.docx)
+  -t, --title <title>      Document title (written to DOCX metadata)
+  -a, --author <author>    Document author / creator
+  -d, --description <desc> Document description metadata
+  -c, --config <file>      Path to custom configuration file
+  -i, --init [file]        Scaffold a default config file (e.g. md2docx.config.ts)
+  -h, --help               Show this help message
+  -v, --version            Display version number
+```
+
+### Examples
+
+```bash
+# Automatic output naming (generates spec.docx)
+$ md2docx spec.md
+
+# Custom output destination and metadata
+$ md2docx release-notes.md -o ./dist/notes.docx --title "v2.0 Release Notes" --author "Core Team"
+
+# Using a custom configuration file
+$ md2docx report.md -c md2docx.config.ts
+```
+
+---
+
+## 🤖 CI/CD Automation (GitHub Actions)
+
+Automatically generate Word documentation upon every release or push:
+
+```yaml
+name: Generate Word Docs
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm install
+      - run: npx @m2d/cli docs/architecture.md -o ./dist/architecture.docx
+      - uses: actions/upload-artifact@v4
+        with:
+          name: word-documentation
+          path: ./dist/*.docx
+```

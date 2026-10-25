@@ -76,9 +76,13 @@ const markdown = `
 
 const mdast = unified().use(remarkParse).parse(markdown);
 
-const docxBlob = await toDocx(mdast, {}, {
-  plugins: [listPlugin()],
-});
+const docxBlob = await toDocx(
+  mdast,
+  {},
+  {
+    plugins: [listPlugin()],
+  },
+);
 ```
 
 ---

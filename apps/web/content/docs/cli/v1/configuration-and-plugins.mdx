@@ -1,0 +1,152 @@
+---
+title: Configuration & Custom Plugins
+description: How to configure @m2d/cli and inject custom AST plugins using md2docx.config.ts.
+---
+
+# Configuration & Custom Plugins
+
+`@m2d/cli` supports configuration files written in TypeScript (`md2docx.config.ts`), ESM (`md2docx.config.mjs`), or JSON (`md2docx.config.json`).
+
+Configuration files allow you to:
+1. Register custom AST transformation plugins.
+2. Configure built-in plugins (image scaling, Mermaid themes, table styles).
+3. Set document metadata, page margins, and Word paragraph styles.
+
+---
+
+## 🛠️ Scaffolding a Config File
+
+Run the `--init` command to generate a default configuration file in your project root:
+
+```bash
+$ md2docx --init
+# Creates md2docx.config.json
+```
+
+For full TypeScript support with autocompletion and plugin imports, create `md2docx.config.ts`.
+
+---
+
+## 📄 `md2docx.config.ts` Structure
+
+Use the `defineConfig` helper from `@m2d/cli` for type-safe configuration:
+
+```typescript
+// md2docx.config.ts
+import { defineConfig } from "@m2d/cli";
+
+export default defineConfig({
+  // Global document properties (metadata, styles)
+  docxProps: {
+    title: "Quarterly Performance Report",
+    author: "Analytics Team",
+    description: "Generated automatically via @m2d/cli",
+  },
+
+  // Default section properties (margins, page orientation)
+  sectionProps: {
+    useTitle: true,
+    page: {
+      margin: {
+        top: 1440, // 1 inch (in twips: 1 inch = 1440 twips)
+        bottom: 1440,
+        left: 1440,
+        right: 1440,
+      },
+    },
+  },
+
+  // Built-in plugin options
+  pluginProps: {
+    image: {
+      pathPrefix: "./public/assets", // Base directory for relative image paths
+      maxW: 650,                    // Max width in pixels
+      errorMode: "warn",            // "warn" | "placeholder" | "silent" | "throw"
+    },
+    mermaid: {
+      transparent: true,            // Transparent diagram canvas
+      mermaidConfig: {
+        theme: "neutral",           // "default" | "forest" | "dark" | "neutral"
+      },
+    },
+    list: {
+      defaultBullets: true,
+    },
+    table: {
+      cantSplit: true,              // Prevent rows from splitting across page breaks
+    },
+  },
+});
+```
+
+---
+
+## 🔌 Using Custom Plugins with the CLI
+
+You can extend the document generation pipeline with custom plugins directly in your `md2docx.config.ts`.
+
+### Example: Custom Callout / Admonition Plugin
+
+Suppose you want to convert Markdown blockquotes like `> [!NOTE]` into colored Word callout boxes:
+
+```typescript
+// md2docx.config.ts
+import { defineConfig, type IPlugin } from "@m2d/cli";
+import { Paragraph, Table, TableCell, TableRow, WidthType } from "docx";
+
+/**
+ * Custom plugin that transforms blockquotes into highlighted callout tables.
+ */
+const calloutPlugin: IPlugin = {
+  name: "custom-callout",
+  type: "blockquote",
+  toDocx: (node, ctx) => {
+    const textRuns = ctx.children(node);
+
+    return new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: [
+        new TableRow({
+          children: [
+            new TableCell({
+              shading: { fill: "F0F4F8" },
+              margins: { top: 120, bottom: 120, left: 200, right: 200 },
+              children: [
+                new Paragraph({
+                  children: textRuns,
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+  },
+};
+
+export default defineConfig({
+  // Custom plugins are automatically prepended to the compiler pipeline
+  plugins: [calloutPlugin],
+});
+```
+
+### Running with the Custom Plugin
+
+```bash
+$ md2docx documentation.md -c md2docx.config.ts -o documentation.docx
+```
+
+---
+
+## 🔍 How Plugin Resolution Works in the CLI
+
+1. **Explicit Plugins (`config.plugins`)**:
+   Any plugins listed in the `plugins: [...]` array are passed to `@m2d/core`.
+2. **Default Fallback**:
+   When `plugins` is omitted or empty, `@m2d/cli` defaults to the standard server pipeline (`@m2d/remark-docx-node`):
+   - Native image rasterization (`@m2d/image-node` via `sharp`)
+   - Native Mermaid diagram rendering (`@m2d/mermaid-node` via `beautiful-mermaid`)
+   - Lists (`@m2d/list`)
+   - Tables (`@m2d/table`)
+   - Math (`@m2d/math`)
+   - Emoji (`@m2d/emoji`)

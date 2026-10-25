@@ -73,7 +73,8 @@ const docxBuffer = await toDocx(
   {
     plugins: [
       mermaidNodePlugin(), // Generates SVG AST nodes
-      nodeImagePlugin({    // Rasterizes SVGs and resolves local/remote images
+      nodeImagePlugin({
+        // Rasterizes SVGs and resolves local/remote images
         pathPrefix: "./public",
         fallbackImageType: "png",
         maxW: 6.5,

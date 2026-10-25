@@ -1,0 +1,12 @@
+{
+  "title": "@m2d/frontmatter",
+  "description": "Front-matter Metadata Plugin",
+  "tagLine": "Front-matter plugin for md2docx to map Markdown YAML/TOML metadata to native DOCX document properties.",
+  "lastModified": "2026-10-25T07:15:56.528Z",
+  "version": "0.1.0",
+  "root": true,
+  "icon": "FileText",
+  "pages": [
+    "v0"
+  ]
+}

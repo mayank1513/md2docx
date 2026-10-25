@@ -1,0 +1,91 @@
+[**@m2d/tiptap**](../index.mdx)
+
+***
+
+[@m2d/tiptap](../index.mdx) / DocxExtensionOptions
+
+# Interface: DocxExtensionOptions
+
+Defined in: [tiptap.ts:29](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L29)
+
+## Extends
+
+- [`DocxExportOptions`](DocxExportOptions.mdx)
+
+## Properties
+
+### defaultFilename?
+
+> `optional` **defaultFilename?**: `string`
+
+Defined in: [tiptap.ts:34](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L34)
+
+Default filename for downloaded docx files.
+
+#### Default
+
+```ts
+"document.docx"
+```
+
+***
+
+### docxProps?
+
+> `optional` **docxProps?**: `IDocxProps`
+
+Defined in: [tiptap.ts:16](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L16)
+
+Document metadata properties (e.g., title, creator, description, keywords).
+
+#### Inherited from
+
+[`DocxExportOptions`](DocxExportOptions.mdx).[`docxProps`](DocxExportOptions.mdx#docxprops)
+
+***
+
+### filename?
+
+> `optional` **filename?**: `string`
+
+Defined in: [tiptap.ts:11](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L11)
+
+Filename to use when downloading the document.
+
+#### Default
+
+```ts
+"document.docx"
+```
+
+#### Inherited from
+
+[`DocxExportOptions`](DocxExportOptions.mdx).[`filename`](DocxExportOptions.mdx#filename)
+
+***
+
+### pluginProps?
+
+> `optional` **pluginProps?**: `Mdast2DocxPluginProps`
+
+Defined in: [tiptap.ts:26](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L26)
+
+Sub-plugin options (mermaid, math, table, emoji, image, frontmatter).
+
+#### Inherited from
+
+[`DocxExportOptions`](DocxExportOptions.mdx).[`pluginProps`](DocxExportOptions.mdx#pluginprops)
+
+***
+
+### sectionProps?
+
+> `optional` **sectionProps?**: `Optional`\<`IDefaultMdastToDocxSectionProps`\>
+
+Defined in: [tiptap.ts:21](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L21)
+
+Section properties (e.g., margins, page orientation, headerAst, footerAst).
+
+#### Inherited from
+
+[`DocxExportOptions`](DocxExportOptions.mdx).[`sectionProps`](DocxExportOptions.mdx#sectionprops)

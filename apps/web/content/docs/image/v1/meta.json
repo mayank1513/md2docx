@@ -1,5 +1,5 @@
 {
-  "title": "Version 1.6.0",
+  "title": "Version 1.6.1",
   "description": "MDAST to DOCX plugin for resolving and embedding images. Supports base64, URLs, and custom resolvers for seamless DOCX image integration.",
   "pages": [
     "overview",

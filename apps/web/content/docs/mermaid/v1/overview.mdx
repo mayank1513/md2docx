@@ -70,12 +70,16 @@ graph TD
 
 const mdast = unified().use(remarkParse).parse(markdown);
 
-const docxBlob = await toDocx(mdast, {}, {
-  plugins: [
-    mermaidPlugin(), // 1. Converts mermaid code blocks into SVG nodes
-    imagePlugin(),   // 2. Rasterizes SVGs into OpenXML DrawingML runs
-  ],
-});
+const docxBlob = await toDocx(
+  mdast,
+  {},
+  {
+    plugins: [
+      mermaidPlugin(), // 1. Converts mermaid code blocks into SVG nodes
+      imagePlugin(), // 2. Rasterizes SVGs into OpenXML DrawingML runs
+    ],
+  },
+);
 ```
 
 > ⚠️ **Plugin Ordering**: Place `mermaidPlugin()` **before** `imagePlugin()` in the `plugins` array. `mermaidPlugin` generates the SVG nodes that `imagePlugin` subsequently compiles into Word images.

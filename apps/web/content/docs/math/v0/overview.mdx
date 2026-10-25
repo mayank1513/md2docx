@@ -78,9 +78,13 @@ $$
 const mdast = unified().use(remarkParse).use(remarkMath).parse(markdown);
 
 // 2. Convert to DOCX with the math plugin
-const docxBlob = await toDocx(mdast, {}, {
-  plugins: [mathPlugin()],
-});
+const docxBlob = await toDocx(
+  mdast,
+  {},
+  {
+    plugins: [mathPlugin()],
+  },
+);
 ```
 
 ---

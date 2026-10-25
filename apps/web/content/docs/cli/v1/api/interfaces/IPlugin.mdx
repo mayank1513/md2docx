@@ -1,0 +1,171 @@
+[**@m2d/cli**](../index.mdx)
+
+***
+
+[@m2d/cli](../index.mdx) / IPlugin
+
+# Interface: IPlugin\<T\>
+
+Defined in: [packages/core/src/utils/index.ts:231](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L231)
+
+Interface for extending MDAST to DOCX conversion using plugins.
+
+## Type Parameters
+
+### T
+
+`T` *extends* `Node` = `EmptyNode`
+
+## Properties
+
+### block?
+
+> `optional` **block?**: (`docx`, `node`, `paraProps`, `blockChildrenProcessor`, `inlineChildrenProcessor`) => (`Paragraph` \| `Table`)[]
+
+Defined in: [packages/core/src/utils/index.ts:235](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L235)
+
+Processes block-level MDAST nodes and converts them to DOCX elements.
+
+#### Parameters
+
+##### docx
+
+`__module`
+
+##### node
+
+`ExtendedRootContent`\<`T`\>
+
+##### paraProps
+
+`MutableParaOptions`
+
+##### blockChildrenProcessor
+
+`BlockNodeChildrenProcessor`
+
+##### inlineChildrenProcessor
+
+`InlineChildrenProcessor`
+
+#### Returns
+
+(`Paragraph` \| `Table`)[]
+
+***
+
+### inline?
+
+> `optional` **inline?**: (`docx`, `node`, `runProps`, `definitions`, `footnoteDefinitions`, `inlineChildrenProcessor`) => `InlineDocxNodes`[]
+
+Defined in: [packages/core/src/utils/index.ts:246](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L246)
+
+Processes inline-level MDAST nodes and converts them to DOCX runs.
+
+#### Parameters
+
+##### docx
+
+`__module`
+
+##### node
+
+`ExtendedRootContent`\<`T`\>
+
+##### runProps
+
+`MutableRunOptions`
+
+##### definitions
+
+`Definitions`
+
+##### footnoteDefinitions
+
+`FootnoteDefinitions`
+
+##### inlineChildrenProcessor
+
+`InlineChildrenProcessor`
+
+#### Returns
+
+`InlineDocxNodes`[]
+
+***
+
+### postprocess?
+
+> `optional` **postprocess?**: (`sections`) => `void` \| `Promise`\<`void`\>
+
+Defined in: [packages/core/src/utils/index.ts:278](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L278)
+
+Post-processes the final DOCX document after conversion.
+Plugins can use this for cleanup or applying final transformations.
+
+#### Parameters
+
+##### sections
+
+`DocxSection`[]
+
+#### Returns
+
+`void` \| `Promise`\<`void`\>
+
+***
+
+### preprocess?
+
+> `optional` **preprocess?**: (`tree`, `definitions`, `docxProps?`) => `void` \| `Promise`\<`void`\>
+
+Defined in: [packages/core/src/utils/index.ts:268](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L268)
+
+Preprocesses the MDAST tree before the DOCX conversion begins.
+
+#### Parameters
+
+##### tree
+
+`Root`
+
+##### definitions
+
+`Definitions`
+
+##### docxProps?
+
+[`IDocxProps`](../type-aliases/IDocxProps.mdx)
+
+#### Returns
+
+`void` \| `Promise`\<`void`\>
+
+***
+
+### ~~root?~~
+
+> `optional` **root?**: (`props`, `astInputs?`) => `void`
+
+Defined in: [packages/core/src/utils/index.ts:260](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L260)
+
+Modifies document-level DOCX properties, such as styles, numbering, headers, or footers.
+Useful for applying global formatting customizations.
+
+#### Parameters
+
+##### props
+
+[`IDocxProps`](../type-aliases/IDocxProps.mdx)
+
+##### astInputs?
+
+`Root` \| `object`[]
+
+#### Returns
+
+`void`
+
+#### Deprecated
+
+Use `preprocess(tree, definitions, docxProps)` instead.

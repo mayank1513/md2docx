@@ -63,7 +63,9 @@ import { Md } from "@m2d/react-markdown";
 export default function Article() {
   return (
     <article className="prose">
-      <Md>{"# Hello World\n\nRendered on the server with zero client hooks!"}</Md>
+      <Md>
+        {"# Hello World\n\nRendered on the server with zero client hooks!"}
+      </Md>
     </article>
   );
 }

@@ -1,0 +1,211 @@
+[**@m2d/remark-docx**](../index.mdx)
+
+***
+
+[@m2d/remark-docx](../index.mdx) / RemarkSectionProps
+
+# Interface: RemarkSectionProps
+
+Defined in: [packages/remark-docx/src/index.ts:24](https://github.com/md2docx/md2docx/blob/main/packages/remark-docx/src/index.ts#L24)
+
+## Extends
+
+- `ISectionProps`
+
+## Properties
+
+### footerAst?
+
+> `optional` **footerAst?**: `FooterAst`
+
+Defined in: [packages/core/src/utils/index.ts:124](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L124)
+
+Pre-parsed MDAST Root for section footers.
+
+#### Inherited from
+
+`ISectionProps.footerAst`
+
+***
+
+### footerMarkdown?
+
+> `optional` **footerMarkdown?**: [`FooterMarkdown`](../type-aliases/FooterMarkdown.mdx)
+
+Defined in: [packages/remark-docx/src/index.ts:26](https://github.com/md2docx/md2docx/blob/main/packages/remark-docx/src/index.ts#L26)
+
+***
+
+### footers?
+
+> `readonly` `optional` **footers?**: `object`
+
+Defined in: node\_modules/.pnpm/docx@9.13.0/node\_modules/docx/dist/index.d.ts:7341
+
+Optional footer definitions for the section.
+
+#### default?
+
+> `readonly` `optional` **default?**: `Footer`
+
+Default footer for all pages (when first/even not specified).
+
+#### even?
+
+> `readonly` `optional` **even?**: `Footer`
+
+Footer for even-numbered pages.
+
+#### first?
+
+> `readonly` `optional` **first?**: `Footer`
+
+Footer for the first page of the section.
+
+#### Inherited from
+
+`ISectionProps.footers`
+
+***
+
+### footnoteProps?
+
+> `optional` **footnoteProps?**: `Omit`\<`Mutable`\<`IParagraphOptions`\>, `"children"`\> & `object` & `Mutable`\<`Omit`\<`IRunOptions`, `"children"`\>\> & `object`
+
+Defined in: [packages/core/src/utils/index.ts:114](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L114)
+
+Configures paragraph and run styling options specifically for footnote content rendering
+
+#### Type Declaration
+
+##### checked?
+
+> `optional` **checked?**: `boolean` \| `null`
+
+##### pre?
+
+> `optional` **pre?**: `boolean`
+
+##### pre?
+
+> `optional` **pre?**: `boolean`
+
+#### Inherited from
+
+`ISectionProps.footnoteProps`
+
+***
+
+### headerAst?
+
+> `optional` **headerAst?**: `HeaderAst`
+
+Defined in: [packages/core/src/utils/index.ts:119](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L119)
+
+Pre-parsed MDAST Root for section headers.
+
+#### Inherited from
+
+`ISectionProps.headerAst`
+
+***
+
+### headerMarkdown?
+
+> `optional` **headerMarkdown?**: [`HeaderMarkdown`](../type-aliases/HeaderMarkdown.mdx)
+
+Defined in: [packages/remark-docx/src/index.ts:25](https://github.com/md2docx/md2docx/blob/main/packages/remark-docx/src/index.ts#L25)
+
+***
+
+### headers?
+
+> `readonly` `optional` **headers?**: `object`
+
+Defined in: node\_modules/.pnpm/docx@9.13.0/node\_modules/docx/dist/index.d.ts:7332
+
+Optional header definitions for the section.
+
+#### default?
+
+> `readonly` `optional` **default?**: `Header`
+
+Default header for all pages (when first/even not specified).
+
+#### even?
+
+> `readonly` `optional` **even?**: `Header`
+
+Header for even-numbered pages.
+
+#### first?
+
+> `readonly` `optional` **first?**: `Header`
+
+Header for the first page of the section.
+
+#### Inherited from
+
+`ISectionProps.headers`
+
+***
+
+### plugins?
+
+> `optional` **plugins?**: (`Optional`\<`IPlugin`\<`EmptyNode`\>\> \| `undefined`)[]
+
+Defined in: [packages/core/src/utils/index.ts:104](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L104)
+
+List of plugins to extend conversion functionality.
+
+#### Inherited from
+
+`ISectionProps.plugins`
+
+***
+
+### properties?
+
+> `readonly` `optional` **properties?**: `ISectionPropertiesOptions`
+
+Defined in: node\_modules/.pnpm/docx@9.13.0/node\_modules/docx/dist/index.d.ts:7350
+
+Section properties such as page size, margins, and orientation.
+
+#### Inherited from
+
+`ISectionProps.properties`
+
+***
+
+### trimInnerSpaces?
+
+> `optional` **trimInnerSpaces?**: `boolean`
+
+Defined in: [packages/core/src/utils/index.ts:109](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L109)
+
+Should trim multiple white spaces in text nodes? 'a    b' will become 'a b'
+
+#### Inherited from
+
+`ISectionProps.trimInnerSpaces`
+
+***
+
+### useTitle?
+
+> `optional` **useTitle?**: `boolean`
+
+Defined in: [packages/core/src/utils/index.ts:99](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L99)
+
+If true, H1 corresponds to the title, H2 to Heading1, etc.
+
+#### Default
+
+```ts
+true
+```
+
+#### Inherited from
+
+`ISectionProps.useTitle`
