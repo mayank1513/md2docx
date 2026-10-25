@@ -23,7 +23,7 @@
   <img alt="license" src="https://img.shields.io/npm/l/mdast2docx" />
 </p>
 
-> **Md2Docx**: A powerful, modular, and extensible Markdown to Microsoft Word (`.docx`) document engine for Node.js and browsers.
+> **Md2Docx**: A powerful, pluggable, and extensible Markdown to Microsoft Word (`.docx`) document engine for Node.js and browsers, backed by a rich suite of official plugins.
 
 ---
 
@@ -31,7 +31,7 @@
 
 Modern applications, technical platforms, and **Generative AI** tools produce structured output in **Markdown**. `Md2Docx` transforms Markdown Abstract Syntax Trees (MDAST) into professionally formatted Word documents with native tables, vector diagrams, editable equations, and custom section layouts.
 - 📐 **Authentic Word Elements**: Converts Markdown directly into native Microsoft Word OpenXML elements (`docx.Table`, `docx.Math`, `docx.ImageRun`, outline numbering).
-- 🧩 **Modular Plugin Ecosystem**: Use the all-in-one `mdast2docx` umbrella or cherry-pick lightweight `@m2d/*` plugins.
+- 🧩 **Pluggable Core & Rich Plugin Suite**: Fully extensible Unified/MDAST architecture. Use the all-in-one package, cherry-pick official `@m2d/*` plugins, or author custom plugins for bespoke syntax.
 - 🌐 **Isomorphic Runtimes**: Zero-server client-side generation (`Blob`) in browsers, or high-throughput batch generation (`Buffer`) in Node.js.
 - 🛡️ **Resilient by Default**: Graceful fallbacks for failed diagrams, self-healing syntax auto-repair, and protection against runaway markdown syntax.
 

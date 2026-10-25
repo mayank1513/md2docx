@@ -19,10 +19,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
     template: "%s | Md2Docx",
-    default: "Md2Docx - Universal Markdown to Word Engine",
+    default:
+      "Md2Docx - Pluggable universal Markdown to Word Engine & Official Plugin Ecosystem",
   },
   description:
-    "Convert standard Markdown, GFM tables, math equations, and diagrams into native Microsoft Word (.docx) documents with client privacy or server streaming.",
+    "Convert Markdown into native Microsoft Word (.docx) documents with a fully pluggable Unified/MDAST engine and a rich suite of official plugins for math, diagrams, tables, frontmatter, and custom OpenXML extensions.",
   keywords: [
     "markdown",
     "docx",
@@ -85,6 +86,10 @@ export default function Layout({ children }: LayoutProps<"/">) {
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="flex flex-col min-h-screen">
         <RootProvider>{children}</RootProvider>
+        <div
+          id="invisible-mermaid-container"
+          className="fixed z-1 pointer-events-none opacity-0"
+        ></div>
       </body>
     </html>
   );

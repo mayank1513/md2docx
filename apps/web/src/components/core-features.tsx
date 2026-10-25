@@ -1,4 +1,12 @@
-import { Brain, FileCheck2, Puzzle, Sparkles, Zap } from "lucide-react";
+import {
+  Brain,
+  FileCheck2,
+  LayoutTemplate,
+  Puzzle,
+  Sparkles,
+  Terminal,
+  Zap,
+} from "lucide-react";
 
 const features = [
   {
@@ -16,11 +24,25 @@ const features = [
     tag: "Clean OpenXML",
   },
   {
-    title: "Modular Plugin Architecture",
+    title: "Pluggable Core & Rich Official Plugins",
     description:
-      "Built on the Unified & Remark ecosystem. Cherry-pick isolated plugins for LaTeX math, Mermaid diagrams, GFM tables, and images to keep bundles ultra-lean.",
+      "Engineered on the Unified & Remark AST ecosystem. Leverage our comprehensive suite of official plugins or write custom plugins.",
     icon: Puzzle,
-    tag: "Composable",
+    tag: "Pluggable & Extensible",
+  },
+  {
+    title: "Executive Cover Pages & Callouts",
+    description:
+      "Turn YAML/TOML frontmatter into professional title pages, divider rules, author metadata lines, page breaks, and callout banners with zero manual markup.",
+    icon: LayoutTemplate,
+    tag: "Layout Synthesis",
+  },
+  {
+    title: "Zero-Config Terminal CLI",
+    description:
+      "Run instant document compilation via npx @m2d/cli or in CI/CD release pipelines with structured logging, configuration files, and multiple binary aliases.",
+    icon: Terminal,
+    tag: "CLI Automation",
   },
   {
     title: "Generative AI Document Bridge",
@@ -49,7 +71,7 @@ export const CoreFeatures = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature) => {
             const Icon = feature.icon;
             return (

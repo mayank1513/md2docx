@@ -1,5 +1,6 @@
 import { ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
+import { CliTerminal } from "./cli-terminal";
 import { Button } from "./ui/button";
 
 const Github = (props: React.SVGProps<SVGSVGElement>) => (
@@ -28,18 +29,25 @@ export const Hero = () => {
       <div className="container relative z-10 mx-auto px-4 text-center">
         <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-sm font-medium text-primary mb-8 shadow-sm">
           <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
-          🚀 Md2Docx — Universal Markdown to Word Engine
+          🚀 Md2Docx — Pluggable Engine with Rich Official Plugin Ecosystem
         </div>
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-6">
           Markdown to Word <br className="hidden md:block" />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 dark:from-blue-400 dark:via-indigo-400 dark:to-cyan-300">
-            Native, Modular, Effortless
+            Native, Modular, Extensible
           </span>
         </h1>
-        <p className="mx-auto max-w-2xl text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed">
-          Convert standard Markdown, GFM tables, LaTeX formulas, and Mermaid
-          diagrams into native, editable Microsoft Word (.docx) documents — with
-          100% in-browser client privacy or robust Node.js backend streaming.
+        <p className="mx-auto max-w-5xl text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed">
+          Convert Markdown into native, editable Word (.docx) documents in
+          browsers or Node.js. Modular by design — cherry-pick official plugins,
+          or{" "}
+          <Link
+            href="/docs/md2docx/plugin-authoring"
+            className="text-foreground underline decoration-primary/50 underline-offset-4 hover:decoration-primary font-medium transition-colors"
+          >
+            easily author your own
+          </Link>
+          .
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
           <Button
@@ -79,6 +87,9 @@ export const Hero = () => {
             </Link>
           </Button>
         </div>
+
+        {/* CLI Terminal Pill */}
+        <CliTerminal />
       </div>
     </section>
   );
