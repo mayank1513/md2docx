@@ -1,8 +1,16 @@
 "use client";
 
+import { parseFrontmatter } from "@m2d/frontmatter";
 import { Md } from "@m2d/react-markdown/client";
-import { Check, Copy, SlidersHorizontal } from "lucide-react";
-import { isValidElement, useMemo, useState } from "react";
+import {
+  Check,
+  Clock,
+  Copy,
+  FileText,
+  SlidersHorizontal,
+  Zap,
+} from "lucide-react";
+import { isValidElement, useEffect, useMemo, useState } from "react";
 import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -10,17 +18,23 @@ import { Button } from "../ui/button";
 import { TARGETS } from "./constants";
 import { highlightCode } from "./highlight";
 import { MermaidViewer } from "./mermaid-viewer";
+import { MetadataInspector } from "./metadata-inspector";
 import { TiptapRichEditor } from "./tiptap-rich-editor";
-import type { PresetId, TargetId, ViewMode } from "./types";
+import type { PluginId, PresetId, TargetId, ViewMode } from "./types";
 
 interface PreviewPanelProps {
   viewMode: ViewMode;
   markdown: string;
   selectedPreset: PresetId;
   selectedTarget: TargetId;
+  enabledPlugins: Record<PluginId, boolean>;
   activePluginCount: number;
+  coverPage: boolean;
+  infoBox: boolean;
   generatedCode: string;
   onChangeMarkdown: (md: string) => void;
+  onToggleCoverPage?: () => void;
+  onToggleInfoBox?: () => void;
 }
 
 export const PreviewPanel = ({
@@ -28,11 +42,19 @@ export const PreviewPanel = ({
   markdown,
   selectedPreset,
   selectedTarget,
+  enabledPlugins,
   activePluginCount,
+  coverPage,
+  infoBox,
   generatedCode,
   onChangeMarkdown,
+  onToggleCoverPage,
+  onToggleInfoBox,
 }: PreviewPanelProps) => {
   const [copiedCode, setCopiedCode] = useState(false);
+  const [previewRenderTimeMs, setPreviewRenderTimeMs] = useState<number | null>(
+    null,
+  );
 
   const handleCopyCode = async () => {
     try {
@@ -44,14 +66,55 @@ export const PreviewPanel = ({
     }
   };
 
+  const remarkPlugins = useMemo(() => {
+    const list = [];
+    if (enabledPlugins?.table !== false) list.push(remarkGfm);
+    if (enabledPlugins?.math) list.push(remarkMath);
+    return list;
+  }, [enabledPlugins]);
+
+  const rehypePlugins = useMemo(() => {
+    const list = [];
+    if (enabledPlugins?.math) list.push(rehypeKatex);
+    return list;
+  }, [enabledPlugins]);
+
+  const frontmatterMetadata = useMemo(() => {
+    if (!enabledPlugins?.frontmatter) return null;
+    const match = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (!match) return null;
+    try {
+      return parseFrontmatter(match[1], "yaml");
+    } catch {
+      return null;
+    }
+  }, [markdown, enabledPlugins?.frontmatter]);
+
+  const markdownToRender = useMemo(() => {
+    if (!frontmatterMetadata) return markdown;
+    let body = markdown.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n\r?\n?/, "");
+    if (coverPage && frontmatterMetadata.title) {
+      const escapedTitle = String(frontmatterMetadata.title).replace(
+        /[.*+?^${}()|[\]\\]/g,
+        "\\$&",
+      );
+      body = body.replace(
+        new RegExp(`^#\\s+${escapedTitle}\\r?\\n\\r?\\n?`, "i"),
+        "",
+      );
+    }
+    return body;
+  }, [markdown, frontmatterMetadata, coverPage]);
+
   const markdownComponents = useMemo(
     () => ({
       pre: ({
         children,
         ...props
       }: React.HTMLAttributes<HTMLPreElement> & { node?: unknown }) => {
-        // If the child is a mermaid code block, unwrap from <pre> styling
+        // If the child is a mermaid code block and mermaid plugin is enabled, unwrap from <pre> styling
         if (
+          enabledPlugins?.mermaid &&
           isValidElement<{ className?: string }>(children) &&
           children.props?.className?.includes("language-mermaid")
         ) {
@@ -75,7 +138,10 @@ export const PreviewPanel = ({
           ? children.join("")
           : String(children ?? "");
 
-        if (className?.includes("language-mermaid")) {
+        if (
+          className?.includes("language-mermaid") &&
+          enabledPlugins?.mermaid
+        ) {
           return <MermaidViewer chart={text} />;
         }
 
@@ -98,8 +164,17 @@ export const PreviewPanel = ({
         );
       },
     }),
-    [],
+    [enabledPlugins],
   );
+
+  useEffect(() => {
+    if (!markdownToRender) return;
+    const t0 = performance.now();
+    const animId = requestAnimationFrame(() => {
+      setPreviewRenderTimeMs(Math.max(1, Math.round(performance.now() - t0)));
+    });
+    return () => cancelAnimationFrame(animId);
+  }, [markdownToRender]);
 
   return (
     <div className="p-5">
@@ -118,13 +193,138 @@ export const PreviewPanel = ({
       {/* 2. Live Document Preview via @m2d/react-markdown */}
       <div className={viewMode === "preview" ? "block" : "hidden"}>
         <div className="w-full min-h-[260px] max-h-[500px] overflow-y-auto p-5 rounded-xl border border-border bg-background text-foreground prose prose-sm dark:prose-invert max-w-none leading-relaxed">
+          {/* Showcase Banner: @m2d/react-markdown & Live Render Time */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-border/60 text-xs not-prose">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-semibold">
+              <Zap className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span>
+                Rendered with <strong>@m2d/react-markdown</strong>
+              </span>
+            </div>
+
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground">
+              <Clock className="w-3.5 h-3.5" />
+              <span>
+                Preview render:{" "}
+                <strong className="text-foreground">
+                  {previewRenderTimeMs !== null
+                    ? `${previewRenderTimeMs}ms`
+                    : "measuring..."}
+                </strong>
+              </span>
+            </div>
+          </div>
+          {/* Cover Page Visual Card */}
+          {enabledPlugins?.frontmatter && coverPage && frontmatterMetadata && (
+            <div className="mb-6 p-6 rounded-xl border border-primary/30 bg-card/60 shadow-md not-prose">
+              <div className="text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary w-fit font-bold mb-3">
+                Word Document Cover Page (Page 1)
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight text-foreground mb-1">
+                {String(frontmatterMetadata.title || "Untitled Document")}
+              </h1>
+              {(frontmatterMetadata.subtitle ||
+                frontmatterMetadata.description) && (
+                <p className="text-sm italic text-muted-foreground mb-4">
+                  {String(
+                    frontmatterMetadata.subtitle ||
+                      frontmatterMetadata.description,
+                  )}
+                </p>
+              )}
+              <hr className="border-border my-4" />
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-muted-foreground">
+                {Boolean(frontmatterMetadata.author) && (
+                  <div>
+                    <span className="font-semibold text-foreground">
+                      Author:{" "}
+                    </span>
+                    {String(frontmatterMetadata.author)}
+                  </div>
+                )}
+                {Boolean(frontmatterMetadata.date) && (
+                  <div>
+                    <span className="font-semibold text-foreground">
+                      Date:{" "}
+                    </span>
+                    {String(frontmatterMetadata.date)}
+                  </div>
+                )}
+                {Boolean(frontmatterMetadata.version) && (
+                  <div>
+                    <span className="font-semibold text-foreground">
+                      Version:{" "}
+                    </span>
+                    {String(frontmatterMetadata.version)}
+                  </div>
+                )}
+              </div>
+              <div className="mt-5 pt-3 border-t border-dashed border-primary/30 text-center font-mono text-[11px] text-primary flex items-center justify-center gap-2">
+                <span>📄</span>
+                <span>--- Word Page Break • Page 2 Begins Below ---</span>
+              </div>
+            </div>
+          )}
+
+          {/* Info-Box Banner */}
+          {enabledPlugins?.frontmatter && infoBox && frontmatterMetadata && (
+            <div className="mb-5 p-4 rounded-xl border-l-4 border-l-primary border-y border-r border-border bg-muted/40 not-prose shadow-xs">
+              <div className="text-xs font-bold text-foreground mb-2 flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-primary" />
+                <span>Document Overview</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                {Boolean(frontmatterMetadata.author) && (
+                  <div>
+                    <span className="font-semibold text-foreground">
+                      Author:{" "}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {String(frontmatterMetadata.author)}
+                    </span>
+                  </div>
+                )}
+                {Boolean(frontmatterMetadata.date) && (
+                  <div>
+                    <span className="font-semibold text-foreground">
+                      Date:{" "}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {String(frontmatterMetadata.date)}
+                    </span>
+                  </div>
+                )}
+                {Boolean(frontmatterMetadata.version) && (
+                  <div>
+                    <span className="font-semibold text-foreground">
+                      Version:{" "}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {String(frontmatterMetadata.version)}
+                    </span>
+                  </div>
+                )}
+                {Boolean(frontmatterMetadata.status) && (
+                  <div>
+                    <span className="font-semibold text-foreground">
+                      Status:{" "}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {String(frontmatterMetadata.status)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <Md
-            remarkPlugins={[remarkGfm, remarkMath]}
-            rehypePlugins={[rehypeKatex]}
+            remarkPlugins={remarkPlugins}
+            rehypePlugins={rehypePlugins}
             // @ts-expect-error – custom components shape conforms to HAST runtime
             components={markdownComponents}
           >
-            {markdown}
+            {markdownToRender}
           </Md>
         </div>
       </div>
@@ -138,7 +338,34 @@ export const PreviewPanel = ({
         />
       </div>
 
-      {/* 4. Implementation Code Snippet */}
+      {/* 4. Document Properties & Metadata Inspector */}
+      {viewMode === "metadata" && (
+        <MetadataInspector
+          markdown={markdown}
+          coverPage={coverPage}
+          infoBox={infoBox}
+          onToggleCoverPage={onToggleCoverPage}
+          onToggleInfoBox={onToggleInfoBox}
+          onInsertFrontmatter={() => {
+            const sampleHeader = `---
+title: "Project Architectural Overview"
+author: "Engineering Lead"
+subject: "System Design Document"
+keywords: "architecture, microservices, cloud, docx"
+header: "Acme Corp • Confidential Design Spec"
+footer: "Internal Use Only • Page 1"
+description: "Comprehensive system architecture overview and engineering roadmap."
+---
+
+`;
+            onChangeMarkdown(
+              sampleHeader + markdown.replace(/^---[\s\S]*?---\r?\n\r?\n?/, ""),
+            );
+          }}
+        />
+      )}
+
+      {/* 5. Implementation Code Snippet */}
       {viewMode === "code" && (
         <div className="relative rounded-xl border border-border bg-muted/40 p-4">
           <div className="flex items-center justify-between pb-3 mb-3 border-b border-border/50 text-xs">

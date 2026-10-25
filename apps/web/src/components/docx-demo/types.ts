@@ -30,7 +30,14 @@ export interface PluginDefinition {
   desc: string;
 }
 
-export type ViewMode = "edit" | "preview" | "code" | "tiptap";
+export type ViewMode = "edit" | "preview" | "tiptap" | "metadata" | "code";
+
+export type ExecutionMode = "client" | "server";
+
+export interface FrontmatterLayoutOptions {
+  coverPage: boolean;
+  infoBox: boolean;
+}
 
 export type TimingResult = {
   mode: "client" | "server";

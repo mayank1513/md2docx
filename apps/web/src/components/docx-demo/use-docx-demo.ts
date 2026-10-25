@@ -1,9 +1,10 @@
+import { frontmatterPlugin } from "@m2d/frontmatter";
 import { md2docx } from "@m2d/md2docx";
 import { remarkDocx } from "@m2d/remark-docx";
+import type { Root } from "mdast";
 import { toDocx } from "mdast2docx";
 import {
   emojiPlugin,
-  frontmatterPlugin,
   htmlPlugin,
   imagePlugin,
   listPlugin,
@@ -11,7 +12,7 @@ import {
   mermaidPlugin,
   tablePlugin,
 } from "mdast2docx/plugins";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -24,6 +25,7 @@ import {
   TARGETS,
 } from "./constants";
 import type {
+  ExecutionMode,
   PluginId,
   PresetId,
   TargetId,
@@ -34,11 +36,32 @@ import { downloadBlob, generateSnippet, getPresetDocxFilename } from "./utils";
 
 export const useDocxDemo = () => {
   const [selectedPreset, setSelectedPreset] = useState<PresetId>("all");
+  const [isPresetActive, setIsPresetActive] = useState(true);
   const [selectedTarget, setSelectedTarget] = useState<TargetId>("md2docx");
   const [markdown, setMarkdown] = useState(ALL_PLUGINS_SAMPLE);
   const [fullSampleText, setFullSampleText] = useState<string | null>(null);
   const [loadingSample, setLoadingSample] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("edit");
+  const [executionMode, setExecutionMode] = useState<ExecutionMode>("client");
+  const [coverPage, setCoverPage] = useState(false);
+  const [infoBox, setInfoBox] = useState(true);
+
+  /** Cached MDAST reference to avoid re-parsing identical markdown trees */
+  const astRef = useRef<{ markdown: string; ast: Root } | null>(null);
+
+  const getOrParseAst = (md: string): Root => {
+    if (astRef.current && astRef.current.markdown === md) {
+      return structuredClone(astRef.current.ast);
+    }
+    const processor = unified()
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkMath)
+      .use(remarkFrontmatter);
+    const ast = processor.parse(md) as Root;
+    astRef.current = { markdown: md, ast };
+    return structuredClone(ast);
+  };
 
   const [enabledPlugins, setEnabledPlugins] = useState<
     Record<PluginId, boolean>
@@ -55,11 +78,23 @@ export const useDocxDemo = () => {
     [enabledPlugins],
   );
 
+  const handleSelectPreset = (id: PresetId) => {
+    setSelectedPreset(id);
+    setIsPresetActive(true);
+  };
+
+  const handleMarkdownChange = (newMd: string) => {
+    setMarkdown(newMd);
+    setIsPresetActive(false);
+  };
+
   const togglePlugin = (id: PluginId) => {
+    setIsPresetActive(false);
     setEnabledPlugins((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
   const setAllPlugins = (enable: boolean) => {
+    setIsPresetActive(false);
     setEnabledPlugins({
       frontmatter: enable,
       math: enable,
@@ -70,6 +105,16 @@ export const useDocxDemo = () => {
       html: enable,
       emoji: enable,
     });
+  };
+
+  const toggleCoverPage = () => {
+    setIsPresetActive(false);
+    setCoverPage((v) => !v);
+  };
+
+  const toggleInfoBox = () => {
+    setIsPresetActive(false);
+    setInfoBox((v) => !v);
   };
 
   const handleClearCache = () => {
@@ -85,6 +130,7 @@ export const useDocxDemo = () => {
   };
 
   const handleResetText = () => {
+    setIsPresetActive(true);
     setEnabledPlugins(PRESET_PLUGINS[selectedPreset]);
     if (selectedPreset === "full" && fullSampleText) {
       setMarkdown(fullSampleText);
@@ -122,7 +168,9 @@ export const useDocxDemo = () => {
   /** Helper to instantiate only the active client plugins */
   const getActiveClientPlugins = () => {
     const list = [];
-    if (enabledPlugins.frontmatter) list.push(frontmatterPlugin());
+    if (enabledPlugins.frontmatter) {
+      list.push(frontmatterPlugin(undefined, { coverPage, infoBox }));
+    }
     if (enabledPlugins.mermaid) list.push(mermaidPlugin());
     if (enabledPlugins.html) list.push(htmlPlugin());
     if (enabledPlugins.list) list.push(listPlugin());
@@ -169,12 +217,7 @@ export const useDocxDemo = () => {
         const res = await processor.process(markdown);
         docxBlob = res.result as Blob;
       } else {
-        const processor = unified()
-          .use(remarkParse)
-          .use(remarkGfm)
-          .use(remarkMath)
-          .use(remarkFrontmatter);
-        const mdast = processor.parse(markdown);
+        const mdast = getOrParseAst(markdown);
         docxBlob = (await toDocx(
           mdast,
           docxProps,
@@ -227,6 +270,8 @@ export const useDocxDemo = () => {
         body: JSON.stringify({
           markdown,
           plugins: enabledPlugins,
+          coverPage,
+          infoBox,
         }),
       });
 
@@ -267,20 +312,46 @@ export const useDocxDemo = () => {
   };
 
   const generatedCode = useMemo(
-    () => generateSnippet(selectedTarget, enabledPlugins),
-    [selectedTarget, enabledPlugins],
+    () =>
+      generateSnippet(
+        selectedTarget,
+        enabledPlugins,
+        executionMode,
+        coverPage,
+        infoBox,
+      ),
+    [selectedTarget, enabledPlugins, executionMode, coverPage, infoBox],
   );
+
+  const handleExportDocx = () => {
+    if (executionMode === "client") {
+      handleClientGenerate();
+    } else {
+      handleServerGenerate();
+    }
+  };
 
   return {
     selectedPreset,
     setSelectedPreset,
+    isPresetActive,
+    handleSelectPreset,
     selectedTarget,
     setSelectedTarget,
     markdown,
-    setMarkdown,
+    setMarkdown: handleMarkdownChange,
+    rawSetMarkdown: setMarkdown,
     loadingSample,
     viewMode,
     setViewMode,
+    executionMode,
+    setExecutionMode,
+    coverPage,
+    setCoverPage,
+    infoBox,
+    setInfoBox,
+    toggleCoverPage,
+    toggleInfoBox,
     enabledPlugins,
     togglePlugin,
     setAllPlugins,
@@ -294,6 +365,7 @@ export const useDocxDemo = () => {
     handleResetText,
     handleClientGenerate,
     handleServerGenerate,
+    handleExportDocx,
     generatedCode,
   };
 };

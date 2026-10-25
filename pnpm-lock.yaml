@@ -408,6 +408,9 @@ importers:
       "@tailwindcss/postcss":
         specifier: ^4.3.3
         version: 4.3.3
+      "@types/mdast":
+        specifier: ^4.0.4
+        version: 4.0.4
       "@types/mdx":
         specifier: ^2.0.14
         version: 2.0.14

@@ -34,6 +34,8 @@ export const MermaidViewer = ({ chart }: MermaidViewerProps) => {
     setLoading(true);
     setError(null);
 
+    const container = document.getElementById("invisible-mermaid-container");
+
     const renderChart = async () => {
       try {
         mermaid.initialize({
@@ -41,9 +43,14 @@ export const MermaidViewer = ({ chart }: MermaidViewerProps) => {
           theme: "neutral",
           securityLevel: "loose",
           fontFamily: "inherit",
+          suppressErrorRendering: true,
         });
 
-        const { svg: renderedSvg } = await mermaid.render(id, trimmedChart);
+        const { svg: renderedSvg } = await mermaid.render(
+          id,
+          trimmedChart,
+          container ?? undefined,
+        );
         if (active) {
           setSvg(renderedSvg);
           setLoading(false);

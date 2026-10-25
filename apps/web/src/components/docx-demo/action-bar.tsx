@@ -2,35 +2,37 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock,
+  FileDown,
   Loader2,
   Server,
   Zap,
 } from "lucide-react";
 import { Button } from "../ui/button";
-import { TARGETS } from "./constants";
-import type { TargetId, TimingResult } from "./types";
+import type { ExecutionMode, TimingResult } from "./types";
 
 interface ActionBarProps {
   timing: TimingResult | null;
-  selectedTarget: TargetId;
+  executionMode: ExecutionMode;
   clientLoading: boolean;
   serverLoading: boolean;
   hasMarkdown: boolean;
   errorMsg: string | null;
-  onClientGenerate: () => void;
-  onServerGenerate: () => void;
+  onSelectExecutionMode: (mode: ExecutionMode) => void;
+  onExportDocx: () => void;
 }
 
 export const ActionBar = ({
   timing,
-  selectedTarget,
+  executionMode,
   clientLoading,
   serverLoading,
   hasMarkdown,
   errorMsg,
-  onClientGenerate,
-  onServerGenerate,
+  onSelectExecutionMode,
+  onExportDocx,
 }: ActionBarProps) => {
+  const loading = clientLoading || serverLoading;
+
   return (
     <>
       {/* Error Banner */}
@@ -88,44 +90,59 @@ export const ActionBar = ({
           )}
         </div>
 
-        {/* Action Buttons for Client & Server */}
-        <div className="flex items-center gap-3 self-end md:self-auto">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onServerGenerate}
-            disabled={serverLoading || clientLoading || !hasMarkdown}
-            className="text-xs font-medium border-blue-500/30 text-blue-500 hover:bg-blue-500/10 hover:text-blue-500 cursor-pointer"
-          >
-            {serverLoading ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                Server Processing...
-              </>
-            ) : (
-              <>
-                <Server className="w-3.5 h-3.5 mr-1.5" />
-                Render on Server (Node API)
-              </>
-            )}
-          </Button>
+        {/* Execution Mode Toggle & Unified Export Button */}
+        <div className="flex flex-wrap items-center gap-3 self-end md:self-auto">
+          {/* Client / Server Toggle */}
+          <div className="inline-flex items-center p-0.5 rounded-lg bg-muted border border-border/60">
+            <button
+              type="button"
+              onClick={() => onSelectExecutionMode("client")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                executionMode === "client"
+                  ? "bg-card text-foreground shadow-xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Zap className="w-3.5 h-3.5 text-primary" />
+              <span>Browser (Blob)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectExecutionMode("server")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                executionMode === "server"
+                  ? "bg-card text-foreground shadow-xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Server className="w-3.5 h-3.5 text-blue-500" />
+              <span>Node.js API</span>
+            </button>
+          </div>
 
+          {/* Unified Export Button */}
           <Button
             size="sm"
-            onClick={onClientGenerate}
-            disabled={clientLoading || serverLoading || !hasMarkdown}
-            className="text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+            onClick={onExportDocx}
+            disabled={loading || !hasMarkdown}
+            className="text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 h-9 cursor-pointer shadow-xs gap-1.5"
           >
-            {clientLoading ? (
+            {loading ? (
               <>
-                <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                Compiling in Browser...
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>
+                  {executionMode === "client"
+                    ? "Compiling in Browser..."
+                    : "Rendering on Server..."}
+                </span>
               </>
             ) : (
               <>
-                <Zap className="w-3.5 h-3.5 mr-1.5" />
-                Compile in Browser (
-                {TARGETS.find((t) => t.id === selectedTarget)?.name})
+                <FileDown className="w-4 h-4" />
+                <span>
+                  Export DOCX (
+                  {executionMode === "client" ? "Browser" : "Node.js"})
+                </span>
               </>
             )}
           </Button>
