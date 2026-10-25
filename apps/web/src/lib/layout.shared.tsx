@@ -12,6 +12,10 @@ export function baseOptions(): BaseLayoutProps {
         </span>
       ),
     },
+    links: [
+      { text: "Documentation", url: "/docs" },
+      { text: "Playground", url: "/playground" },
+    ],
     githubUrl,
   };
 }

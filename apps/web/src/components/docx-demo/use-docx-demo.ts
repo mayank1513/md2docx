@@ -14,17 +14,13 @@ import {
   tablePlugin,
 } from "mdast2docx/plugins";
 import { useEffect, useMemo, useRef, useState } from "react";
-import remarkFrontmatter from "remark-frontmatter";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
-import remarkParse from "remark-parse";
-import { unified } from "unified";
 import {
   ALL_PLUGINS_SAMPLE,
   PRESET_PLUGINS,
   PRESETS,
   TARGETS,
 } from "./constants";
+import { generateDocxBlob } from "./generator";
 import type {
   ExecutionMode,
   PluginId,
@@ -49,23 +45,6 @@ export const useDocxDemo = () => {
 
   /** Captured MDAST reference from @m2d/react-markdown preview */
   const previewAstRef = useRef<NonNullable<AstRef["current"]>>([]);
-
-  /** Cached MDAST reference to avoid re-parsing identical markdown trees */
-  const astRef = useRef<{ markdown: string; ast: Root } | null>(null);
-
-  const getOrParseAst = (md: string): Root => {
-    if (astRef.current && astRef.current.markdown === md) {
-      return structuredClone(astRef.current.ast);
-    }
-    const processor = unified()
-      .use(remarkParse)
-      .use(remarkGfm)
-      .use(remarkMath)
-      .use(remarkFrontmatter);
-    const ast = processor.parse(md) as Root;
-    astRef.current = { markdown: md, ast };
-    return structuredClone(ast);
-  };
 
   const [enabledPlugins, setEnabledPlugins] = useState<
     Record<PluginId, boolean>
@@ -169,21 +148,67 @@ export const useDocxDemo = () => {
     }
   }, [selectedPreset, fullSampleText]);
 
-  /** Helper to instantiate only the active client plugins */
-  const getActiveClientPlugins = () => {
-    const list = [];
-    if (enabledPlugins.frontmatter) {
-      list.push(frontmatterPlugin(undefined, { coverPage, infoBox }));
-    }
-    if (enabledPlugins.mermaid) list.push(mermaidPlugin());
-    if (enabledPlugins.html) list.push(htmlPlugin());
-    if (enabledPlugins.list) list.push(listPlugin());
-    if (enabledPlugins.math) list.push(mathPlugin());
-    if (enabledPlugins.table) list.push(tablePlugin());
-    if (enabledPlugins.emoji) list.push(emojiPlugin());
-    if (enabledPlugins.image) list.push(imagePlugin());
-    return list;
-  };
+  // Live DOCX Blob for instant side-by-side preview
+  const [liveBlob, setLiveBlob] = useState<Blob | null>(null);
+  const [liveBlobLoading, setLiveBlobLoading] = useState(false);
+  const [liveBlobError, setLiveBlobError] = useState<string | null>(null);
+  const [liveBlobRenderTimeMs, setLiveBlobRenderTimeMs] = useState<
+    number | null
+  >(null);
+
+  // Debounced auto-generation of liveBlob on changes
+  useEffect(() => {
+    let isMounted = true;
+    const timer = setTimeout(async () => {
+      if (!markdown.trim()) {
+        setLiveBlob(null);
+        return;
+      }
+      setLiveBlobLoading(true);
+      setLiveBlobError(null);
+      const start = performance.now();
+      try {
+        const blob = await generateDocxBlob({
+          markdown,
+          target: selectedTarget,
+          enabledPlugins,
+          coverPage,
+          infoBox,
+          title:
+            selectedPreset === "full"
+              ? "Markdown Syntax Showcase"
+              : "md2docx Live Preview",
+        });
+        if (isMounted) {
+          setLiveBlob(blob);
+          setLiveBlobRenderTimeMs(Math.round(performance.now() - start));
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.error("Live DOCX generation failed:", err);
+          setLiveBlobError(
+            err instanceof Error ? err.message : "Live DOCX generation error",
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setLiveBlobLoading(false);
+        }
+      }
+    }, 350);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [
+    markdown,
+    selectedTarget,
+    enabledPlugins,
+    coverPage,
+    infoBox,
+    selectedPreset,
+  ]);
 
   /** Client-Side Generation using the selected Target */
   const handleClientGenerate = async () => {
@@ -191,7 +216,6 @@ export const useDocxDemo = () => {
     setErrorMsg(null);
     const start = performance.now();
     try {
-      const plugins = getActiveClientPlugins();
       const docxProps = {
         title:
           selectedPreset === "full"
@@ -200,41 +224,15 @@ export const useDocxDemo = () => {
         creator: `${selectedTarget} Browser Engine`,
       };
 
-      let docxBlob: Blob;
-
-      if (selectedTarget === "md2docx") {
-        docxBlob = (await md2docx(
-          markdown,
-          docxProps,
-          // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-          { plugins: plugins as any },
-          "blob",
-        )) as Blob;
-      } else if (selectedTarget === "remark-docx") {
-        const processor = unified()
-          .use(remarkParse)
-          .use(remarkGfm)
-          .use(remarkMath)
-          .use(remarkFrontmatter)
-          // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-          .use(remarkDocx, "blob", docxProps, { plugins: plugins as any });
-        const res = await processor.process(markdown);
-        docxBlob = res.result as Blob;
-      } else {
-        // target === "mdast2docx"
-        // Use captured AST from @m2d/react-markdown preview to avoid running Unified twice!
-        const capturedMdast = previewAstRef.current?.[0]?.mdast;
-        const mdast = capturedMdast
-          ? structuredClone(capturedMdast)
-          : getOrParseAst(markdown);
-        docxBlob = (await toDocx(
-          mdast,
-          docxProps,
-          // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-          { plugins: plugins as any },
-          "blob",
-        )) as Blob;
-      }
+      const docxBlob = await generateDocxBlob({
+        markdown,
+        target: selectedTarget,
+        enabledPlugins,
+        coverPage,
+        infoBox,
+        title: docxProps.title,
+        creator: docxProps.creator,
+      });
 
       const renderTimeMs = Math.round(performance.now() - start);
       const sizeKb = Number((docxBlob.size / 1024).toFixed(1));
@@ -377,5 +375,9 @@ export const useDocxDemo = () => {
     handleExportDocx,
     generatedCode,
     previewAstRef,
+    liveBlob,
+    liveBlobLoading,
+    liveBlobError,
+    liveBlobRenderTimeMs,
   };
 };

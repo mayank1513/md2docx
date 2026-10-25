@@ -30,7 +30,13 @@ export interface PluginDefinition {
   desc: string;
 }
 
-export type ViewMode = "edit" | "preview" | "tiptap" | "metadata" | "code";
+export type ViewMode =
+  | "edit"
+  | "preview"
+  | "tiptap"
+  | "metadata"
+  | "code"
+  | "docx";
 
 export type ExecutionMode = "client" | "server";
 

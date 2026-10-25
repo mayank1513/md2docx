@@ -2,6 +2,7 @@ import {
   ChevronDown,
   Code2,
   Eye,
+  FileCheck2,
   FileText,
   Layers,
   RotateCcw,
@@ -117,6 +118,7 @@ export const DemoToolbar = ({
             >
               <option value="edit">Markdown</option>
               <option value="preview">Live Preview</option>
+              <option value="docx">Word (.docx) Preview</option>
               <option value="tiptap">WYSIWYG (Tiptap)</option>
               <option value="metadata">Doc Properties</option>
               <option value="code">Implementation Code</option>
@@ -150,6 +152,18 @@ export const DemoToolbar = ({
           >
             <Eye className="w-3.5 h-3.5" />
             <span>Live Preview</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onChangeViewMode("docx")}
+            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+              viewMode === "docx"
+                ? "bg-card text-foreground shadow-xs font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <FileCheck2 className="w-3.5 h-3.5 text-blue-500" />
+            <span>Word (.docx)</span>
           </button>
           <button
             type="button"

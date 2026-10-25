@@ -17,6 +17,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { Button } from "../ui/button";
 import { TARGETS } from "./constants";
+import { DocxViewer } from "./docx-viewer";
 import { highlightCode } from "./highlight";
 import { MermaidViewer } from "./mermaid-viewer";
 import { MetadataInspector } from "./metadata-inspector";
@@ -34,6 +35,10 @@ interface PreviewPanelProps {
   infoBox: boolean;
   generatedCode: string;
   previewAstRef?: AstRef;
+  docxBlob?: Blob | null;
+  docxLoading?: boolean;
+  docxError?: string | null;
+  docxRenderTimeMs?: number | null;
   onChangeMarkdown: (md: string) => void;
   onToggleCoverPage?: () => void;
   onToggleInfoBox?: () => void;
@@ -50,6 +55,10 @@ export const PreviewPanel = ({
   infoBox,
   generatedCode,
   previewAstRef,
+  docxBlob = null,
+  docxLoading = false,
+  docxError = null,
+  docxRenderTimeMs = null,
   onChangeMarkdown,
   onToggleCoverPage,
   onToggleInfoBox,
@@ -332,6 +341,18 @@ export const PreviewPanel = ({
           </Md>
         </div>
       </div>
+
+      {/* 2.5. Word (.docx) Live Paginated Canvas */}
+      {viewMode === "docx" && (
+        <div className="rounded-xl border border-border overflow-hidden h-[680px]">
+          <DocxViewer
+            blob={docxBlob}
+            loading={docxLoading}
+            error={docxError}
+            renderTimeMs={docxRenderTimeMs}
+          />
+        </div>
+      )}
 
       {/* 3. WYSIWYG Rich Text Editor via Tiptap 3 */}
       <div className={viewMode === "tiptap" ? "block" : "hidden"}>

@@ -40,6 +40,10 @@ export const DocxDemo = () => {
     handleExportDocx,
     generatedCode,
     previewAstRef,
+    liveBlob,
+    liveBlobLoading,
+    liveBlobError,
+    liveBlobRenderTimeMs,
   } = useDocxDemo();
 
   return (
@@ -105,6 +109,10 @@ export const DocxDemo = () => {
             infoBox={infoBox}
             generatedCode={generatedCode}
             previewAstRef={previewAstRef}
+            docxBlob={liveBlob}
+            docxLoading={liveBlobLoading}
+            docxError={liveBlobError}
+            docxRenderTimeMs={liveBlobRenderTimeMs}
             onChangeMarkdown={setMarkdown}
             onToggleCoverPage={toggleCoverPage}
             onToggleInfoBox={toggleInfoBox}

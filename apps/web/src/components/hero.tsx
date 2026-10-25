@@ -55,9 +55,9 @@ export const Hero = () => {
             className="w-full sm:w-auto font-semibold shadow-md"
             asChild
           >
-            <Link href="#demo">
+            <Link href="/playground">
               <Play className="mr-2 h-4 w-4 fill-current" />
-              Try Live Playground
+              Launch Live Playground
             </Link>
           </Button>
           <Button
