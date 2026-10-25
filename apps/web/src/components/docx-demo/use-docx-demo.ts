@@ -1,5 +1,6 @@
 import { frontmatterPlugin } from "@m2d/frontmatter";
 import { md2docx } from "@m2d/md2docx";
+import type { AstRef } from "@m2d/react-markdown/client";
 import { remarkDocx } from "@m2d/remark-docx";
 import type { Root } from "mdast";
 import { toDocx } from "mdast2docx";
@@ -45,6 +46,9 @@ export const useDocxDemo = () => {
   const [executionMode, setExecutionMode] = useState<ExecutionMode>("client");
   const [coverPage, setCoverPage] = useState(false);
   const [infoBox, setInfoBox] = useState(true);
+
+  /** Captured MDAST reference from @m2d/react-markdown preview */
+  const previewAstRef = useRef<NonNullable<AstRef["current"]>>([]);
 
   /** Cached MDAST reference to avoid re-parsing identical markdown trees */
   const astRef = useRef<{ markdown: string; ast: Root } | null>(null);
@@ -217,7 +221,12 @@ export const useDocxDemo = () => {
         const res = await processor.process(markdown);
         docxBlob = res.result as Blob;
       } else {
-        const mdast = getOrParseAst(markdown);
+        // target === "mdast2docx"
+        // Use captured AST from @m2d/react-markdown preview to avoid running Unified twice!
+        const capturedMdast = previewAstRef.current?.[0]?.mdast;
+        const mdast = capturedMdast
+          ? structuredClone(capturedMdast)
+          : getOrParseAst(markdown);
         docxBlob = (await toDocx(
           mdast,
           docxProps,
@@ -367,5 +376,6 @@ export const useDocxDemo = () => {
     handleServerGenerate,
     handleExportDocx,
     generatedCode,
+    previewAstRef,
   };
 };

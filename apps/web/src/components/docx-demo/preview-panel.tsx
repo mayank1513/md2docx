@@ -1,6 +1,7 @@
 "use client";
 
 import { parseFrontmatter } from "@m2d/frontmatter";
+import type { AstRef } from "@m2d/react-markdown/client";
 import { Md } from "@m2d/react-markdown/client";
 import {
   Check,
@@ -32,6 +33,7 @@ interface PreviewPanelProps {
   coverPage: boolean;
   infoBox: boolean;
   generatedCode: string;
+  previewAstRef?: AstRef;
   onChangeMarkdown: (md: string) => void;
   onToggleCoverPage?: () => void;
   onToggleInfoBox?: () => void;
@@ -47,6 +49,7 @@ export const PreviewPanel = ({
   coverPage,
   infoBox,
   generatedCode,
+  previewAstRef,
   onChangeMarkdown,
   onToggleCoverPage,
   onToggleInfoBox,
@@ -319,6 +322,7 @@ export const PreviewPanel = ({
           )}
 
           <Md
+            astRef={previewAstRef}
             remarkPlugins={remarkPlugins}
             rehypePlugins={rehypePlugins}
             // @ts-expect-error – custom components shape conforms to HAST runtime

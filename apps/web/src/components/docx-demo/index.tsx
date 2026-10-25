@@ -39,6 +39,7 @@ export const DocxDemo = () => {
     handleResetText,
     handleExportDocx,
     generatedCode,
+    previewAstRef,
   } = useDocxDemo();
 
   return (
@@ -103,6 +104,7 @@ export const DocxDemo = () => {
             coverPage={coverPage}
             infoBox={infoBox}
             generatedCode={generatedCode}
+            previewAstRef={previewAstRef}
             onChangeMarkdown={setMarkdown}
             onToggleCoverPage={toggleCoverPage}
             onToggleInfoBox={toggleInfoBox}
