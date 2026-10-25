@@ -27,6 +27,8 @@
 
 - **Zero External Dependencies:** Built-in quote-aware parser for YAML (`:`) and basic TOML (`=`).
 - **Automatic Metadata Mapping:** Maps standard fields (`title`, `author`/`creator`, `description`, `subject`, `tags`/`keywords`, `revision`) directly to Word OpenXML document properties (`IPropertiesOptions`).
+- **Automated Cover Page:** Generates a standalone styled title page with title, subtitle, metadata, and page break (`coverPage: true`).
+- **Metadata Info-Box / Banner:** Automatically generates a styled callout blockquote or table banner (`infoBox: true`).
 - **Quote & Escape Resilient:** Correctly preserves `#` inside strings and URLs, decodes escaped double quotes (`\"`), and decodes doubled single quotes (`''`).
 - **Typed Inline Arrays:** Parses numbers, booleans, and quoted strings inside bracketed arrays (`[item1, true, 42]`).
 - **Pluggable Parsers:** Seamlessly inject dedicated parsers (e.g. `smol-toml` or `yaml`) for complex nested tables, multi-line strings, or full specifications.

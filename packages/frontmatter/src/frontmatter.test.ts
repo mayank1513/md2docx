@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: Use of any is ok for test files */
 
+import { toDocx } from "@m2d/core";
 import { describe, expect, test } from "vitest";
 import {
   extractFrontmatterNode,
@@ -206,5 +207,233 @@ department: "Engineering"
 
     plugin.preprocess?.(ast, {}, props);
     expect(props.title).toBe("Transformed: Custom");
+  });
+
+  describe("Cover Page generation", () => {
+    test("should synthesize a cover page and remove matching duplicate body heading", () => {
+      const plugin = frontmatterPlugin(undefined, {
+        coverPage: true,
+      });
+
+      const props: any = {};
+      const ast: any = {
+        type: "root",
+        children: [
+          {
+            type: "yaml",
+            value: `
+title: "Technical Specification"
+description: "Architecture overview for v2"
+author: "Engineering Lead"
+date: "2026-10-25"
+version: "2.0.0"
+`,
+          },
+          {
+            type: "heading",
+            depth: 1,
+            children: [{ type: "text", value: "Technical Specification" }],
+          },
+          {
+            type: "paragraph",
+            children: [{ type: "text", value: "This is body content." }],
+          },
+        ],
+      };
+
+      plugin.preprocess?.(ast, {}, props);
+
+      // Total children should now have: yaml, cover Title H1, Subtitle, ThematicBreak, Author, Date, Version, PageBreak, and Body Paragraph (duplicate H1 removed)
+      const nonYaml = ast.children.filter((c: any) => c.type !== "yaml");
+      expect(nonYaml[0].type).toBe("heading");
+      expect(nonYaml[0].children[0].value).toBe("Technical Specification");
+
+      expect(nonYaml[1].type).toBe("paragraph");
+      expect(nonYaml[1].children[0].type).toBe("emphasis");
+      expect(nonYaml[1].children[0].children[0].value).toBe(
+        "Architecture overview for v2",
+      );
+
+      expect(nonYaml[2].type).toBe("thematicBreak");
+
+      // Check author line
+      expect(nonYaml[3].children[1].value).toBe("Engineering Lead");
+      // Check date line
+      expect(nonYaml[4].children[1].value).toBe("2026-10-25");
+      // Check version line
+      expect(nonYaml[5].children[1].value).toBe("2.0.0");
+
+      // Check page break paragraph
+      expect(nonYaml[6].data?.pageBreakBefore).toBe(true);
+
+      // Body paragraph
+      expect(nonYaml[7].children[0].value).toBe("This is body content.");
+    });
+
+    test("should retain duplicate heading when removeMatchingHeading is false", () => {
+      const plugin = frontmatterPlugin(undefined, {
+        coverPage: {
+          removeMatchingHeading: false,
+          organization: "OpenSource Org",
+        },
+      });
+
+      const props: any = {};
+      const ast: any = {
+        type: "root",
+        children: [
+          {
+            type: "yaml",
+            value: `title: "Guide"\nauthor: "Dev"`,
+          },
+          {
+            type: "heading",
+            depth: 1,
+            children: [{ type: "text", value: "Guide" }],
+          },
+        ],
+      };
+
+      plugin.preprocess?.(ast, {}, props);
+
+      const headings = ast.children.filter((c: any) => c.type === "heading");
+      expect(headings.length).toBe(2); // Cover title + body title
+      const orgLine = ast.children.find(
+        (c: any) => c.children?.[1]?.value === "OpenSource Org",
+      );
+      expect(orgLine).toBeDefined();
+    });
+  });
+
+  describe("Metadata Info-Box generation", () => {
+    test("should insert blockquote info-box after first H1 heading", () => {
+      const plugin = frontmatterPlugin(undefined, {
+        infoBox: {
+          header: "Document Metadata",
+        },
+      });
+
+      const props: any = {};
+      const ast: any = {
+        type: "root",
+        children: [
+          {
+            type: "yaml",
+            value: `
+title: "API Reference"
+author: "Doc Writer"
+date: "2026-10-25"
+status: "Draft"
+`,
+          },
+          {
+            type: "heading",
+            depth: 1,
+            children: [{ type: "text", value: "API Reference" }],
+          },
+          {
+            type: "paragraph",
+            children: [{ type: "text", value: "First body paragraph." }],
+          },
+        ],
+      };
+
+      plugin.preprocess?.(ast, {}, props);
+
+      // Info-box should be placed at index 2 (right after heading at index 1)
+      const infoBox = ast.children[2];
+      expect(infoBox.type).toBe("blockquote");
+      expect(infoBox.children[0].children[0].children[0].value).toBe(
+        "Document Metadata",
+      );
+      expect(infoBox.children[1].children[1].value).toBe("Doc Writer");
+      expect(infoBox.children[2].children[1].value).toBe("2026-10-25");
+      expect(infoBox.children[3].children[1].value).toBe("Draft");
+    });
+
+    test("should insert info-box as table when format is table", () => {
+      const plugin = frontmatterPlugin(undefined, {
+        infoBox: {
+          format: "table",
+          position: "top",
+        },
+      });
+
+      const props: any = {};
+      const ast: any = {
+        type: "root",
+        children: [
+          {
+            type: "yaml",
+            value: `author: "Scientist"\ncategory: "Research"`,
+          },
+          {
+            type: "paragraph",
+            children: [{ type: "text", value: "Paper content." }],
+          },
+        ],
+      };
+
+      plugin.preprocess?.(ast, {}, props);
+
+      const tableNode = ast.children[1];
+      expect(tableNode.type).toBe("table");
+      expect(tableNode.children[0].type).toBe("tableRow"); // header
+      expect(tableNode.children[1].children[1].children[0].value).toBe(
+        "Scientist",
+      );
+    });
+
+    test("should generate distinct DOCX sections for coverPage only vs coverPage + infoBox", async () => {
+      const yamlContent = `
+title: "md2docx Feature Showcase"
+author: "Mayank Chaudhari"
+description: "A complete demonstration of Markdown to native DOCX conversion"
+keywords: "docx, markdown, openxml, remark"
+`;
+      const createAst = () => ({
+        type: "root",
+        children: [
+          { type: "yaml", value: yamlContent },
+          {
+            type: "heading",
+            depth: 1,
+            children: [{ type: "text", value: "md2docx Feature Showcase" }],
+          },
+          {
+            type: "paragraph",
+            children: [{ type: "text", value: "Body paragraph content." }],
+          },
+        ],
+      });
+
+      const p1 = frontmatterPlugin(undefined, {
+        coverPage: true,
+        infoBox: false,
+      });
+      const p2 = frontmatterPlugin(undefined, {
+        coverPage: true,
+        infoBox: true,
+      });
+
+      const ast1: any = createAst();
+      const ast2: any = createAst();
+
+      p1.preprocess?.(ast1, {}, {});
+      p2.preprocess?.(ast2, {}, {});
+
+      // Cover page only produces 6 children; Cover page + infobox produces 7 (including blockquote)
+      expect(ast2.children.length).toBeGreaterThan(ast1.children.length);
+      expect(
+        ast2.children.some((c: { type: string }) => c.type === "blockquote"),
+      ).toBe(true);
+
+      const blob1 = (await toDocx(ast1, {}, { plugins: [p1] })) as Blob;
+      const blob2 = (await toDocx(ast2, {}, { plugins: [p2] })) as Blob;
+
+      expect(blob1).toBeInstanceOf(Blob);
+      expect(blob2).toBeInstanceOf(Blob);
+      expect(blob2.size).toBeGreaterThan(blob1.size);
+    });
   });
 });

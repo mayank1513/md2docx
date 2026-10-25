@@ -16,28 +16,69 @@ The `frontmatterPlugin(options)` factory accepts an optional configuration objec
 ```typescript
 export interface FrontmatterPluginOptions {
   /**
-   * Whether to remove the frontmatter block from the document body.
-   * @default true
-   */
-  strip?: boolean;
-
-  /**
    * Custom parser function to override the built-in YAML/TOML parser.
    * Useful when full YAML 1.2 or TOML specifications are required.
    */
-  parser?: (raw: string, type: "yaml" | "toml") => Record<string, unknown>;
+  parser?: (raw: string, type?: FrontmatterType) => FrontmatterData;
 
   /**
    * Custom transform function to map raw metadata to OpenXML document properties.
    */
-  transform?: (
-    raw: Record<string, unknown>,
-    defaultProps: Partial<IDocxProps>,
-  ) => Partial<IDocxProps>;
+  transform?: (frontmatter: FrontmatterData, docxProps: IDocxProps) => void;
+
+  /**
+   * Automatically generate a standalone cover page from frontmatter metadata.
+   */
+  coverPage?: boolean | CoverPageOptions;
+
+  /**
+   * Automatically generate a styled info-box / callout banner from frontmatter metadata.
+   */
+  infoBox?: boolean | InfoBoxOptions;
 }
 ```
 
 ---
+
+## 📄 Automated Cover Page
+
+Generate a standalone title/cover page at the start of your DOCX document:
+
+```typescript
+import { frontmatterPlugin } from "@m2d/frontmatter";
+
+const plugin = frontmatterPlugin(undefined, {
+  coverPage: true, // or provide CoverPageOptions overrides
+});
+```
+
+When enabled, `@m2d/frontmatter` synthesizes:
+1. Title (`H1`) from `frontmatter.title` or `docxProps.title`
+2. Subtitle / description in emphasis styling
+3. Thematic break divider
+4. Key metadata lines (Author, Organization, Date, Version)
+5. A page break before the body content, and automatically deduplicates any matching `H1` in the document body.
+
+---
+
+## 📋 Metadata Info-Box / Callout
+
+Generate a compact callout or table summarizing document metadata at the top of the body:
+
+```typescript
+import { frontmatterPlugin } from "@m2d/frontmatter";
+
+const plugin = frontmatterPlugin(undefined, {
+  infoBox: {
+    format: "blockquote", // "blockquote" (callout box) or "table"
+    position: "after-title", // "after-title" or "top"
+    header: "Document Information",
+  },
+});
+```
+
+---
+
 
 ## 🔌 Custom Parser Integration
 
