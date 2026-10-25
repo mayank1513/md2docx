@@ -1,20 +1,16 @@
 "use client";
 
 import {
-  ArrowLeft,
   BookOpen,
   ChevronDown,
   Code2,
   Download,
-  FileCheck2,
   FileText,
   Layers,
-  LayoutTemplate,
   Loader2,
   RotateCcw,
   ShieldCheck,
   Sliders,
-  Sparkles,
   Trash2,
 } from "lucide-react";
 import Image from "next/image";
@@ -27,15 +23,11 @@ import { highlightCode } from "@/components/docx-demo/highlight";
 import { MetadataInspector } from "@/components/docx-demo/metadata-inspector";
 import { PluginPipeline } from "@/components/docx-demo/plugin-pipeline";
 import { TiptapRichEditor } from "@/components/docx-demo/tiptap-rich-editor";
-import type {
-  PresetId,
-  TargetId,
-  ViewMode,
-} from "@/components/docx-demo/types";
+import type { PresetId, TargetId } from "@/components/docx-demo/types";
 import { useDocxDemo } from "@/components/docx-demo/use-docx-demo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { githubUrl, name } from "@/meta.json";
+import { name } from "@/meta.json";
 
 export default function PlaygroundPage() {
   const {
@@ -150,11 +142,45 @@ export default function PlaygroundPage() {
               </select>
               <ChevronDown className="w-3 h-3 text-muted-foreground absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
+            <Badge
+              variant="outline"
+              className="hidden 2xl:inline-flex text-[10px] font-mono text-muted-foreground border-border/80"
+            >
+              {currentTarget.badge}
+            </Badge>
           </div>
         </div>
 
         {/* Right Toolbar Actions */}
         <div className="flex items-center gap-2">
+          {/* Execution Mode Segmented Toggle */}
+          <div className="hidden lg:flex items-center p-0.5 rounded-lg border border-border/60 bg-muted/30 text-xs">
+            <button
+              type="button"
+              onClick={() => setExecutionMode("client")}
+              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                executionMode === "client"
+                  ? "bg-primary text-primary-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              title="Compile entirely in the browser using WebAssembly / Web APIs"
+            >
+              Browser
+            </button>
+            <button
+              type="button"
+              onClick={() => setExecutionMode("server")}
+              className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors cursor-pointer ${
+                executionMode === "server"
+                  ? "bg-primary text-primary-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              title="Compile using Node.js server API endpoint"
+            >
+              Server
+            </button>
+          </div>
+
           {/* Layout Synthesizer Toggles */}
           <div className="hidden xl:flex items-center gap-1.5 px-2 py-0.5 rounded-lg border border-border/60 bg-muted/30 text-xs">
             <span className="text-[11px] text-muted-foreground font-medium">
@@ -242,6 +268,13 @@ export default function PlaygroundPage() {
         </div>
       </header>
 
+      {/* Error Alert Banner */}
+      {errorMsg && (
+        <div className="bg-destructive/10 border-b border-destructive/20 text-destructive text-xs px-4 py-2 flex items-center justify-between z-10 shrink-0">
+          <span>{errorMsg}</span>
+        </div>
+      )}
+
       {/* Main Side-by-Side Split Workspace */}
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Left Pane: Editor, Plugins & Metadata (50% on desktop) */}
@@ -300,7 +333,12 @@ export default function PlaygroundPage() {
             </div>
 
             {/* Quick plugin counter pill */}
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
+              {timing && (
+                <span className="text-[10px] text-muted-foreground hidden sm:inline-block font-mono">
+                  Exported {timing.sizeKb}KB in {timing.totalTimeMs}ms
+                </span>
+              )}
               <Badge
                 variant="outline"
                 className="text-[10px] font-mono px-1.5 py-0 border-border/80 text-muted-foreground"

@@ -596,6 +596,57 @@ You can use raw HTML tags such as:
   <p>The core converter iterates through the Markdown AST, converts phrasing elements to docx <code>TextRun</code> instances, groups block content into <code>Paragraph</code> instances, and organizes sections into a <code>Document</code>.</p>
 </details>
 
+### Combining Markdown and HTML
+
+> This is a **blockquote** with an embedded **HTML table**:
+>
+> <table border="1">
+>   <tr>
+>     <th>Feature</th>
+>     <th>Supported</th>
+>     <th>Engine</th>
+>   </tr>
+>   <tr>
+>     <td>Markdown AST</td>
+>     <td>✅ Yes</td>
+>     <td>Pure Unified / MDAST</td>
+>   </tr>
+>   <tr>
+>     <td>HTML & CSS</td>
+>     <td>✅ Yes</td>
+>     <td><code>@m2d/html</code> / <code>@m2d/html-node</code></td>
+>   </tr>
+> </table>
+
+### Custom Styling via `<style>` Blocks
+
+<style>
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid red;
+    padding: 8px;
+    text-align: left;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+</style>
+
+The `<style>` block above is automatically parsed by `@m2d/html` and `@m2d/html-node`, customizing table borders, cell padding, and header shading (`#f2f2f2`) across the document.
+
+---
+
+## 14. Custom Directives (MDX)
+
+Embedding custom components:
+
+```mdx
+<MyComponent title="Hello World" />
+```
+
 ---
 
 <p align="center"><em>Markdown Syntax Showcase — Prepared for md2docx Monorepo</em></p>

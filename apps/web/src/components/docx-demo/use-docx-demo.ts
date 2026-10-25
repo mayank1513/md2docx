@@ -1,18 +1,4 @@
-import { frontmatterPlugin } from "@m2d/frontmatter";
-import { md2docx } from "@m2d/md2docx";
 import type { AstRef } from "@m2d/react-markdown/client";
-import { remarkDocx } from "@m2d/remark-docx";
-import type { Root } from "mdast";
-import { toDocx } from "mdast2docx";
-import {
-  emojiPlugin,
-  htmlPlugin,
-  imagePlugin,
-  listPlugin,
-  mathPlugin,
-  mermaidPlugin,
-  tablePlugin,
-} from "mdast2docx/plugins";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ALL_PLUGINS_SAMPLE,
