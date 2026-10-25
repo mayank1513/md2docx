@@ -23,9 +23,20 @@ import {
   Undo,
 } from "lucide-react";
 import mermaid from "mermaid";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CodeBlockLowlightMermaid } from "tiptap-extension-mermaid";
 import { lowlight } from "./highlight";
+
+const FRONTMATTER_REGEX =
+  /^(---\r?\n[\s\S]*?\r?\n---|^\+\+\+\r?\n[\s\S]*?\r?\n\+\+\+)\r?\n?/;
+
+const splitFrontmatter = (val: string) => {
+  const match = val.match(FRONTMATTER_REGEX);
+  if (!match) return { frontmatter: "", body: val };
+  const frontmatter = match[0];
+  const body = val.slice(frontmatter.length);
+  return { frontmatter, body };
+};
 
 interface TiptapRichEditorProps {
   value: string;
@@ -39,6 +50,8 @@ export const TiptapRichEditor = ({
   isActive = true,
 }: TiptapRichEditorProps) => {
   const [cleanedCount, setCleanedCount] = useState(0);
+  const initial = useMemo(() => splitFrontmatter(value), [value]);
+  const frontmatterRef = useRef(initial.frontmatter);
 
   useEffect(() => {
     mermaid.initialize({
@@ -91,7 +104,7 @@ export const TiptapRichEditor = ({
         defaultFilename: "tiptap-export.docx",
       }),
     ],
-    content: value,
+    content: initial.body,
     contentType: "markdown",
     immediatelyRender: false,
     editorProps: {
@@ -101,17 +114,25 @@ export const TiptapRichEditor = ({
       },
     },
     onUpdate: ({ editor: currentEditor }) => {
-      const md = currentEditor.getMarkdown();
-      onChange(md);
+      const bodyMd = currentEditor.getMarkdown();
+      const fm = frontmatterRef.current;
+      const fullMd = fm ? `${fm.trimEnd()}\n\n${bodyMd.trimStart()}` : bodyMd;
+      onChange(fullMd);
     },
   });
 
   // Keep editor content in sync when preset or external markdown changes
   useEffect(() => {
-    if (editor && !editor.isFocused) {
+    if (!editor) return;
+    const { frontmatter, body } = splitFrontmatter(value);
+    frontmatterRef.current = frontmatter;
+    if (!editor.isFocused) {
       const currentMd = editor.getMarkdown();
-      if (value !== currentMd) {
-        editor.commands.setContent(value, { contentType: "markdown" });
+      if (body.trim() !== currentMd.trim()) {
+        editor.commands.setContent(body, {
+          contentType: "markdown",
+          emitUpdate: false,
+        });
       }
     }
   }, [value, editor]);
@@ -119,9 +140,14 @@ export const TiptapRichEditor = ({
   // Ensure latest external markdown is loaded when this tab becomes active
   useEffect(() => {
     if (editor && isActive) {
+      const { frontmatter, body } = splitFrontmatter(value);
+      frontmatterRef.current = frontmatter;
       const currentMd = editor.getMarkdown();
-      if (value !== currentMd) {
-        editor.commands.setContent(value, { contentType: "markdown" });
+      if (body.trim() !== currentMd.trim()) {
+        editor.commands.setContent(body, {
+          contentType: "markdown",
+          emitUpdate: false,
+        });
       }
     }
   }, [isActive, value, editor]);
@@ -348,6 +374,24 @@ export const TiptapRichEditor = ({
           </button>
         </div>
       </div>
+
+      {/* Frontmatter Metadata Preservation Pill */}
+      {frontmatterRef.current && (
+        <div className="mx-4 mt-3 px-3 py-1.5 rounded-lg border border-border/80 bg-muted/30 font-mono text-xs text-muted-foreground flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="font-semibold text-foreground">
+              Frontmatter Header Preserved
+            </span>
+            <span className="hidden sm:inline text-[11px] text-muted-foreground">
+              (Metadata delimiter intact outside WYSIWYG text flow)
+            </span>
+          </div>
+          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-muted border border-border text-foreground">
+            YAML / TOML
+          </span>
+        </div>
+      )}
 
       {/* Editor Content Surface */}
       <EditorContent editor={editor} />

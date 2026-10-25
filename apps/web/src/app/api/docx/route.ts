@@ -3,6 +3,7 @@ import path from "node:path";
 import { toDocx } from "mdast2docx";
 import {
   emojiPlugin,
+  frontmatterPlugin,
   listPlugin,
   mathPlugin,
   tablePlugin,
@@ -25,8 +26,24 @@ const docxProcessor = unified()
   .use(remarkGfm)
   .use(remarkMath);
 
-const getServerPlugins = (enabled?: Record<string, boolean>) => {
+interface LayoutOptions {
+  coverPage?: boolean;
+  infoBox?: boolean;
+}
+
+const getServerPlugins = (
+  enabled?: Record<string, boolean>,
+  layoutOptions?: LayoutOptions,
+) => {
   const plugins = [];
+  if (enabled?.frontmatter !== false) {
+    plugins.push(
+      frontmatterPlugin(undefined, {
+        coverPage: layoutOptions?.coverPage,
+        infoBox: layoutOptions?.infoBox,
+      }),
+    );
+  }
   if (enabled?.html !== false) plugins.push(nodeHtmlPlugin());
   if (enabled?.list !== false) plugins.push(listPlugin());
   if (enabled?.table !== false) plugins.push(tablePlugin());
@@ -45,6 +62,7 @@ const generateDocxResponse = async (
   filename: string,
   fileProps: Parameters<typeof toDocx>[1] = {},
   pluginsConfig?: Record<string, boolean>,
+  layoutOptions?: LayoutOptions,
 ): Promise<NextResponse> => {
   const start = performance.now();
   const mdast = docxProcessor.parse(markdown);
@@ -52,7 +70,7 @@ const generateDocxResponse = async (
     mdast,
     fileProps,
     // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-    { plugins: getServerPlugins(pluginsConfig) as any },
+    { plugins: getServerPlugins(pluginsConfig, layoutOptions) as any },
     "arraybuffer",
   );
   const renderTimeMs = Math.round(performance.now() - start);
@@ -73,7 +91,7 @@ const generateDocxResponse = async (
 /**
  * Generate a docx file from markdown on server side.
  * GET: Converts monorepo root sample.md
- * POST: Converts request body { markdown, plugins }
+ * POST: Converts request body { markdown, plugins, coverPage, infoBox }
  */
 export const GET = async () => {
   try {
@@ -96,7 +114,12 @@ export const POST = async (req: NextRequest) => {
     const body = await req.json();
     const md = body?.markdown || "# Empty Document";
     const plugins = body?.plugins as Record<string, boolean> | undefined;
-    return await generateDocxResponse(md, "document.docx", {}, plugins);
+    const coverPage = body?.coverPage as boolean | undefined;
+    const infoBox = body?.infoBox as boolean | undefined;
+    return await generateDocxResponse(md, "document.docx", {}, plugins, {
+      coverPage,
+      infoBox,
+    });
   } catch (error) {
     console.error("Error generating DOCX from body:", error);
     return NextResponse.json(
