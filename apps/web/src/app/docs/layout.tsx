@@ -61,7 +61,7 @@ const Layout = async ({ children }: { children: ReactNode }) => {
   const toggleOptions = await getRootToggleOptions();
 
   return (
-    <RootProvider search={{ options: { type: "static" } }}>
+    <RootProvider>
       <DocsLayout tree={sourceTree} {...baseOptions()} tabs={toggleOptions}>
         {children}
       </DocsLayout>
