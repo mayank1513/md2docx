@@ -1,7 +1,13 @@
 import type { Element, Root as HastRoot } from "hast";
 import { toJsxRuntime } from "hast-util-to-jsx-runtime";
 import type { Root } from "mdast";
-import type { FC, HTMLProps, JSX, ReactNode } from "react";
+import {
+  type FC,
+  type HTMLProps,
+  isValidElement,
+  type JSX,
+  type ReactNode,
+} from "react";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import remarkParse from "remark-parse";
 import remarkRehype, { type Options } from "remark-rehype";
@@ -170,3 +176,86 @@ export const renderWithWrapper = <T extends MdxProps>(
     </Wrapper>
   );
 };
+
+export interface MarkdownRecursiveProps {
+  children: ReactNode;
+  markdownProps: Omit<MdxProps, "wrapper">;
+  cursor: { index: number };
+}
+
+/**
+ * Creates a recursive markdown renderer that traverses React children
+ * and replaces string content with rendered markdown.
+ */
+export const createMarkdownRecursive = (
+  MarkdownComponent: FC<MdProps & { chunkIndex?: number }>,
+  supportArrays = false,
+) => {
+  const Recursive: FC<MarkdownRecursiveProps> = ({
+    children,
+    markdownProps,
+    cursor,
+  }: MarkdownRecursiveProps): ReactNode => {
+    if (typeof children === "string") {
+      return (
+        <MarkdownComponent {...markdownProps} chunkIndex={cursor.index++}>
+          {children}
+        </MarkdownComponent>
+      );
+    }
+
+    if (supportArrays && Array.isArray(children)) {
+      return children.map((child, id) => {
+        const childKey = `${cursor.index}-${id}`;
+        return (
+          <Recursive
+            key={childKey}
+            markdownProps={markdownProps}
+            cursor={cursor}
+          >
+            {child}
+          </Recursive>
+        );
+      });
+    }
+
+    if (isValidElement(children)) {
+      const Tag = children.type;
+      const innerProps = children.props as IntrinsicProps;
+
+      return (
+        <Tag {...(innerProps as IntrinsicProps)}>
+          <Recursive markdownProps={markdownProps} cursor={cursor}>
+            {(innerProps as IntrinsicProps).children}
+          </Recursive>
+        </Tag>
+      );
+    }
+
+    /* v8 ignore next 2 should never reach here, but in case */
+    return children;
+  };
+
+  return Recursive;
+};
+
+/**
+ * Renders markdown inside a wrapper, traversing children recursively and updating astRef.
+ */
+export const renderRecursiveMarkdown = (
+  props: MdxProps,
+  children: ReactNode,
+  Recursive: FC<MarkdownRecursiveProps>,
+) =>
+  renderWithWrapper(props, (markdownProps) => {
+    const cursor = { index: 0 };
+    const content = (
+      <Recursive markdownProps={markdownProps} cursor={cursor}>
+        {children}
+      </Recursive>
+    );
+    if (props.astRef?.current) {
+      props.astRef.current.length = cursor.index;
+    }
+    return content;
+  });
