@@ -204,18 +204,35 @@ export const tablePlugin: (options?: ITablePluginProps) => IPlugin = (
           ...(rowIndex === 0 ? firstRowProps : {}),
           children: row.children.map((cell, cellIndex) => {
             wrapInBlockNodeIfNeeded(cell);
+            // biome-ignore lint/suspicious/noExplicitAny: dynamic AST cell styling data
+            const cData = (cell.data as any) ?? {};
+            const cellShading =
+              cData.shading ??
+              (rowIndex === 0 ? firstRowCellProps.shading : cellProps.shading);
+            const cellBorders =
+              cData.border ??
+              cData.borders ??
+              (rowIndex === 0 ? firstRowCellProps.borders : cellProps.borders);
+            const cellMargins =
+              cData.margins ?? cData.margin ?? cellProps.margins;
+
             return new TableCell({
               verticalAlign: alignments.defaultVerticalAlign,
               ...cellProps,
               ...(rowIndex === 0 ? firstRowCellProps : {}),
+              ...(cellBorders ? { borders: cellBorders } : {}),
+              ...(cellShading ? { shading: cellShading } : {}),
+              ...(cellMargins ? { margins: cellMargins } : {}),
               children: blockChildrenProcessor(cell, {
                 alignment:
-                  rowIndex === 0 && alignment1
+                  cData.alignment ??
+                  (rowIndex === 0 && alignment1
                     ? alignment1
                     : alignments.preferMdData
                       ? align?.[cellIndex]
-                      : alignments.defaultHorizontalAlign,
+                      : alignments.defaultHorizontalAlign),
                 ...(rowIndex === 0 ? data : cellData),
+                ...cData,
               }),
             });
           }),
@@ -225,7 +242,16 @@ export const tablePlugin: (options?: ITablePluginProps) => IPlugin = (
       (node as unknown as EmptyNode)._type = node.type;
       // @ts-expect-error - Setting type to empty string to avoid re-processing the node.
       node.type = "";
-      return [new Table({ ...tableProps, rows })];
+      // biome-ignore lint/suspicious/noExplicitAny: dynamic AST table styling data
+      const tData = (node.data as any) ?? {};
+      const tableBorders = tData.border ?? tData.borders ?? tableProps.borders;
+      return [
+        new Table({
+          ...tableProps,
+          ...(tableBorders ? { borders: tableBorders } : {}),
+          rows,
+        }),
+      ];
     },
   };
 };
