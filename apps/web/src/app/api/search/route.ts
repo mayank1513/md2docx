@@ -10,7 +10,7 @@ const searchSource = {
     }),
 };
 
-export const { GET } = createFromSource(searchSource, {
+export const { GET, staticGET } = createFromSource(searchSource, {
   language: "english",
   buildIndex: async (page) => {
     const data = page.data as {
