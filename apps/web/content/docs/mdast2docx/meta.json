@@ -2,8 +2,8 @@
   "title": "mdast2docx",
   "description": "Complete Markdown to DOCX",
   "tagLine": "Convert Markdown Abstract Syntax Tree (MDAST) to DOCX seamlessly. Supports footnotes, images, links, and customizable document properties.",
-  "lastModified": "2026-10-25T07:16:10.536Z",
-  "version": "1.7.0",
+  "lastModified": "2026-10-25T16:36:06.043Z",
+  "version": "1.7.1",
   "root": true,
   "icon": "FileOutput",
   "pages": [

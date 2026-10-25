@@ -1,5 +1,5 @@
 {
-  "title": "Version 0.1.1",
+  "title": "Version 0.2.0",
   "description": "Server-side HTML to MDAST plugin for md2docx using linkedom. Converts HTML elements in Markdown into DOCX-compatible MDAST nodes on Node.js.",
   "pages": [
     "overview",

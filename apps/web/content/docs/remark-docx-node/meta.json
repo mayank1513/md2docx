@@ -2,8 +2,8 @@
   "title": "@m2d/remark-docx-node",
   "description": "Server-side Remark DOCX Compiler Plugin with native image & Mermaid diagram support",
   "tagLine": "Unified compiler plugin to convert MDAST trees to DOCX on Node.js with native image rasterization and Mermaid diagram rendering.",
-  "lastModified": "2026-10-25T07:16:18.204Z",
-  "version": "0.2.0",
+  "lastModified": "2026-10-25T16:36:18.565Z",
+  "version": "0.2.1",
   "root": true,
   "icon": "FileCheck",
   "pages": [

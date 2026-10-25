@@ -28,6 +28,7 @@
 - 📊 **Native Word Tables**: Converts Markdown GFM tables into clean `docx.Table` elements with authentic Word OpenXML borders and paddings.
 - 🎯 **Automatic Column Alignment**: Honors Markdown column alignments (`left`, `center`, `right`) with fallback defaults.
 - 🎨 **Rich Cell Styling**: Style headers and data cells with background fills (`shading`), custom typography (fonts, sizes, colors), and paragraph spacing via the `data` option.
+- 🖌️ **Dynamic AST & CSS Styling**: Automatically respects cell-level and table-level `shading`, `borders`, `margins` (cell padding), and `alignment` metadata passed via `cell.data` and `node.data` (e.g. from embedded `<style>` blocks or raw HTML attributes processed by `@m2d/html`).
 - 📄 **Multi-Page Header Repetition**: Automatically repeats header rows across page breaks (`tableHeader: true`).
 - 🧱 **Block Content in Cells**: Seamlessly accommodates nested paragraphs, lists, code snippets, and blockquotes inside table cells (ideal when paired with `@m2d/html`).
 

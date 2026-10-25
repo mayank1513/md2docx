@@ -27,6 +27,7 @@
 
 - 🌐 **Embedded HTML Parsing**: Converts raw HTML tags inside Markdown into structured MDAST nodes, enabling HTML-to-Word generation.
 - 🎨 **Inline CSS Resolution**: Extracts and translates inline CSS (`color`, `background-color`, `text-align`, `font-weight`, `font-size`, `borders`) into native Word OpenXML styling.
+- 🖌️ **Embedded `<style>` Blocks**: Automatically extracts `<style>` blocks and cascades CSS rules across standard Markdown and HTML elements (`table`, `th`, `td`, `tr`, `h1`–`h6`, `p`, `blockquote`, `code`, `hr`, and lists) into docx shading fills, borders, margins, and text alignment.
 - 🧩 **Deep Ecosystem Integration**: Upgrades raw `<img>`, `<table>`, and list tags so that downstream plugins (`@m2d/image`, `@m2d/table`, `@m2d/list`) can process them seamlessly.
 - ☑️ **Interactive Elements**: Translates `<input type="checkbox">` elements into clean Unicode checkbox representations (`☑` / `☐`).
 - ⚡ **Lightweight DOM Parsing**: Fast, robust stack-based parsing that pairs closing tags across sibling Markdown nodes without mangling surrounding content.

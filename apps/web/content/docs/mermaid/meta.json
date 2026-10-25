@@ -2,7 +2,7 @@
   "title": "@m2d/mermaid",
   "description": "Mermaid to DOCX Plugin",
   "tagLine": "Enhance Markdown-to-DOCX conversion with Mermaid and mindmap diagram support using this plugin for @m2d/core. Converts code blocks into SVG images with customizable Mermaid config.",
-  "lastModified": "2026-10-25T07:16:12.036Z",
+  "lastModified": "2026-10-25T16:36:08.452Z",
   "version": "1.3.2",
   "root": true,
   "icon": "GitGraph",

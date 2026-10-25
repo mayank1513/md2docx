@@ -6,7 +6,7 @@
 
 # Interface: DocxExtensionOptions
 
-Defined in: [tiptap.ts:29](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L29)
+Defined in: [tiptap.ts:102](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L102)
 
 ## Extends
 
@@ -18,7 +18,7 @@ Defined in: [tiptap.ts:29](https://github.com/md2docx/md2docx/blob/main/packages
 
 > `optional` **defaultFilename?**: `string`
 
-Defined in: [tiptap.ts:34](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L34)
+Defined in: [tiptap.ts:107](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L107)
 
 Default filename for downloaded docx files.
 
@@ -34,7 +34,7 @@ Default filename for downloaded docx files.
 
 > `optional` **docxProps?**: `IDocxProps`
 
-Defined in: [tiptap.ts:16](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L16)
+Defined in: [tiptap.ts:89](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L89)
 
 Document metadata properties (e.g., title, creator, description, keywords).
 
@@ -48,7 +48,7 @@ Document metadata properties (e.g., title, creator, description, keywords).
 
 > `optional` **filename?**: `string`
 
-Defined in: [tiptap.ts:11](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L11)
+Defined in: [tiptap.ts:84](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L84)
 
 Filename to use when downloading the document.
 
@@ -68,7 +68,7 @@ Filename to use when downloading the document.
 
 > `optional` **pluginProps?**: `Mdast2DocxPluginProps`
 
-Defined in: [tiptap.ts:26](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L26)
+Defined in: [tiptap.ts:99](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L99)
 
 Sub-plugin options (mermaid, math, table, emoji, image, frontmatter).
 
@@ -78,11 +78,27 @@ Sub-plugin options (mermaid, math, table, emoji, image, frontmatter).
 
 ***
 
+### preserveFrontmatter?
+
+> `optional` **preserveFrontmatter?**: `boolean`
+
+Defined in: [tiptap.ts:113](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L113)
+
+Automatically preserve YAML/TOML frontmatter delimiters outside ProseMirror canvas.
+
+#### Default
+
+```ts
+true
+```
+
+***
+
 ### sectionProps?
 
 > `optional` **sectionProps?**: `Optional`\<`IDefaultMdastToDocxSectionProps`\>
 
-Defined in: [tiptap.ts:21](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L21)
+Defined in: [tiptap.ts:94](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L94)
 
 Section properties (e.g., margins, page orientation, headerAst, footerAst).
 

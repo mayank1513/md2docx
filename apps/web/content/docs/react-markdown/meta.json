@@ -2,8 +2,8 @@
   "title": "@m2d/react-markdown",
   "description": "SSR-Friendly React Markdown",
   "tagLine": "A modern, SSR-friendly React Markdown renderer that preserves the MDAST tree for reuse (e.g., mdast2docx), supports full JSX children, unified plugins, and component overrides.",
-  "lastModified": "2026-10-25T07:16:15.247Z",
-  "version": "1.0.2",
+  "lastModified": "2026-10-25T16:36:13.657Z",
+  "version": "1.0.3",
   "root": true,
   "icon": "Atom",
   "pages": [

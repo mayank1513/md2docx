@@ -1,5 +1,5 @@
 {
-  "title": "Version 0.1.2",
+  "title": "Version 0.1.3",
   "description": "The simplest way to convert Markdown to DOCX. Batteries-included wrapper around all @m2d/remark-docx package and Unified. One import, one call — full Markdown → Word conversion with HTML, images, math, tables, and more.",
   "pages": [
     "overview",

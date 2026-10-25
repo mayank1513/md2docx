@@ -6,8 +6,9 @@
 
 # Variable: DocxExtension
 
-> `const` **DocxExtension**: `Extension`\<[`DocxExtensionOptions`](../interfaces/DocxExtensionOptions.mdx), `any`\>
+> `const` **DocxExtension**: `Extension`\<[`DocxExtensionOptions`](../interfaces/DocxExtensionOptions.mdx), [`DocxStorage`](../interfaces/DocxStorage.mdx)\>
 
-Defined in: [tiptap.ts:154](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L154)
+Defined in: [tiptap.ts:334](https://github.com/md2docx/md2docx/blob/main/packages/tiptap/src/tiptap.ts#L334)
 
-Tiptap extension to export rich-text editor content directly to Word (.docx) documents.
+Tiptap extension to export rich-text editor content directly to Word (.docx) documents,
+with native frontmatter delimiter preservation and recovery.

@@ -1,5 +1,5 @@
 {
-  "title": "Version 0.1.4",
+  "title": "Version 0.2.0",
   "description": "Plugin to convert Markdown tables (MDAST) to DOCX with support for rich formatting and seamless integration into mdast2docx.",
   "pages": [
     "overview",

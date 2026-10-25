@@ -2,7 +2,7 @@
   "title": "@m2d/image-node",
   "description": "Server-Side Image Plugin",
   "tagLine": "Server-side Node.js image and SVG rasterization plugin for @m2d/core using sharp.",
-  "lastModified": "2026-10-25T07:16:02.541Z",
+  "lastModified": "2026-10-25T16:35:53.205Z",
   "version": "0.1.3",
   "root": true,
   "icon": "Image",
