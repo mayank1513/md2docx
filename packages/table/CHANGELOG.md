@@ -1,5 +1,12 @@
 # @m2d/table
 
+## 0.2.0
+
+### Minor Changes
+
+- [`7ed174f`](https://github.com/md2docx/md2docx/commit/7ed174fad69db7458b7bd59f2a926432146e7433) Thanks [@mayank1513](https://github.com/mayank1513)! - - Respect cell-level and table-level `shading`, `border`/`borders`, and `alignment` metadata passed via `cell.data` and `node.data`
+  - Support dynamic cell margins/padding from AST node metadata
+
 ## 0.1.4
 
 ### Patch Changes

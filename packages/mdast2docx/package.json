@@ -2,7 +2,7 @@
   "name": "mdast2docx",
   "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
   "private": false,
-  "version": "1.7.0",
+  "version": "1.7.1",
   "publishConfig": {
     "access": "public",
     "provenance": true

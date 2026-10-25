@@ -1,5 +1,13 @@
 # @m2d/remark-docx-node
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`657e9e3`](https://github.com/md2docx/md2docx/commit/657e9e319a2dcd72abb35ed99ec8e539ff93372f), [`7ed174f`](https://github.com/md2docx/md2docx/commit/7ed174fad69db7458b7bd59f2a926432146e7433)]:
+  - @m2d/html-node@0.2.0
+  - @m2d/table@0.2.0
+
 ## 0.2.0
 
 ### Minor Changes

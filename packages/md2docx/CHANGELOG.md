@@ -1,5 +1,12 @@
 # @m2d/md2docx
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @m2d/remark-docx@1.5.1
+
 ## 0.1.2
 
 ### Patch Changes
