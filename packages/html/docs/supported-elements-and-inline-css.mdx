@@ -56,6 +56,46 @@ Inline styles specified via `style="..."` on HTML elements are parsed and standa
 
 ---
 
+## Embedded `<style>` Blocks & CSS Rule Cascading
+
+`@m2d/html` and `@m2d/html-node` automatically extract `<style>` blocks and cascade CSS rules onto matching AST nodes across the document:
+
+### Supported Selectors
+- **Tag Selectors**: `table`, `th`, `td`, `tr`, `h1`–`h6`, `p`, `blockquote`, `pre`, `code`, `hr`, `ol`, `ul`
+- **Descendant & Child Combinators**: e.g. `table td`, `tr > th`, `div p`
+
+```html
+<style>
+  table {
+    border: 1px solid #cbd5e1;
+    width: 100%;
+  }
+  th {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    padding: 8px;
+  }
+  td {
+    border: 1px solid #e2e8f0;
+    padding: 6px;
+  }
+  blockquote {
+    border-left: 4px solid #3b82f6;
+    background-color: #eff6ff;
+  }
+</style>
+```
+
+### How Cascaded Styles Are Rendered in DOCX
+- **Headings (`h1`–`h6`), Paragraphs (`p`), Blockquotes, Code Blocks, and `<hr>`**:
+  `@m2d/html` attaches resolved CSS rules to each AST node's `node.data`. `@m2d/core` natively forwards `node.data` directly to `docx.Paragraph` (applying shading, borders, text alignment, and spacing) without requiring extra plugin configuration.
+- **Tables and Table Cells (`table`, `tr`, `th`, `td`)**:
+  Tables are rendered by the [`@m2d/table`](https://www.npmjs.com/package/@m2d/table) plugin. `@m2d/table` consumes `cell.data` and `node.data` to apply custom cell shading, cell padding (`margins`), cell borders, and table borders.
+- **Class Selectors (`.my-class`)**:
+  Standard Markdown nodes do not have HTML class names. Class selectors apply to raw HTML elements that include a matching `class="..."` attribute. For standard Markdown content, use tag-based selectors or inline `style="..."` attributes.
+
+---
+
 ## Standalone Utilities (`@m2d/html/utils`)
 
 `@m2d/html/utils` exports standalone helpers for color normalization and DOM abstraction:
@@ -72,6 +112,6 @@ const hexFromHash = standardizeColor("#0052cc"); // "0052cc"
 
 ## Known Limitations
 
-- **External Stylesheets**: CSS files or `<style>` blocks in the document head are not evaluated.
+- **External Stylesheets**: Remote `<link rel="stylesheet">` files are not fetched; use embedded `<style>` blocks or inline `style="..."` attributes.
 - **Complex Flexbox / CSS Grid**: HTML layout grids must use standard `<table>` elements for consistent rendering in Word.
-- **Script Tags**: `<script>`, `<style>`, `<meta>`, and other non-visual tags are stripped.
+- **Script Tags**: `<script>`, `<meta>`, and other non-visual tags are safely stripped.

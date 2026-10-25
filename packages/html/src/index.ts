@@ -12,7 +12,12 @@ import type {
   RootContent,
   TableRow,
 } from "@m2d/core";
-import { AlignmentType, BorderStyle, type IBorderOptions } from "docx";
+import {
+  AlignmentType,
+  BorderStyle,
+  type IBorderOptions,
+  type IBordersOptions,
+} from "docx";
 import { type DocumentLike, standardizeColor } from "./utils";
 
 /**
@@ -200,6 +205,16 @@ const getDocxBorder = (cssBorder?: CssBorder, doc?: DocumentLike) => {
   return border;
 };
 
+const getDocxBorders = (
+  borders: ReturnType<typeof parseCssBorders>,
+  doc?: DocumentLike,
+) => ({
+  left: getDocxBorder({ ...borders.border, ...borders.left }, doc),
+  right: getDocxBorder({ ...borders.border, ...borders.right }, doc),
+  top: getDocxBorder({ ...borders.border, ...borders.top }, doc),
+  bottom: getDocxBorder({ ...borders.border, ...borders.bottom }, doc),
+});
+
 /**
  * Parses inline or block style metadata from a DOM node.
  *
@@ -219,6 +234,7 @@ const parseStyles = (el: Node, inline = true, doc?: DocumentLike): Data => {
     textDecoration,
     textTransform,
     color,
+    backgroundColor,
   } = (el as HTMLElement).style ?? {};
   const style = el.getAttribute("style");
   const borders = parseCssBorders(style);
@@ -226,16 +242,7 @@ const parseStyles = (el: Node, inline = true, doc?: DocumentLike): Data => {
   if (inline && borders.border) {
     data.border = getDocxBorder(borders.border, doc);
   } else if (Object.keys(borders).length) {
-    const leftBorder = { ...borders.border, ...borders.left };
-    const rightBorder = { ...borders.border, ...borders.right };
-    const topBorder = { ...borders.border, ...borders.top };
-    const bottomBorder = { ...borders.border, ...borders.bottom };
-    data.border = {
-      left: getDocxBorder(leftBorder, doc),
-      right: getDocxBorder(rightBorder, doc),
-      top: getDocxBorder(topBorder, doc),
-      bottom: getDocxBorder(bottomBorder, doc),
-    };
+    data.border = getDocxBorders(borders, doc);
   }
 
   if (textAlign) {
@@ -267,6 +274,32 @@ const parseStyles = (el: Node, inline = true, doc?: DocumentLike): Data => {
   if (textTransform === "lowercase") data.smallCaps = true;
 
   if (color) data.color = standardizeColor(color, doc);
+  else if (style) {
+    const colorMatch = style.match(/(?:^|;)\s*color\s*:\s*([^;!]+)/i);
+    if (colorMatch) {
+      const c = standardizeColor(colorMatch[1].trim(), doc);
+      if (c && c !== "auto") data.color = c;
+    }
+  }
+
+  if (backgroundColor) {
+    const fill = standardizeColor(backgroundColor, doc);
+    if (fill && fill !== "auto") {
+      // @ts-expect-error -- docx shading fill metadata
+      data.shading = { fill };
+    }
+  } else if (style) {
+    const bgMatch = style.match(
+      /(?:^|;)\s*background(?:-color)?\s*:\s*([^;!]+)/i,
+    );
+    if (bgMatch) {
+      const fill = standardizeColor(bgMatch[1].trim(), doc);
+      if (fill && fill !== "auto") {
+        // @ts-expect-error -- docx shading fill metadata
+        data.shading = { fill };
+      }
+    }
+  }
 
   const tagName = (el as HTMLElement).tagName;
   if (tagName === "SUP") data.superScript = true;
@@ -397,6 +430,9 @@ const createFragmentWithParentNodes = (
   const children: BlockContent[] = [];
   const tmp: Node[] = [];
   for (const node of childNodes) {
+    if (isElement(node) && (node as HTMLElement).tagName === "STYLE") {
+      continue;
+    }
     if (
       isElement(node) &&
       !INLINE_TAGS.includes(
@@ -465,17 +501,6 @@ const createRows = (
   });
 
 /**
- * Default table border style for DOCX tables.
- */
-const border: IBorderOptions = { style: "single" };
-const defaultBorder = {
-  left: border,
-  right: border,
-  top: border,
-  bottom: border,
-};
-
-/**
  * Converts block-level HTML elements into MDAST `BlockContent` nodes.
  *
  * @param el - HTML or svg element to process.
@@ -542,12 +567,9 @@ const processDOMNode = (
     }
     case "STYLE":
       return {
-        type: "paragraph",
-        children: [
-          { type: "text", value: `Not supported yet!\n\n${el.textContent}` },
-        ],
-        data: { ...data, pre: true, border: defaultBorder },
-      };
+        type: "empty",
+        _type: "style",
+      } as unknown as BlockContent;
   }
   return {
     type: "paragraph",
@@ -569,23 +591,313 @@ const processInlineNode = (node: HtmlNode, doc: DocumentLike) => {
 };
 
 /**
+ * Helper to convert CSS padding values into Word-compatible twip margins (1px ≈ 15 twips).
+ */
+const parseCssPadding = (str: string) => {
+  const parts = str
+    .trim()
+    .split(/\s+/)
+    .map((p) => {
+      const val = parseInt(p.replace(/px|pt/g, ""), 10);
+      return Number.isNaN(val) ? 0 : val * 15;
+    });
+  if (parts.length === 1) {
+    return { top: parts[0], bottom: parts[0], left: parts[0], right: parts[0] };
+  }
+  if (parts.length === 2) {
+    return { top: parts[0], bottom: parts[0], left: parts[1], right: parts[1] };
+  }
+  if (parts.length === 4) {
+    return { top: parts[0], right: parts[1], bottom: parts[2], left: parts[3] };
+  }
+  return undefined;
+};
+
+/**
+ * Parsed CSS rule extracted from <style> blocks.
+ */
+export interface ParsedCssRule {
+  selectors: string[];
+  data: Data;
+  shading?: { fill: string };
+  borders?: Mutable<IBorderOptions | IBordersOptions>;
+  margins?: { top?: number; bottom?: number; left?: number; right?: number };
+}
+
+/**
+ * Parses CSS text into structured rules with docx-compatible metadata.
+ *
+ * @param cssText - Raw CSS content from <style> elements.
+ * @param doc - Optional DOM element creator.
+ * @returns Array of parsed CSS rules.
+ */
+export const parseCssRules = (
+  cssText: string,
+  doc?: DocumentLike,
+): ParsedCssRule[] => {
+  const rules: ParsedCssRule[] = [];
+  const cleanCss = cssText.replace(/\/\*[\s\S]*?\*\//g, "");
+  const ruleRegex = /([^{]+)\{([^}]+)\}/g;
+  let match: RegExpExecArray | null;
+
+  // biome-ignore lint/suspicious/noAssignInExpressions: valid loop
+  while ((match = ruleRegex.exec(cleanCss)) !== null) {
+    const rawSelectors = match[1];
+    const declarations = match[2].trim();
+    if (!rawSelectors || !declarations) continue;
+
+    const selectors = rawSelectors
+      .split(",")
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    let data: Data = {};
+
+    if (doc) {
+      try {
+        const dummy = doc.createElement("div") as HTMLElement;
+        dummy.setAttribute("style", declarations);
+        data = parseStyles(dummy, false, doc);
+      } catch {
+        // fallback to manual extraction if DOM throws
+      }
+    }
+
+    // Direct manual fallback if DOM didn't extract border
+    if (!data.border) {
+      const borders = parseCssBorders(declarations);
+      if (Object.keys(borders).length) {
+        data.border = getDocxBorders(borders, doc);
+      }
+    }
+
+    // Direct text-align fallback
+    if (!data.alignment) {
+      const alignMatch = declarations.match(/text-align\s*:\s*(\w+)/i);
+      if (alignMatch) {
+        const alignKey = alignMatch[1].toUpperCase();
+        if (Object.keys(AlignmentType).includes(alignKey)) {
+          data.alignment =
+            AlignmentType[alignKey as keyof typeof AlignmentType];
+        } else if (alignKey === "JUSTIFY") {
+          data.alignment = AlignmentType.JUSTIFIED;
+        }
+      }
+    }
+
+    // Direct color fallback
+    if (!data.color) {
+      const colorMatch = declarations.match(/(?:^|;)\s*color\s*:\s*([^;!]+)/i);
+      if (colorMatch) {
+        const c = standardizeColor(colorMatch[1].trim(), doc);
+        if (c && c !== "auto") data.color = c;
+      }
+    }
+
+    // Direct background / shading fallback
+    // biome-ignore lint/suspicious/noExplicitAny: dynamic shading metadata
+    let shading: { fill: string } | undefined = (data as any)?.shading;
+    if (!shading) {
+      const bgMatch = declarations.match(
+        /(?:^|;)\s*background(?:-color)?\s*:\s*([^;!]+)/i,
+      );
+      if (bgMatch) {
+        const fill = standardizeColor(bgMatch[1].trim(), doc);
+        if (fill && fill !== "auto") {
+          shading = { fill };
+        }
+      }
+    }
+
+    // Direct padding / margins fallback
+    const padMatch = declarations.match(/(?:^|;)\s*padding\s*:\s*([^;!]+)/i);
+    let margins:
+      | { top?: number; bottom?: number; left?: number; right?: number }
+      | undefined;
+    if (padMatch) {
+      margins = parseCssPadding(padMatch[1]);
+    }
+
+    rules.push({
+      selectors,
+      data,
+      shading,
+      borders: data.border,
+      margins,
+    });
+  }
+
+  return rules;
+};
+
+const matchesAnySelector = (selectors: string[], ...tags: string[]) =>
+  selectors.some((sel) =>
+    tags.some(
+      (tag) =>
+        sel === tag || sel.endsWith(` ${tag}`) || sel.endsWith(`>${tag}`),
+    ),
+  );
+
+const mergeCssRuleData = (
+  target: { data?: Data },
+  rule: ParsedCssRule,
+  includeMargins = false,
+) => {
+  target.data = {
+    ...rule.data,
+    ...(rule.shading ? { shading: rule.shading } : {}),
+    ...(rule.borders ? { border: rule.borders } : {}),
+    ...(includeMargins && rule.margins ? { margins: rule.margins } : {}),
+    ...target.data,
+  };
+};
+
+/**
+ * Applies parsed CSS rules to the MDAST tree matching standard HTML tag selectors.
+ *
+ * @param parent - AST root or parent node.
+ * @param rules - Parsed CSS rules to apply.
+ */
+const applyCssRulesToTree = (parent: Parent, rules: ParsedCssRule[]) => {
+  for (const node of parent.children) {
+    // 1. Table Matching
+    if (node.type === "table") {
+      for (const rule of rules) {
+        if (matchesAnySelector(rule.selectors, "table")) {
+          mergeCssRuleData(node, rule, true);
+        }
+      }
+
+      // Match rows and cells inside table
+      const table = node as unknown as { children: TableRow[] };
+      table.children?.forEach((row, rowIndex) => {
+        for (const rule of rules) {
+          if (matchesAnySelector(rule.selectors, "tr")) {
+            row.data = { ...rule.data, ...row.data };
+          }
+        }
+
+        row.children?.forEach((cell) => {
+          // biome-ignore lint/suspicious/noExplicitAny: dynamic AST cell structure
+          const cData = (cell.data as any) ?? {};
+          const isTh = rowIndex === 0 || cData.tag === "th";
+          const tag = isTh ? "th" : "td";
+          for (const rule of rules) {
+            if (matchesAnySelector(rule.selectors, tag)) {
+              mergeCssRuleData(cell, rule, true);
+            }
+          }
+        });
+      });
+    }
+
+    // 2. Headings: h1, h2, h3, h4, h5, h6
+    if (node.type === "heading") {
+      const hTag = `h${(node as Heading).depth}`;
+      for (const rule of rules) {
+        if (matchesAnySelector(rule.selectors, hTag)) {
+          mergeCssRuleData(node, rule);
+        }
+      }
+    }
+
+    // 3. Paragraphs: p
+    if (node.type === "paragraph") {
+      for (const rule of rules) {
+        if (matchesAnySelector(rule.selectors, "p")) {
+          mergeCssRuleData(node, rule);
+        }
+      }
+    }
+
+    // 4. Blockquotes: blockquote
+    if (node.type === "blockquote") {
+      for (const rule of rules) {
+        if (matchesAnySelector(rule.selectors, "blockquote")) {
+          mergeCssRuleData(node, rule);
+        }
+      }
+    }
+
+    // 5. Code blocks: pre, code
+    if (node.type === "code") {
+      for (const rule of rules) {
+        if (matchesAnySelector(rule.selectors, "code", "pre")) {
+          mergeCssRuleData(node, rule);
+        }
+      }
+    }
+
+    // 6. Thematic Break (horizontal rule): hr
+    if (node.type === "thematicBreak") {
+      for (const rule of rules) {
+        if (matchesAnySelector(rule.selectors, "hr")) {
+          mergeCssRuleData(node, rule);
+        }
+      }
+    }
+
+    // 7. Lists: ul, ol
+    if (node.type === "list") {
+      // biome-ignore lint/suspicious/noExplicitAny: dynamic list AST node
+      const listTag = (node as any).ordered ? "ol" : "ul";
+      for (const rule of rules) {
+        if (rule.selectors.includes(listTag)) {
+          node.data = { ...rule.data, ...node.data };
+        }
+      }
+    }
+
+    // Recurse for nested blocks (e.g. lists, blockquotes, fragments)
+    if ((node as Parent).children?.length && node.type !== "table") {
+      applyCssRulesToTree(node as Parent, rules);
+    }
+  }
+};
+
+/**
  * Consolidates inline HTML tag children inside valid tag-matching groups.
  *
  * @param pNode - MDAST parent node.
  * @param isRoot - Whether currently at the root of the AST.
  * @param doc - DOM element creator.
+ * @param collectedCss - Accumulator for CSS rules extracted from <style> blocks.
  */
-const preprocess = (pNode: Parent, isRoot = true, doc?: DocumentLike) => {
+const preprocess = (
+  pNode: Parent,
+  isRoot = true,
+  doc?: DocumentLike,
+  collectedCss: string[] = [],
+) => {
   if (!doc) return;
   const children: RootContent[] = [];
   const htmlNodeStack: HtmlNode[] = [];
 
   for (const node of pNode.children) {
     if ((node as Parent).children?.length)
-      preprocess(node as Parent, false, doc);
+      preprocess(node as Parent, false, doc, collectedCss);
     const valueRaw = (node as Literal).value;
     // node.value could be a promise too, e.g., mermaid SVG
     const value = typeof valueRaw === "string" ? valueRaw : "";
+
+    // Extract any <style> tags from HTML node
+    if (node.type === "html" && /<style[\s>]/i.test(value)) {
+      const styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+      let sMatch: RegExpExecArray | null;
+      // biome-ignore lint/suspicious/noAssignInExpressions: valid loop
+      while ((sMatch = styleRegex.exec(value)) !== null) {
+        collectedCss.push(sMatch[1]);
+      }
+      const remainingValue = value
+        .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+        .trim();
+      if (!remainingValue) {
+        // The node only contained <style>, drop it
+        continue;
+      }
+      (node as Literal).value = remainingValue;
+    }
+
     // match only inline non-self-closing html nodes.
     const tag = value?.split?.(" ")[0].replace(/^<|\/?>$/g, "");
     if (
@@ -632,6 +944,13 @@ const preprocess = (pNode: Parent, isRoot = true, doc?: DocumentLike) => {
     }
   }
   pNode.children = children;
+
+  if (isRoot && collectedCss.length > 0) {
+    const rules = parseCssRules(collectedCss.join("\n"), doc);
+    if (rules.length > 0) {
+      applyCssRulesToTree(pNode, rules);
+    }
+  }
 };
 
 /**
