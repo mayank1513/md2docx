@@ -32,7 +32,7 @@ jobs:
       - name: Build & Test
         run: |
           pnpm turbo telemetry disable
-          pnpm build --filter=!@app/web
+          pnpm build
           pnpm test
           node --experimental-strip-types ./tooling/scripts/split-lcov.ts
         env:

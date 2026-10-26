@@ -2,6 +2,7 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 import "./global.css";
 import { Inter } from "next/font/google";
+import { name } from "@/meta.json";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,7 +19,7 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: {
-    template: "%s | Md2Docx",
+    template: `%s | ${name}`,
     default:
       "Md2Docx - Pluggable universal Markdown to Word Engine & Official Plugin Ecosystem",
   },
@@ -54,7 +55,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    siteName: "Md2Docx",
+    siteName: name,
     locale: "en_US",
     url: baseUrl,
     title: "Md2Docx - Universal Markdown to Word Engine",
@@ -84,6 +85,11 @@ export const metadata: Metadata = {
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
+      <script
+        type="module"
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon='{"token": "b4d82b44a09b4f30b2291d2896ebd6a0"}'
+      ></script>
       <body className="flex flex-col min-h-screen">
         <RootProvider>{children}</RootProvider>
         <div

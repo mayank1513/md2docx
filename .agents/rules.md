@@ -1,4 +1,5 @@
 # Agent Rules & Guidelines
+Welcome to **Md2Docx**. This document defines the engineering standards, monorepo architecture, operational workflows, and agent alignment rules for template users and AI coding assistants.
 
 ## ⚠️ Critical Behavioral Rules
 
@@ -13,9 +14,6 @@
 ---
 
 # Commit Message Rules
-
-When asked to generate a commit message, you MUST follow these rules.
-
 ## Context
 
 - Generate commit based on `git diff --cached`

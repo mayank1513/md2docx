@@ -75,7 +75,7 @@
     "@m2d/mermaid": "workspace:*",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.5",
-    "docx": "^9.13.0",
+    "docx": "^9.14.0",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "tsup": "latest",
