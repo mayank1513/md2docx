@@ -9,6 +9,11 @@ const config = {
   images: {
     unoptimized: true,
   },
+  typescript: {
+    // When deploying on Vercel, package DTS generation is skipped for fast builds;
+    // full typechecking is handled in CI and local verification.
+    ignoreBuildErrors: Boolean(process.env.VERCEL),
+  },
 };
 
 export default withMDX(config);
