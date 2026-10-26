@@ -96,10 +96,19 @@ export default async function Page(props: PageProps<"/docs/[[...slug]]">) {
   );
 }
 
+/**
+ * ISR (Incremental Static Regeneration):
+ * - Build top-level entry paths at build time.
+ * - Generate documentation pages on-demand when visited, and cache them statically.
+ */
+export const dynamicParams = true;
+export const revalidate = false;
+
 export async function generateStaticParams() {
   return [
-    ...source.generateParams(),
     { slug: [] },
+    { slug: ["overview"] },
+    { slug: ["getting-started"] },
     ...PKG_MAX_VERSION.map((pkg) => ({
       slug: [pkg.dir],
     })),

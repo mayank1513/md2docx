@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getLLMText, source } from "@/lib/source";
 
 export const dynamic = "force-static";
+export const revalidate = false;
 
 export async function GET(
   _req: Request,
@@ -26,15 +27,10 @@ export async function GET(
   });
 }
 
+/**
+ * On-demand generation for LLM documentation endpoints:
+ * Pre-generates only critical entry points at build time, generating others when requested.
+ */
 export function generateStaticParams() {
-  const params = source.generateParams();
-  if (!params.length) {
-    return [{ slug: ["overview.mdx"] }];
-  }
-  return params.map((p) => {
-    if (!p.slug?.length) return p;
-    const newSlug = [...p.slug];
-    newSlug[newSlug.length - 1] = `${newSlug[newSlug.length - 1]}.mdx`;
-    return { ...p, slug: newSlug };
-  });
+  return [{ slug: ["overview.mdx"] }, { slug: ["getting-started.mdx"] }];
 }

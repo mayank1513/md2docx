@@ -26,7 +26,7 @@ import {
   Terminal,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Badge } from "./ui/badge";
 import {
   Card,
@@ -307,8 +307,36 @@ export const PackageGrid = () => {
     });
   }, [activeCategory, searchQuery]);
 
+  // Handle smooth scroll when navigating to #ecosystem or when URL contains #ecosystem / #modular-ecosystem
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const scrollToHash = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (hash === "ecosystem" || hash === "modular-ecosystem") {
+        const el =
+          document.getElementById(hash) || document.getElementById("ecosystem");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }
+    };
+
+    if (window.location.hash) {
+      const timer = setTimeout(scrollToHash, 100);
+      return () => clearTimeout(timer);
+    }
+
+    window.addEventListener("hashchange", scrollToHash);
+    return () => window.removeEventListener("hashchange", scrollToHash);
+  }, []);
+
   return (
-    <section className="py-24 bg-background border-t border-border/40">
+    <section
+      id="ecosystem"
+      className="py-24 bg-background border-t border-border/40 scroll-mt-16 md:scroll-mt-20 relative"
+    >
+      <div id="modular-ecosystem" className="absolute -top-20" />
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Section Header */}
         <div className="text-center mb-12">

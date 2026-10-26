@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
 import { CliTerminal } from "./cli-terminal";
@@ -23,14 +25,30 @@ const Github = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export const Hero = () => {
+  const handleScrollToEcosystem = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const target =
+      document.getElementById("ecosystem") ||
+      document.getElementById("modular-ecosystem");
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.pushState(null, "", "#ecosystem");
+    }
+  };
+
   return (
     <section className="relative overflow-hidden bg-background pt-24 pb-32">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
       <div className="container relative z-10 mx-auto px-4 text-center">
-        <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-sm font-medium text-primary mb-8 shadow-sm">
+        <Link
+          href="/#ecosystem"
+          scroll={false}
+          onClick={handleScrollToEcosystem}
+          className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3.5 py-1 text-sm font-medium text-primary mb-8 shadow-xs hover:bg-primary/15 transition-colors cursor-pointer"
+        >
           <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
           🚀 Md2Docx — Pluggable Engine with Rich Official Plugin Ecosystem
-        </div>
+        </Link>
         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-6">
           Markdown to Word <br className="hidden md:block" />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 dark:from-blue-400 dark:via-indigo-400 dark:to-cyan-300">
@@ -39,10 +57,18 @@ export const Hero = () => {
         </h1>
         <p className="mx-auto max-w-5xl text-lg md:text-xl text-muted-foreground mb-10 leading-relaxed">
           Convert Markdown into native, editable Word (.docx) documents in
-          browsers or Node.js. Modular by design — cherry-pick official plugins,
-          or{" "}
+          browsers or Node.js. Modular by design — cherry-pick{" "}
           <Link
-            href="/docs/md2docx/plugin-authoring"
+            href="/#ecosystem"
+            scroll={false}
+            onClick={handleScrollToEcosystem}
+            className="text-foreground underline decoration-primary/50 underline-offset-4 hover:decoration-primary font-medium transition-colors cursor-pointer"
+          >
+            official plugins
+          </Link>
+          , or{" "}
+          <Link
+            href="/docs/plugin-authoring"
             className="text-foreground underline decoration-primary/50 underline-offset-4 hover:decoration-primary font-medium transition-colors"
           >
             easily author your own

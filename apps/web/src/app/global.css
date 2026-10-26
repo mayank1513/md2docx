@@ -264,6 +264,10 @@
     color: #9ca3af;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   * {
     @apply border-border;
   }
