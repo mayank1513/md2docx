@@ -20,7 +20,10 @@
   <a href="https://npmjs.com/package/mdast2docx" rel="noopener noreferrer">
     <img alt="npm bundle size" src="https://img.shields.io/bundlephobia/minzip/mdast2docx" />
   </a>
-  <img alt="license" src="https://img.shields.io/npm/l/mdast2docx" />
+  <img alt="license" src="https://img.shields.io/npm/l/mdast2docx" />  
+  <a href="https://hub.xerj.org/contributors/mayank1513" rel="noopener noreferrer">
+    <img alt="npm bundle size" src="https://hub.xerj.org/contributors/mayank1513/badge.svg" />
+  </a>
 </p>
 
 > **Md2Docx**: A powerful, pluggable, and extensible Markdown to Microsoft Word (`.docx`) document engine for Node.js and browsers, backed by a rich suite of official plugins.
