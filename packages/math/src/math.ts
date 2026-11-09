@@ -590,7 +590,7 @@ export interface IMathPluginOptions {
 }
 
 const BLOCK_MARKER_REGEX =
-  /\n\s*(?:#{1,6}\s+|---|\*\*\*|___|```|>|\s*[-*+]\s+|\s*\d+\.\s+|\|)/;
+  /\n[ \t]*(?:#{1,6}[ \t]+|---|\*\*\*|___|```|>|[-*+][ \t]+|\d+\.[ \t]+|\|)/;
 
 /**
  * Validates a math string against length constraints and markdown block marker collisions.

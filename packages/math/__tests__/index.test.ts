@@ -427,5 +427,41 @@ $$
         ),
       ).rejects.toThrow();
     });
+
+    it("detects unclosed math delimiter with markdown block markers", async ({
+      expect,
+    }) => {
+      const markdown = `
+$$
+x = 1
+  - list item
+$$
+`;
+      const mdast = unified().use(remarkParse).use(remarkMath).parse(markdown);
+      await expect(
+        toDocx(
+          mdast,
+          {},
+          {
+            plugins: [mathPlugin({ errorMode: "throw" })],
+          },
+        ),
+      ).rejects.toThrow(/Unclosed equation delimiter/);
+    });
+
+    it("validates BLOCK_MARKER_REGEX against ReDoS with long space repetitions", async ({
+      expect,
+    }) => {
+      // ReDoS regression test for CodeQL alert: \n followed by 50k spaces should not cause catastrophic backtracking
+      const spacesPayload = `$$\nx = 1\n${" ".repeat(50000)}y\n$$`;
+      const start = Date.now();
+      const mdast = unified()
+        .use(remarkParse)
+        .use(remarkMath)
+        .parse(spacesPayload);
+      await toDocx(mdast, {}, { plugins: [mathPlugin()] });
+      const elapsed = Date.now() - start;
+      expect(elapsed).toBeLessThan(1000);
+    });
   });
 });
