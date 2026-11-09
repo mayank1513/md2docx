@@ -7,7 +7,7 @@
     "access": "public",
     "provenance": true
   },
-  "description": "",
+  "description": "Shiki syntax highlighting and code block formatting plugin for md2docx.",
   "license": "MIT",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -37,19 +37,32 @@
     "dist/**"
   ],
   "scripts": {
-    "build": "tsup && gzip -c dist/index.js | wc -c",
+    "build": "tsup",
     "clean": "rm -rf dist",
     "dev": "tsup --watch"
   },
+  "dependencies": {
+    "@m2d/code": "workspace:*",
+    "@m2d/core": "workspace:*",
+    "shiki": "^4.5.0"
+  },
+  "peerDependencies": {
+    "docx": "^9.3.0"
+  },
   "devDependencies": {
-    "@types/node": "latest",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^26.6.5",
+    "docx": "^9.14.0",
     "tsup": "latest",
     "typescript": "latest"
   },
   "forge": {
-    "aliases": [],
-    "icon": "LibraryBig",
-    "description": ""
+    "aliases": [
+      "@md2docx/code-shiki",
+      "@mdast2docx/code-shiki"
+    ],
+    "icon": "Sparkles",
+    "description": "Shiki Code Highlighting Plugin"
   },
   "funding": [
     {
@@ -63,6 +76,12 @@
   ],
   "keywords": [
     "@m2d/code-shiki",
-    "turboforge"
+    "shiki",
+    "syntax-highlighting",
+    "mdast",
+    "markdown",
+    "docx",
+    "markdown-to-docx",
+    "mdast-to-docx"
   ]
 }
