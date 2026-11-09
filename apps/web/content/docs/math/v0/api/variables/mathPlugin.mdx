@@ -8,9 +8,10 @@
 
 > `const` **mathPlugin**: (`options?`) => `IPlugin`\<\{ `type`: `""` \| `"math"` \| `"inlineMath"`; `value?`: `string`; \}\>
 
-Defined in: [index.ts:524](https://github.com/md2docx/md2docx/blob/main/packages/math/src/index.ts#L524)
+Defined in: [math.ts:702](https://github.com/md2docx/md2docx/blob/main/packages/math/src/math.ts#L702)
 
-Math Plugin
+Creates the md2docx math plugin for compiling LaTeX math expressions (MDAST `math` and `inlineMath`)
+to native Microsoft Word OpenXML Math elements (`m:oMath`).
 
 ## Parameters
 
@@ -18,6 +19,10 @@ Math Plugin
 
 [`IMathPluginOptions`](../interfaces/IMathPluginOptions.mdx)
 
+Configuration options for error modes and inline length constraints.
+
 ## Returns
 
 `IPlugin`\<\{ `type`: `""` \| `"math"` \| `"inlineMath"`; `value?`: `string`; \}\>
+
+Configured md2docx plugin object with inline and block handlers.

@@ -109,3 +109,15 @@ Every plugin attached to `md2docx` can hook into 4 deterministic lifecycle stage
    Transforms custom inline AST nodes into Word `TextRun`, `ImageRun`, or `ExternalHyperlink` instances.
 4. **`postprocess(sections)`**:
    Runs after all document sections are generated, allowing inspection, reordering, or cleanup before ZIP packaging.
+
+---
+
+## 📑 Multi-Section Compilation & Scoping (`definitionsScope`)
+
+In complex enterprise reports, whitepapers, and specifications, documents frequently require multiple sections with distinct page geometry (e.g. Portrait for narrative text, Landscape for wide comparison tables).
+
+`@m2d/core` coordinates multi-section compilation via `toDocx([{ ast, props }, ...])`:
+- **Footnote Collision Immunity**: Footnote IDs are allocated deterministically using sequential offset indexes per section (`footnoteOffsets[i]`), ensuring footnotes across sections never overwrite one another in the global OpenXML document dictionary.
+- **`definitionsScope: "shared"` (Default)**: Aggregates reference definitions (`[id]: url`) and footnotes across all sections. Local section definitions override global ones on key collision.
+- **`definitionsScope: "section"`**: Limits definition lookups strictly to the originating section.
+- **Case-Insensitive Resolution**: Footnote and link identifiers follow the CommonMark specification and resolve case-insensitively.

@@ -2,8 +2,8 @@
   "title": "@m2d/math",
   "description": "LaTeX Math to DOCX",
   "tagLine": "Plugin to convert mathematical expressions in Markdown (MDAST) to DOCX using LaTeX-style syntax. Integrates seamlessly with mdast2docx.",
-  "lastModified": "2026-10-25T16:35:57.993Z",
-  "version": "0.1.2",
+  "lastModified": "2026-11-09T13:04:31.978Z",
+  "version": "0.1.3",
   "root": true,
   "icon": "Sigma",
   "pages": [

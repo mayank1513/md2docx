@@ -8,9 +8,9 @@
 
 > **parseLatex**(`docx`, `value`): `MathRun`[][]
 
-Defined in: [index.ts:404](https://github.com/md2docx/md2docx/blob/main/packages/math/src/index.ts#L404)
+Defined in: [math.ts:551](https://github.com/md2docx/md2docx/blob/main/packages/math/src/math.ts#L551)
 
-Parse latex and convert to DOCX MathRun nodes
+Parses a LaTeX mathematical expression string and converts it into grouped DOCX MathRun arrays (paragraphs).
 
 ## Parameters
 
@@ -18,10 +18,16 @@ Parse latex and convert to DOCX MathRun nodes
 
 `__module`
 
+The docx library instance.
+
 ### value
 
 `string`
 
+Raw LaTeX string.
+
 ## Returns
 
 `MathRun`[][]
+
+2D array of DOCX MathRun nodes grouped into paragraphs.

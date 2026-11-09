@@ -1,5 +1,5 @@
 {
-  "title": "Version 0.1.0",
+  "title": "Version 0.1.1",
   "description": "Front-matter plugin for md2docx to map Markdown YAML/TOML metadata to native DOCX document properties.",
   "pages": [
     "overview",
