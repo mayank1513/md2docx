@@ -1,5 +1,11 @@
 # @m2d/core
 
+## 1.10.0
+
+### Minor Changes
+
+- [#22](https://github.com/md2docx/md2docx/pull/22) [`127b9fc`](https://github.com/md2docx/md2docx/commit/127b9fc651a381e4edbfb1a5a188cec5beb305c0) Thanks [@mayank1513](https://github.com/mayank1513)! - Support `definitionsScope` ("shared" | "section") in `IDocxProps` to enable cross-section reference link and footnote resolution across multi-section documents while preserving local section overrides.
+
 ## 1.9.0
 
 ### Minor Changes

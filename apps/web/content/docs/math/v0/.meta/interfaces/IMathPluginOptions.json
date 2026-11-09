@@ -1,6 +1,6 @@
 {
   "title": "IMathPluginOptions",
-  "editURL": "https://github.com/md2docx/md2docx/blob/main/packages/math/src/index.ts#L428",
-  "commitHash": "ca9bdf39ad59575036f371ee18e42a488582dda4",
-  "lastModified": "2026-10-22T09:40:29.668Z"
+  "editURL": "https://github.com/md2docx/md2docx/blob/main/packages/math/src/math.ts#L575",
+  "commitHash": "13ace996d2abcdb3ba6d056b27b5a1aa879b0ec3",
+  "lastModified": "2026-11-09T13:04:47.337Z"
 }

@@ -1,5 +1,12 @@
 # @m2d/table
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`127b9fc`](https://github.com/md2docx/md2docx/commit/127b9fc651a381e4edbfb1a5a188cec5beb305c0)]:
+  - @m2d/core@1.10.0
+
 ## 0.2.0
 
 ### Minor Changes

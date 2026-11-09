@@ -1,5 +1,22 @@
 # mdast2docx
 
+## 1.7.2
+
+### Patch Changes
+
+- Updated dependencies [[`127b9fc`](https://github.com/md2docx/md2docx/commit/127b9fc651a381e4edbfb1a5a188cec5beb305c0), [`331ac49`](https://github.com/md2docx/md2docx/commit/331ac493bf049063935579cb9d872d4cf0c31943)]:
+  - @m2d/core@1.10.0
+  - @m2d/math@0.1.3
+  - @m2d/frontmatter@0.1.1
+  - @m2d/html@1.3.1
+  - @m2d/html-node@0.2.1
+  - @m2d/image@1.6.2
+  - @m2d/image-node@0.1.4
+  - @m2d/list@0.0.13
+  - @m2d/mermaid@1.3.3
+  - @m2d/mermaid-node@0.1.4
+  - @m2d/table@0.2.1
+
 ## 1.7.1
 
 ### Patch Changes

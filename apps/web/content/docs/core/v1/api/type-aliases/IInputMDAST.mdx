@@ -4,13 +4,15 @@
 
 [@m2d/core](../index.mdx) / IInputMDAST
 
-# Type Alias: IInputMDAST
+# ~~Type Alias: IInputMDAST~~
 
 > **IInputMDAST** = [`Root`](../interfaces/Root.mdx) \| `object`[]
 
-Defined in: [packages/core/src/index.ts:18](https://github.com/md2docx/md2docx/blob/main/packages/core/src/index.ts#L18)
+Defined in: [packages/core/src/index.ts:19](https://github.com/md2docx/md2docx/blob/main/packages/core/src/index.ts#L19)
 
 Represents the input Markdown AST tree(s) for conversion.
-Supports either:
-- A single `Root` node (direct conversion)
-- An array of objects `{ ast: Root, props?: ISectionProps }` for fine-grained section-level control.
+
+## Deprecated
+
+Passing an array of multiple AST inputs (`{ ast: Root, props?: ISectionProps }[]`) is deprecated
+and scheduled for removal in the next major version. Future multi-section documents will be modeled natively within a single AST tree.

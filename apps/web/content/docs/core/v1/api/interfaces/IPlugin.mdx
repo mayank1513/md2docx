@@ -6,7 +6,7 @@
 
 # Interface: IPlugin\<T\>
 
-Defined in: [packages/core/src/utils/index.ts:231](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L231)
+Defined in: [packages/core/src/utils/index.ts:242](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L242)
 
 Interface for extending MDAST to DOCX conversion using plugins.
 
@@ -22,7 +22,7 @@ Interface for extending MDAST to DOCX conversion using plugins.
 
 > `optional` **block?**: (`docx`, `node`, `paraProps`, `blockChildrenProcessor`, `inlineChildrenProcessor`) => (`Paragraph` \| `Table`)[]
 
-Defined in: [packages/core/src/utils/index.ts:235](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L235)
+Defined in: [packages/core/src/utils/index.ts:246](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L246)
 
 Processes block-level MDAST nodes and converts them to DOCX elements.
 
@@ -58,7 +58,7 @@ Processes block-level MDAST nodes and converts them to DOCX elements.
 
 > `optional` **inline?**: (`docx`, `node`, `runProps`, `definitions`, `footnoteDefinitions`, `inlineChildrenProcessor`) => `InlineDocxNodes`[]
 
-Defined in: [packages/core/src/utils/index.ts:246](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L246)
+Defined in: [packages/core/src/utils/index.ts:257](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L257)
 
 Processes inline-level MDAST nodes and converts them to DOCX runs.
 
@@ -98,7 +98,7 @@ Processes inline-level MDAST nodes and converts them to DOCX runs.
 
 > `optional` **postprocess?**: (`sections`) => `void` \| `Promise`\<`void`\>
 
-Defined in: [packages/core/src/utils/index.ts:278](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L278)
+Defined in: [packages/core/src/utils/index.ts:289](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L289)
 
 Post-processes the final DOCX document after conversion.
 Plugins can use this for cleanup or applying final transformations.
@@ -119,7 +119,7 @@ Plugins can use this for cleanup or applying final transformations.
 
 > `optional` **preprocess?**: (`tree`, `definitions`, `docxProps?`) => `void` \| `Promise`\<`void`\>
 
-Defined in: [packages/core/src/utils/index.ts:268](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L268)
+Defined in: [packages/core/src/utils/index.ts:279](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L279)
 
 Preprocesses the MDAST tree before the DOCX conversion begins.
 
@@ -147,7 +147,7 @@ Preprocesses the MDAST tree before the DOCX conversion begins.
 
 > `optional` **root?**: (`props`, `astInputs?`) => `void`
 
-Defined in: [packages/core/src/utils/index.ts:260](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L260)
+Defined in: [packages/core/src/utils/index.ts:271](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L271)
 
 Modifies document-level DOCX properties, such as styles, numbering, headers, or footers.
 Useful for applying global formatting customizations.

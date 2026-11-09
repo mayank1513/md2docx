@@ -6,8 +6,24 @@
 
 # Type Alias: IDocxProps
 
-> **IDocxProps** = `Omit`\<[`Mutable`](Mutable.mdx)\<`IPropertiesOptions`\>, `"sections"` \| `"footnotes"`\>
+> **IDocxProps** = `Omit`\<[`Mutable`](Mutable.mdx)\<`IPropertiesOptions`\>, `"sections"` \| `"footnotes"`\> & `object`
 
-Defined in: [packages/core/src/utils/index.ts:142](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L142)
+Defined in: [packages/core/src/utils/index.ts:144](https://github.com/md2docx/md2docx/blob/main/packages/core/src/utils/index.ts#L144)
 
 Defines document properties, excluding sections and footnotes (which are managed internally).
+
+## Type Declaration
+
+### definitionsScope?
+
+> `optional` **definitionsScope?**: `DefinitionsScope`
+
+Scope of reference link definitions and footnotes across multiple sections.
+- "shared": Definitions declared in any section are available across all sections.
+- "section": Definitions are strictly scoped to the AST where they are declared.
+
+#### Default
+
+```ts
+"shared"
+```
