@@ -1,5 +1,12 @@
 # @m2d/list
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies [[`127b9fc`](https://github.com/md2docx/md2docx/commit/127b9fc651a381e4edbfb1a5a188cec5beb305c0)]:
+  - @m2d/core@1.10.0
+
 ## 0.0.12
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @m2d/math
 
+## 0.1.3
+
+### Patch Changes
+
+- [#24](https://github.com/md2docx/md2docx/pull/24) [`331ac49`](https://github.com/md2docx/md2docx/commit/331ac493bf049063935579cb9d872d4cf0c31943) Thanks [@mayank1513](https://github.com/mayank1513)! - Resolve nested superscripts and subscripts inside braces (e.g. `e^{-x^2}`, `a^{b^2}`, `x_{i_j}`) to nested DOCX MathSuperScript and MathSubScript elements instead of plain text.
+- Updated dependencies [[`127b9fc`](https://github.com/md2docx/md2docx/commit/127b9fc651a381e4edbfb1a5a188cec5beb305c0)]:
+  - @m2d/core@1.10.0
+
 ## 0.1.2
 
 ### Patch Changes

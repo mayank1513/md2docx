@@ -1,5 +1,12 @@
 # @m2d/html
 
+## 1.3.1
+
+### Patch Changes
+
+- Updated dependencies [[`127b9fc`](https://github.com/md2docx/md2docx/commit/127b9fc651a381e4edbfb1a5a188cec5beb305c0)]:
+  - @m2d/core@1.10.0
+
 ## 1.3.0
 
 ### Minor Changes
