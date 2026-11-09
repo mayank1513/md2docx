@@ -37,20 +37,38 @@ const PY_NUMBER =
 const SQL_NUMBER = /\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b/iy;
 const GENERIC_NUMBER = /\b\d+(?:\.\d+)?\b/y;
 
-// Comments
-const C_BLOCK_COMMENT = /\/\*[\s\S]*?\*\//y;
-const C_COMBINED_COMMENT = /\/\*[\s\S]*?\*\/|\/\/[^\r\n]*/y;
-const HASH_LINE_COMMENT = /#[^\r\n]*/y;
-// promptshield-ignore -- this is valid and required comment regexp
-const HTML_COMMENT = /<!--[\s\S]*?-->/y;
-const SQL_COMMENT = /--[^\r\n]*|#[^\r\n]*|\/\*[\s\S]*?\*\//y;
+// Comments: ReDoS-immune deterministic scanners (no polynomial backtracking)
+const matchBlockComment = (
+  source: string,
+  cursor: number,
+  openSeq = "/*",
+  closeSeq = "*/",
+): string | undefined => {
+  if (!source.startsWith(openSeq, cursor)) return undefined;
+  const end = source.indexOf(closeSeq, cursor + openSeq.length);
+  return end === -1
+    ? source.slice(cursor)
+    : source.slice(cursor, end + closeSeq.length);
+};
+
+const matchLineComment = (
+  source: string,
+  cursor: number,
+  prefix: string,
+): string | undefined => {
+  if (!source.startsWith(prefix, cursor)) return undefined;
+  let end = cursor + prefix.length;
+  while (end < source.length && source[end] !== "\r" && source[end] !== "\n") {
+    end++;
+  }
+  return source.slice(cursor, end);
+};
 
 // Strings & Literals
 const JS_STRINGS =
   /`(?:\\[\s\S]|[^`\\])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/y;
 const PY_STRINGS =
   /(?:[rRuUbB]|[fF][rR]?|[rR][fF])?(?:"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/y;
-const JSON_KEY = /"(?:\\.|[^"\\])*"(?=\s*:)/y;
 const DBL_QUOTE_STRING = /"(?:\\.|[^"\\])*"/y;
 const SGL_OR_DBL_STRING = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/y;
 const SQL_STRINGS = /'(?:''|[^'])*'|"(?:""|[^"])*"/y;
@@ -736,78 +754,40 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
     // -------------------------------------------------------------------------
     // Phase 2: Comments (MUST PRECEDES STRINGS & IDENTIFIERS)
     // -------------------------------------------------------------------------
-    if (lang === "javascript") {
-      C_COMBINED_COMMENT.lastIndex = cursor;
-      const match = C_COMBINED_COMMENT.exec(source);
-      if (match && match.index === cursor) {
-        push("comment", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+    let comment: string | undefined;
+    if (
+      lang === "javascript" ||
+      lang === "jsonc" ||
+      lang === "scss" ||
+      lang === "less"
+    ) {
+      comment =
+        matchBlockComment(source, cursor, "/*", "*/") ??
+        matchLineComment(source, cursor, "//");
     } else if (lang === "python" || lang === "bash") {
-      HASH_LINE_COMMENT.lastIndex = cursor;
-      const match = HASH_LINE_COMMENT.exec(source);
-      if (match && match.index === cursor) {
-        push("comment", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
-    } else if (lang === "jsonc") {
-      C_COMBINED_COMMENT.lastIndex = cursor;
-      const match = C_COMBINED_COMMENT.exec(source);
-      if (match && match.index === cursor) {
-        push("comment", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      comment = matchLineComment(source, cursor, "#");
     } else if (lang === "html" || lang === "markdown") {
-      HTML_COMMENT.lastIndex = cursor;
-      const match = HTML_COMMENT.exec(source);
-      if (match && match.index === cursor) {
-        push("comment", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      // promptshield-ignore -- ok
+      comment = matchBlockComment(source, cursor, "<!--", "-->");
     } else if (lang === "css") {
       // Standard CSS strictly does NOT accept // line comments
-      C_BLOCK_COMMENT.lastIndex = cursor;
-      const match = C_BLOCK_COMMENT.exec(source);
-      if (match && match.index === cursor) {
-        push("comment", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
-    } else if (lang === "scss" || lang === "less") {
-      C_COMBINED_COMMENT.lastIndex = cursor;
-      const match = C_COMBINED_COMMENT.exec(source);
-      if (match && match.index === cursor) {
-        push("comment", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      comment = matchBlockComment(source, cursor, "/*", "*/");
     } else if (lang === "sql") {
-      SQL_COMMENT.lastIndex = cursor;
-      const match = SQL_COMMENT.exec(source);
-      if (match && match.index === cursor) {
-        push("comment", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      comment =
+        matchLineComment(source, cursor, "--") ??
+        matchLineComment(source, cursor, "#") ??
+        matchBlockComment(source, cursor, "/*", "*/");
     } else if (lang === "generic") {
-      C_COMBINED_COMMENT.lastIndex = cursor;
-      let match = C_COMBINED_COMMENT.exec(source);
-      if (match && match.index === cursor) {
-        push("comment", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
-      HASH_LINE_COMMENT.lastIndex = cursor;
-      match = HASH_LINE_COMMENT.exec(source);
-      if (match && match.index === cursor) {
-        push("comment", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      comment =
+        matchBlockComment(source, cursor, "/*", "*/") ??
+        matchLineComment(source, cursor, "//") ??
+        matchLineComment(source, cursor, "#");
+    }
+
+    if (comment) {
+      push("comment", comment);
+      cursor += comment.length;
+      continue;
     }
 
     // -------------------------------------------------------------------------
@@ -831,17 +811,21 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
         continue;
       }
     } else if (lang === "json" || lang === "jsonc") {
-      JSON_KEY.lastIndex = cursor;
-      let match = JSON_KEY.exec(source);
-      if (match && match.index === cursor) {
-        push("keyword", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
       DBL_QUOTE_STRING.lastIndex = cursor;
-      match = DBL_QUOTE_STRING.exec(source);
+      const match = DBL_QUOTE_STRING.exec(source);
       if (match && match.index === cursor) {
-        push("string", match[0]);
+        let peek = cursor + match[0].length;
+        while (
+          peek < source.length &&
+          (source[peek] === " " ||
+            source[peek] === "\t" ||
+            source[peek] === "\r" ||
+            source[peek] === "\n")
+        ) {
+          peek++;
+        }
+        const type = source[peek] === ":" ? "keyword" : "string";
+        push(type, match[0]);
         cursor += match[0].length;
         continue;
       }
@@ -934,7 +918,7 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
         cursor += match[0].length;
         continue;
       }
-      const CSS_MEASURE = /-?(?:\d*\.)?\d+(?:%|[a-zA-Z]+)?\b/y;
+      const CSS_MEASURE = /-?(?:\d+(?:\.\d+)?|\.\d+)(?:%|[a-zA-Z]+)?/y;
       CSS_MEASURE.lastIndex = cursor;
       match = CSS_MEASURE.exec(source);
       if (match && match.index === cursor) {
@@ -951,13 +935,21 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
         continue;
       }
     } else if (lang === "json" || lang === "jsonc") {
-      const JSON_NUM = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?\b/y;
+      const JSON_NUM = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/y;
       JSON_NUM.lastIndex = cursor;
       const match = JSON_NUM.exec(source);
       if (match && match.index === cursor) {
-        push("number", match[0]);
-        cursor += match[0].length;
-        continue;
+        const nextChar = source.charCodeAt(cursor + match[0].length);
+        const isIdent =
+          (nextChar >= 65 && nextChar <= 90) ||
+          (nextChar >= 97 && nextChar <= 122) ||
+          nextChar === 95 ||
+          nextChar === 46;
+        if (!isIdent) {
+          push("number", match[0]);
+          cursor += match[0].length;
+          continue;
+        }
       }
     } else {
       GENERIC_NUMBER.lastIndex = cursor;
@@ -1045,8 +1037,7 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       }
     } else if (lang === "bash") {
       // Bash variables: ${VAR}, $VAR, $0-$9, $?
-      const BASH_VAR =
-        /\$\{[^}\r\n]+\}|\$[a-zA-Z_][a-zA-Z0-9_]*|\$[0-9?*@#$!]/y;
+      const BASH_VAR = /\$\{[^}{\r\n]+\}|\$[a-zA-Z_]\w*|\$[0-9?*@#$!]/y;
       BASH_VAR.lastIndex = cursor;
       let match = BASH_VAR.exec(source);
       if (match && match.index === cursor) {
@@ -1081,13 +1072,22 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
         continue;
       }
       // HTML attributes
-      const HTML_ATTR = /[a-zA-Z_:][\w:.-]*(?=\s*=)/y;
+      const HTML_ATTR = /[a-zA-Z_:][\w:.-]*/y;
       HTML_ATTR.lastIndex = cursor;
       match = HTML_ATTR.exec(source);
       if (match && match.index === cursor) {
-        push("function", match[0]);
-        cursor += match[0].length;
-        continue;
+        let peek = cursor + match[0].length;
+        while (
+          peek < source.length &&
+          (source[peek] === " " || source[peek] === "\t")
+        ) {
+          peek++;
+        }
+        if (source[peek] === "=") {
+          push("function", match[0]);
+          cursor += match[0].length;
+          continue;
+        }
       }
       // HTML entities
       const HTML_ENTITY = /&(?:#\d+|#x[\da-fA-F]+|[a-zA-Z][\da-zA-Z]+);/y;
@@ -1109,13 +1109,22 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
         continue;
       }
       // CSS custom property or property name: --var or margin(?=:)
-      const CSS_PROP = /--[\w-]+|[a-zA-Z-]+(?=\s*:)/y;
+      const CSS_PROP = /--[\w-]+|[a-zA-Z-]+/y;
       CSS_PROP.lastIndex = cursor;
       match = CSS_PROP.exec(source);
       if (match && match.index === cursor) {
-        push("keyword", match[0]);
-        cursor += match[0].length;
-        continue;
+        let peek = cursor + match[0].length;
+        while (
+          peek < source.length &&
+          (source[peek] === " " || source[peek] === "\t")
+        ) {
+          peek++;
+        }
+        if (source[peek] === ":" && source[peek + 1] !== ":") {
+          push("keyword", match[0]);
+          cursor += match[0].length;
+          continue;
+        }
       }
       // CSS selector class/pseudo: .class or :hover or #id
       const CSS_SELECTOR = /[.#:][\w-]+/y;

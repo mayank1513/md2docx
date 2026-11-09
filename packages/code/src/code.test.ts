@@ -532,4 +532,70 @@ def calculate(value: int) -> bool:
       expect(tokens?.find((t) => t.value === "with")?.type).toBe("keyword");
     });
   });
+
+  describe("ReDoS Resistance & Linear Scanning Verification", () => {
+    test("handles repetitions of / and a/ without polynomial slowdown", () => {
+      const malicious = `/${"a/".repeat(5000)}`;
+      const start = performance.now();
+      const tokens = tokenize(malicious, "javascript");
+      const elapsed = performance.now() - start;
+      expect(elapsed).toBeLessThan(100);
+      expect(tokens.length).toBeGreaterThan(0);
+    });
+
+    test("handles unclosed C-style block comments without backtracking", () => {
+      const unclosed = `/* ${"x".repeat(10000)}`;
+      const start = performance.now();
+      const tokens = tokenize(unclosed, "javascript");
+      const elapsed = performance.now() - start;
+      expect(elapsed).toBeLessThan(50);
+      expect(tokens[0]?.[0]?.type).toBe("comment");
+    });
+
+    test("handles repetitions of <!-- without polynomial slowdown", () => {
+      const repeatedComments = `<!--${"<!--".repeat(2000)}`;
+      const start = performance.now();
+      const tokens = tokenize(repeatedComments, "html");
+      const elapsed = performance.now() - start;
+      expect(elapsed).toBeLessThan(50);
+      expect(tokens[0]?.[0]?.type).toBe("comment");
+    });
+
+    test("handles long numeric digit sequences in CSS and JSON in linear time", () => {
+      const cssMeasure = `width: ${"9".repeat(5000)}px;`;
+      const startCss = performance.now();
+      const cssTokens = tokenize(cssMeasure, "css");
+      expect(performance.now() - startCss).toBeLessThan(50);
+      expect(cssTokens[0]?.find((t) => t.type === "number")).toBeDefined();
+
+      const jsonNum = `{"count": ${"1".repeat(5000)}}`;
+      const startJson = performance.now();
+      const jsonTokens = tokenize(jsonNum, "json");
+      expect(performance.now() - startJson).toBeLessThan(50);
+      expect(jsonTokens[0]?.find((t) => t.type === "number")).toBeDefined();
+    });
+
+    test("handles repetitions of ${{ in bash without polynomial slowdown", () => {
+      const repeatedBraces = `${"${{".repeat(2000)}END`;
+      const start = performance.now();
+      const tokens = tokenize(repeatedBraces, "bash");
+      const elapsed = performance.now() - start;
+      expect(elapsed).toBeLessThan(50);
+      expect(tokens.length).toBeGreaterThan(0);
+    });
+
+    test("handles repetitions of : in HTML and - in CSS in linear time", () => {
+      const colons = `<div ${":".repeat(5000)}>`;
+      const startHtml = performance.now();
+      const htmlTokens = tokenize(colons, "html");
+      expect(performance.now() - startHtml).toBeLessThan(50);
+      expect(htmlTokens.length).toBeGreaterThan(0);
+
+      const dashes = `body { ${"-".repeat(5000)} }`;
+      const startCss = performance.now();
+      const cssTokens = tokenize(dashes, "css");
+      expect(performance.now() - startCss).toBeLessThan(50);
+      expect(cssTokens.length).toBeGreaterThan(0);
+    });
+  });
 });
