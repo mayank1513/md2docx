@@ -33,6 +33,10 @@
         "./packages/code-lowlight/src",
         "./packages/code-lowlight/dist"
       ],
+      "@m2d/code-shiki": [
+        "./packages/code-shiki/src",
+        "./packages/code-shiki/dist"
+      ],
       "@m2d/core": ["./packages/core/src", "./packages/core/dist"],
       "@m2d/frontmatter": [
         "./packages/frontmatter/src",

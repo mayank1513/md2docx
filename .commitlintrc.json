@@ -10,6 +10,7 @@
         "@m2d/cli",
         "@m2d/code",
         "@m2d/code-lowlight",
+        "@m2d/code-shiki",
         "@m2d/core",
         "@m2d/frontmatter",
         "@m2d/html",
