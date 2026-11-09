@@ -1,12 +1,20 @@
 import fs from "node:fs";
 import path from "node:path";
 import { toDocx } from "@m2d/core";
+import type * as latex from "@unified-latex/unified-latex-types";
 import * as docx from "docx";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
 import { describe, it } from "vitest";
-import { mathPlugin, parseLatex } from "../src";
+import {
+  hasUnparsedScript,
+  mathPlugin,
+  parseLatex,
+  printRawNode,
+  printRawNodes,
+  resolveScriptArg,
+} from "../src/math";
 
 const markdown = fs.readFileSync(
   path.resolve(__dirname, "../../../sample.md"),
@@ -233,5 +241,191 @@ $$
         () => [],
       ),
     ).toEqual([]);
+  });
+
+  describe("printRawNode & AST re-serialization", () => {
+    it("serializes all AST node types correctly", ({ expect }) => {
+      expect(printRawNode(null)).toBe("");
+      expect(printRawNode(undefined)).toBe("");
+      expect(printRawNode({ type: "whitespace" })).toBe(" ");
+      expect(
+        printRawNode({
+          type: "group",
+          content: [{ type: "string", content: "x" }],
+        }),
+      ).toBe("{x}");
+      expect(
+        printRawNode({
+          type: "argument",
+          openMark: "[",
+          closeMark: "]",
+          content: [{ type: "string", content: "arg" }],
+        }),
+      ).toBe("[arg]");
+      expect(
+        printRawNode({
+          type: "argument",
+          openMark: "",
+          closeMark: "",
+          content: [],
+        }),
+      ).toBe("");
+      expect(printRawNode({ type: "macro", content: "alpha" })).toBe("\\alpha");
+      expect(
+        printRawNode({
+          type: "macro",
+          content: "^",
+          escapeToken: "",
+          args: [
+            {
+              type: "argument",
+              openMark: "{",
+              closeMark: "}",
+              content: [{ type: "string", content: "2" }],
+            },
+          ],
+        }),
+      ).toBe("^{2}");
+      expect(
+        printRawNode({
+          type: "inlinemath",
+          content: [{ type: "string", content: "a" }],
+        }),
+      ).toBe("$a$");
+      expect(
+        printRawNode({
+          type: "displaymath",
+          content: [{ type: "string", content: "b" }],
+        }),
+      ).toBe("\\[b\\]");
+      expect(
+        printRawNode({
+          type: "environment",
+          env: "matrix",
+          content: [{ type: "string", content: "1" }],
+        }),
+      ).toBe("\\begin{matrix}1\\end{matrix}");
+      expect(
+        printRawNode({
+          type: "mathenv",
+          env: "align",
+          content: [{ type: "string", content: "y" }],
+        }),
+      ).toBe("\\begin{align}y\\end{align}");
+      expect(printRawNode({ type: "comment", content: "a comment" })).toBe(
+        "%a comment\n",
+      );
+      expect(printRawNode({ type: "parbreak" })).toBe("\n\n");
+      // Fallback object branches
+      expect(
+        printRawNode({
+          type: "custom",
+          content: [{ type: "string", content: "nested" }],
+        } as unknown as latex.Node),
+      ).toBe("nested");
+      expect(
+        printRawNode({
+          type: "custom",
+          content: "literal",
+        } as unknown as latex.Node),
+      ).toBe("literal");
+      expect(printRawNode({ type: "custom" } as unknown as latex.Node)).toBe(
+        "",
+      );
+
+      // printRawNodes array
+      expect(
+        printRawNodes([
+          { type: "string", content: "a" },
+          { type: "string", content: "b" },
+        ]),
+      ).toBe("ab");
+    });
+  });
+
+  describe("hasUnparsedScript & resolveScriptArg", () => {
+    it("inspects trees and detects unparsed script operators", ({ expect }) => {
+      expect(hasUnparsedScript([])).toBe(false);
+      expect(hasUnparsedScript([{ type: "string", content: "regular" }])).toBe(
+        false,
+      );
+      expect(
+        hasUnparsedScript([
+          {
+            type: "group",
+            content: [{ type: "string", content: "no-script" }],
+          },
+        ]),
+      ).toBe(false);
+      expect(
+        hasUnparsedScript([
+          {
+            type: "group",
+            content: [{ type: "string", content: "has_sub" }],
+          },
+        ]),
+      ).toBe(true);
+      expect(hasUnparsedScript([{ type: "string", content: "x^2" }])).toBe(
+        true,
+      );
+    });
+
+    it("returns original nodes when no scripts exist or when parsing fails", ({
+      expect,
+    }) => {
+      const normalNodes: latex.Node[] = [{ type: "string", content: "abc" }];
+      expect(resolveScriptArg(normalNodes)).toBe(normalNodes);
+
+      // Graceful error fallback when parser throws
+      const scriptNodes: latex.Node[] = [{ type: "string", content: "x^2" }];
+      const failingParser = () => {
+        throw new Error("Syntax error");
+      };
+      expect(resolveScriptArg(scriptNodes, failingParser)).toBe(scriptNodes);
+    });
+  });
+
+  describe("math AST node mappings", () => {
+    it("handles sub-then-super (x_1^2)", ({ expect }) => {
+      const result = parseLatex(docx, "x_1^2");
+      expect(result[0][0]).toBeInstanceOf(docx.MathSubSuperScript);
+    });
+
+    it("handles radicals without degree (\\sqrt{x})", ({ expect }) => {
+      const result = parseLatex(docx, "\\sqrt{x}");
+      expect(result[0][0]).toBeInstanceOf(docx.MathRadical);
+    });
+
+    it("handles left and right delimiters", ({ expect }) => {
+      const result = parseLatex(docx, "\\left( x \\right)");
+      expect(result[0].length).toBeGreaterThan(0);
+    });
+
+    it("handles summation followed by non-macro and macro", ({ expect }) => {
+      const resNonMacro = parseLatex(docx, "\\sum x");
+      expect(resNonMacro[0][0]).toBeInstanceOf(docx.MathSum);
+
+      const resMacro = parseLatex(docx, "\\sum \\alpha");
+      expect(resMacro[0][0]).toBeInstanceOf(docx.MathSum);
+    });
+
+    it("throws error for inline math when errorMode is 'throw'", async ({
+      expect,
+    }) => {
+      const runawayInline = `Equation: $${"x".repeat(120)}$`;
+      const mdast = unified()
+        .use(remarkParse)
+        .use(remarkMath)
+        .parse(runawayInline);
+      await expect(
+        toDocx(
+          mdast,
+          {},
+          {
+            plugins: [mathPlugin({ maxInlineLength: 50, errorMode: "throw" })],
+          },
+        ),
+      ).rejects.toThrow();
+    });
   });
 });
