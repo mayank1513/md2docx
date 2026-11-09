@@ -236,7 +236,7 @@ const parser = unified().use(remarkParse).use(remarkGfm);
 ${sections
   .map(
     (sec, idx) =>
-      `const section${idx + 1}Ast = parser.parse(\`${sec.markdown.replace(/`/g, "\\`")}\`);`,
+      `const section${idx + 1}Ast = parser.parse(\`${sec.markdown.replace(/\\/g, "\\\\").replace(/`/g, "\\`")}\`);`,
   )
   .join("\n\n")}
 
