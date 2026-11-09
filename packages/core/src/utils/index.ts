@@ -136,13 +136,23 @@ export const DEFAULT_SECTION_PROPS: IDefaultMdastToDocxSectionProps = {
   trimInnerSpaces: true,
 };
 
+export type DefinitionsScope = "shared" | "section";
+
 /**
  * Defines document properties, excluding sections and footnotes (which are managed internally).
  */
 export type IDocxProps = Omit<
   Mutable<IPropertiesOptions>,
   "sections" | "footnotes"
->;
+> & {
+  /**
+   * Scope of reference link definitions and footnotes across multiple sections.
+   * - "shared": Definitions declared in any section are available across all sections.
+   * - "section": Definitions are strictly scoped to the AST where they are declared.
+   * @default "shared"
+   */
+  definitionsScope?: DefinitionsScope;
+};
 
 export const defaultDocxProps: IDocxProps = {
   styles: {
@@ -162,6 +172,7 @@ export const defaultDocxProps: IDocxProps = {
       heading6: { paragraph: { spacing: { before: 350 } } },
     },
   },
+  definitionsScope: "shared",
 };
 
 /**

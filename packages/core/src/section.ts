@@ -126,8 +126,12 @@ const createInlineProcessor = (
             ];
           case "link":
           case "linkReference":
-            // newRunProps.add("link");
-            // newRunProps.style = "link";
+            if (!url) {
+              return [
+                ...docxNodes,
+                ...processInlineNodeChildren(node, newRunProps),
+              ];
+            }
             newRunProps.underline = {};
             return [
               ...docxNodes,
@@ -145,7 +149,7 @@ const createInlineProcessor = (
             return [
               ...docxNodes,
               new FootnoteReferenceRun(
-                footnoteDefinitions[node.identifier]?.id ?? 0,
+                footnoteDefinitions[node.identifier?.toUpperCase()]?.id ?? 0,
               ),
             ];
           case "fragment":
