@@ -161,6 +161,90 @@ const LATEX_SYMBOLS: Record<string, string> = {
   bigtimes: "⨯",
 };
 
+/** Serialize AST nodes back to a raw LaTeX string for re-parsing */
+const printRawNode = (node: latex.Node | latex.Argument): string => {
+  if (!node) return "";
+  switch (node.type) {
+    case "string":
+      return node.content;
+    case "whitespace":
+      return " ";
+    case "group":
+      return `{${node.content.map(printRawNode).join("")}}`;
+    case "argument": {
+      const open = node.openMark ?? "{";
+      const close = node.closeMark ?? "}";
+      return `${open}${node.content.map(printRawNode).join("")}${close}`;
+    }
+    case "macro": {
+      const escapeToken =
+        node.escapeToken !== undefined ? node.escapeToken : "\\";
+      const args = (node.args || []).map(printRawNode).join("");
+      return `${escapeToken}${node.content}${args}`;
+    }
+    case "inlinemath":
+      return `$${node.content.map(printRawNode).join("")}$`;
+    case "displaymath":
+      return `\\[${node.content.map(printRawNode).join("")}\\]`;
+    case "environment":
+    case "mathenv": {
+      const envName =
+        typeof node.env === "string" ? node.env : printRawNode(node.env);
+      return `\\begin{${envName}}${node.content.map(printRawNode).join("")}\\end{${envName}}`;
+    }
+    case "comment":
+      return `%${node.content}\n`;
+    case "parbreak":
+      return "\n\n";
+    default:
+      if (
+        "content" in node &&
+        Array.isArray((node as { content?: unknown }).content)
+      ) {
+        return (node as { content: (latex.Node | latex.Argument)[] }).content
+          .map(printRawNode)
+          .join("");
+      }
+      return "content" in node &&
+        typeof (node as { content?: unknown }).content === "string"
+        ? (node as { content: string }).content
+        : "";
+  }
+};
+
+const printRawNodes = (nodes: (latex.Node | latex.Argument)[]): string =>
+  nodes.map(printRawNode).join("");
+
+/** Checks whether a node tree contains unparsed script operators (^ or _) */
+const hasUnparsedScript = (nodes: latex.Node[]): boolean =>
+  nodes.some((n) => {
+    if (
+      n.type === "string" &&
+      (n.content.includes("^") || n.content.includes("_"))
+    ) {
+      return true;
+    }
+    if (n.type === "group" && hasUnparsedScript(n.content)) {
+      return true;
+    }
+    return false;
+  });
+
+/**
+ * Re-parses script argument nodes through parseMath if text-mode parsing left
+ * nested superscripts or subscripts (^ or _) as literal strings.
+ */
+const resolveScriptArg = (nodes: latex.Node[]): latex.Node[] => {
+  if (hasUnparsedScript(nodes)) {
+    try {
+      return parseMath(printRawNodes(nodes));
+    } catch {
+      return nodes;
+    }
+  }
+  return nodes;
+};
+
 /** convert group to Math */
 const mapGroup = (docx: typeof DOCX, nodes: latex.Node[]): DOCX.MathRun[] => {
   const group: DOCX.MathRun[] = [];
@@ -202,7 +286,10 @@ const mapMacro = (
     case "^": {
       const prev = runs.pop();
       if (!prev) break;
-      const superScript = mapGroup(docx, node.args?.[0]?.content ?? []);
+      const superScript = mapGroup(
+        docx,
+        resolveScriptArg(node.args?.[0]?.content ?? []),
+      );
       // @ts-expect-error -- using extra vars
       if (prev.isSum) {
         const docNode = new docx.MathSum({
@@ -242,7 +329,10 @@ const mapMacro = (
     case "_": {
       const prev = runs.pop();
       if (!prev) break;
-      const subScript = mapGroup(docx, node.args?.[0]?.content ?? []);
+      const subScript = mapGroup(
+        docx,
+        resolveScriptArg(node.args?.[0]?.content ?? []),
+      );
       // @ts-expect-error -- attaching extra field
       if (prev.isSum) {
         const docNode = new docx.MathSum({
