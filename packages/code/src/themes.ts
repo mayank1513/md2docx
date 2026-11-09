@@ -116,7 +116,7 @@ export const THEMES: Record<PresetThemeName, ICodeTheme> = {
  * Resolves theme configuration from name or custom object.
  */
 export const resolveTheme = (
-  themeOption?: PresetThemeName | ICodeTheme,
+  themeOption?: PresetThemeName | (string & {}) | ICodeTheme,
   customThemes?: Record<string, Partial<ICodeTheme>>,
 ): ICodeTheme => {
   if (typeof themeOption === "object" && themeOption !== null) {
@@ -137,7 +137,7 @@ export const resolveTheme = (
   }
 
   if (themeKey in THEMES) {
-    return THEMES[themeKey];
+    return THEMES[themeKey as PresetThemeName];
   }
 
   return GITHUB_LIGHT_THEME;

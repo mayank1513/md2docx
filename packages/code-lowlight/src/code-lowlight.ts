@@ -6,7 +6,7 @@ import {
   type TokenType,
 } from "@m2d/code";
 import type { EmptyNode, IPlugin } from "@m2d/core";
-import type { ElementContent, Root } from "hast";
+import type { Root, RootContent } from "hast";
 import { common, createLowlight } from "lowlight";
 
 export const defaultLowlight = createLowlight(common);
@@ -105,7 +105,7 @@ export const resolveTokenType = (
  * Recursively walks HAST tree nodes, flattening them into typed Tokens.
  */
 export const hastToTokens = (
-  node: Root | ElementContent,
+  node: Root | RootContent,
   currentType: TokenType = "text",
   tokens: Token[] = [],
 ): Token[] => {

@@ -71,6 +71,7 @@ const createRunsForLine = (
   fontFamily: string,
   fontSize: number,
   tabSize: number,
+  lineBreak = false,
 ): import("docx").TextRun[] => {
   interface CoalescedRun {
     text: string;
@@ -117,13 +118,13 @@ const createRunsForLine = (
   }
 
   return coalesced.map(
-    (item) =>
+    (item, index) =>
       new docx.TextRun({
         text: item.text,
         font: { name: fontFamily },
         size: fontSize,
         color: item.color,
-        preserveSpace: true,
+        ...(lineBreak && index === 0 ? { break: 1 } : {}),
         italics: item.italics,
         bold: item.bold,
       }),
@@ -247,7 +248,6 @@ export const codePlugin: CodePluginFactory = (
                         font: { name: fontFamily },
                         size: fontSize,
                         color: cleanHex(gutterTextColor),
-                        preserveSpace: true,
                       }),
                     ],
                   }),
@@ -277,7 +277,6 @@ export const codePlugin: CodePluginFactory = (
                               text: " ",
                               font: { name: fontFamily },
                               size: fontSize,
-                              preserveSpace: true,
                             }),
                           ],
                   }),
@@ -315,6 +314,7 @@ export const codePlugin: CodePluginFactory = (
             fontFamily,
             fontSize,
             tabSize,
+            lineIndex > 0,
           );
 
           if (lineRuns.length === 0) {
@@ -323,22 +323,9 @@ export const codePlugin: CodePluginFactory = (
                 text: " ",
                 font: { name: fontFamily },
                 size: fontSize,
-                preserveSpace: true,
+                ...(lineIndex > 0 ? { break: 1 } : {}),
               }),
             );
-          }
-
-          if (lineIndex > 0 && lineRuns[0]) {
-            lineRuns[0] = new docx.TextRun({
-              text: lineRuns[0].options?.text ?? "",
-              font: { name: fontFamily },
-              size: fontSize,
-              color: lineRuns[0].options?.color,
-              break: 1,
-              preserveSpace: true,
-              italics: lineRuns[0].options?.italics,
-              bold: lineRuns[0].options?.bold,
-            });
           }
 
           paragraphRuns.push(...lineRuns);
@@ -409,7 +396,6 @@ export const codePlugin: CodePluginFactory = (
                             text: " ",
                             font: { name: fontFamily },
                             size: fontSize,
-                            preserveSpace: true,
                           }),
                         ],
                 }),
@@ -460,7 +446,6 @@ export const codePlugin: CodePluginFactory = (
             type: ShadingType.SOLID,
             fill: cleanHex(theme.background),
           },
-          preserveSpace: true,
         }),
       ];
     },

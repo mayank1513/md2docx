@@ -449,7 +449,7 @@ def calculate(value: int) -> bool:
       );
 
       expect(docxOutput).toBeInstanceOf(Uint8Array);
-      expect(docxOutput.byteLength).toBeGreaterThan(1000);
+      expect((docxOutput as Uint8Array).byteLength).toBeGreaterThan(1000);
     });
   });
 

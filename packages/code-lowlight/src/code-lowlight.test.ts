@@ -152,7 +152,7 @@ describe("@m2d/code-lowlight", () => {
       );
 
       expect(buffer).toBeInstanceOf(Uint8Array);
-      expect(buffer.byteLength).toBeGreaterThan(1000);
+      expect((buffer as Uint8Array).byteLength).toBeGreaterThan(1000);
     });
   });
 });

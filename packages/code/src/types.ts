@@ -80,7 +80,7 @@ export interface ICodePluginOptions {
    * Active theme name or custom theme object.
    * @default "github-light"
    */
-  theme?: PresetThemeName | ICodeTheme;
+  theme?: PresetThemeName | (string & {}) | ICodeTheme;
 
   /**
    * Additional custom themes catalog mapped by name.
