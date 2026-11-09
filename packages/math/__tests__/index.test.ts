@@ -125,4 +125,113 @@ $$
     const docxBlob = await toDocx(mdast, {}, { plugins: [mathPlugin()] });
     expect(docxBlob).toBeInstanceOf(Blob);
   });
+
+  it("handles simultaneous nested sub-superscripts (x_{i_j}^{a^b})", ({
+    expect,
+  }) => {
+    const result = parseLatex(docx, "x_{i_j}^{a^b}");
+    expect(result[0][0]).toBeInstanceOf(docx.MathSubSuperScript);
+    const json = JSON.stringify(result[0][0]);
+    // Verifies that nested m:sSub and m:sSup were generated inside sub and sup
+    expect(json).toContain('"m:sSub"');
+    expect(json).toContain('"m:sSup"');
+  });
+
+  it("handles summation with nested script expressions", ({ expect }) => {
+    const result = parseLatex(docx, "\\sum_{i=1}^{n^2}");
+    expect(result[0][0]).toBeInstanceOf(docx.MathSum);
+    const sumNode = result[0][0] as {
+      sub?: docx.MathRun[];
+      sup?: docx.MathRun[];
+    };
+    expect(sumNode.sup?.[0]).toBeInstanceOf(docx.MathSuperScript);
+  });
+
+  it("handles fractions and radicals containing nested scripts", ({
+    expect,
+  }) => {
+    const fracResult = parseLatex(docx, "\\frac{e^{-x^2}}{\\sqrt{y^3}}");
+    expect(fracResult[0][0]).toBeInstanceOf(docx.MathFraction);
+
+    const radResult = parseLatex(docx, "\\sqrt[3]{a^{b^2}}");
+    expect(radResult[0][0]).toBeInstanceOf(docx.MathRadical);
+  });
+
+  it("handles formatting macros: text, textcolor, accents, and mathbf", ({
+    expect,
+  }) => {
+    const textRes = parseLatex(docx, "\\text{regular} + \\mathbf{bold}");
+    expect(textRes[0].length).toBeGreaterThan(0);
+
+    const colorRes = parseLatex(docx, "\\textcolor{red}{x}");
+    expect(colorRes[0].length).toBeGreaterThan(0);
+
+    const accentRes = parseLatex(docx, "\\hat{x} + \\widehat{y}");
+    expect(accentRes[0].length).toBeGreaterThan(0);
+  });
+
+  it("handles line breaks in math expressions", ({ expect }) => {
+    const result = parseLatex(docx, "a = 1 \\\\ b = 2 \\newline c = 3");
+    expect(result.length).toBe(3);
+  });
+
+  it("handles inline math errors under 'warn' and 'raw' modes", async ({
+    expect,
+  }) => {
+    const runawayInline = `Equation: $${"x".repeat(120)}$`;
+    const mdastWarn = unified()
+      .use(remarkParse)
+      .use(remarkMath)
+      .parse(runawayInline);
+    const blobWarn = await toDocx(
+      mdastWarn,
+      {},
+      { plugins: [mathPlugin({ maxInlineLength: 50, errorMode: "warn" })] },
+    );
+    expect(blobWarn).toBeInstanceOf(Blob);
+
+    const mdastRaw = unified()
+      .use(remarkParse)
+      .use(remarkMath)
+      .parse(runawayInline);
+    const blobRaw = await toDocx(
+      mdastRaw,
+      {},
+      { plugins: [mathPlugin({ maxInlineLength: 50, errorMode: "raw" })] },
+    );
+    expect(blobRaw).toBeInstanceOf(Blob);
+
+    // Block math error under warn mode
+    const badBlockMd = "$$\nx = 1\n# Markdown marker in equation\n$$";
+    const mdastBadBlock = unified()
+      .use(remarkParse)
+      .use(remarkMath)
+      .parse(badBlockMd);
+    const blobBadBlock = await toDocx(
+      mdastBadBlock,
+      {},
+      { plugins: [mathPlugin({ errorMode: "warn" })] },
+    );
+    expect(blobBadBlock).toBeInstanceOf(Blob);
+  });
+
+  it("ignores non-math nodes in plugin hooks", ({ expect }) => {
+    const plugin = mathPlugin();
+    const fakeTextNode = { type: "text", value: "hello" } as unknown as {
+      type: "" | "math" | "inlineMath";
+      value?: string;
+    };
+    expect(plugin.inline?.(docx, fakeTextNode, {}, {}, {}, () => [])).toEqual(
+      [],
+    );
+    expect(
+      plugin.block?.(
+        docx,
+        fakeTextNode,
+        {},
+        () => [],
+        () => [],
+      ),
+    ).toEqual([]);
+  });
 });

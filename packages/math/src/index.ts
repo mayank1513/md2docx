@@ -6,14 +6,23 @@ import type * as DOCX from "docx";
 import { parseMath } from "latex-math";
 
 /**
- * Checks if the argument has curly brackets.
+ * Checks if the AST argument node is enclosed by curly brackets (`{...}`).
+ *
+ * @param arg - LaTeX argument node to check.
+ * @returns `true` if the argument is bounded by curly braces, otherwise `false`.
  */
 const hasCurlyBrackets = (
   arg: latex.Argument | undefined,
 ): arg is latex.Argument =>
   Boolean(arg && arg.openMark === "{" && arg.closeMark === "}");
 
-/** convert to MathRun */
+/**
+ * Converts a plain string to a DOCX MathRun instance.
+ *
+ * @param docx - The docx library instance.
+ * @param s - String to convert.
+ * @returns A new DOCX MathRun node.
+ */
 const mapString = (docx: typeof DOCX, s: string): DOCX.MathRun =>
   new docx.MathRun(s);
 
@@ -161,7 +170,12 @@ const LATEX_SYMBOLS: Record<string, string> = {
   bigtimes: "⨯",
 };
 
-/** Serialize AST nodes back to a raw LaTeX string for re-parsing */
+/**
+ * Serializes an AST node or argument back into its raw LaTeX string representation.
+ *
+ * @param node - The LaTeX AST node or argument to serialize.
+ * @returns Serialized LaTeX string.
+ */
 const printRawNode = (node: latex.Node | latex.Argument): string => {
   if (!node) return "";
   switch (node.type) {
@@ -212,10 +226,21 @@ const printRawNode = (node: latex.Node | latex.Argument): string => {
   }
 };
 
+/**
+ * Serializes an array of AST nodes or arguments into a contiguous raw LaTeX string.
+ *
+ * @param nodes - Array of LaTeX AST nodes or arguments.
+ * @returns Combined LaTeX string.
+ */
 const printRawNodes = (nodes: (latex.Node | latex.Argument)[]): string =>
   nodes.map(printRawNode).join("");
 
-/** Checks whether a node tree contains unparsed script operators (^ or _) */
+/**
+ * Recursively inspects an AST subtree for unparsed script operators (`^` or `_`).
+ *
+ * @param nodes - Array of LaTeX AST nodes to inspect.
+ * @returns `true` if any string or nested group node contains `^` or `_`, otherwise `false`.
+ */
 const hasUnparsedScript = (nodes: latex.Node[]): boolean =>
   nodes.some((n) => {
     if (
@@ -224,15 +249,15 @@ const hasUnparsedScript = (nodes: latex.Node[]): boolean =>
     ) {
       return true;
     }
-    if (n.type === "group" && hasUnparsedScript(n.content)) {
-      return true;
-    }
-    return false;
+    return Boolean(n.type === "group" && hasUnparsedScript(n.content));
   });
 
 /**
- * Re-parses script argument nodes through parseMath if text-mode parsing left
- * nested superscripts or subscripts (^ or _) as literal strings.
+ * Re-parses script argument nodes through `parseMath` if text-mode parsing left
+ * nested superscripts or subscripts (`^` or `_`) as unparsed literal strings.
+ *
+ * @param nodes - Array of LaTeX AST nodes within the script argument.
+ * @returns Re-parsed AST nodes in math mode, or original nodes on error or when no scripts exist.
  */
 const resolveScriptArg = (nodes: latex.Node[]): latex.Node[] => {
   if (hasUnparsedScript(nodes)) {
@@ -245,7 +270,13 @@ const resolveScriptArg = (nodes: latex.Node[]): latex.Node[] => {
   return nodes;
 };
 
-/** convert group to Math */
+/**
+ * Converts an array of LaTeX AST nodes into an array of DOCX MathRun/math elements.
+ *
+ * @param docx - The docx library instance.
+ * @param nodes - Array of LaTeX AST nodes.
+ * @returns Array of converted DOCX MathRun nodes.
+ */
 const mapGroup = (docx: typeof DOCX, nodes: latex.Node[]): DOCX.MathRun[] => {
   const group: DOCX.MathRun[] = [];
   for (const c of nodes) {
@@ -255,7 +286,14 @@ const mapGroup = (docx: typeof DOCX, nodes: latex.Node[]): DOCX.MathRun[] => {
   return group;
 };
 
-/** Handle Macros */
+/**
+ * Handles mapping of LaTeX macro nodes (e.g. `^`, `_`, `\frac`, `\sqrt`, `\textcolor`) to DOCX math nodes.
+ *
+ * @param docx - The docx library instance.
+ * @param node - The LaTeX macro node to map.
+ * @param runs - Accumulated preceding MathRun nodes in the current scope.
+ * @returns Converted DOCX MathRun node(s), or `null` for line breaks.
+ */
 // skipcq: JS-R1005
 const mapMacro = (
   docx: typeof DOCX,
@@ -440,7 +478,14 @@ const mapMacro = (
   return returnVal;
 };
 
-/** Process node */
+/**
+ * Processes a single LaTeX AST node and converts it into corresponding DOCX MathRun nodes.
+ *
+ * @param docx - The docx library instance.
+ * @param node - LaTeX AST node to process.
+ * @param runs - Accumulated preceding MathRun nodes in the current scope.
+ * @returns Array of converted DOCX MathRun nodes, or `false` on line break.
+ */
 const mapNode = (
   docx: typeof DOCX,
   node: latex.Node,
@@ -490,7 +535,13 @@ const mapNode = (
   return docxNodes;
 };
 
-/** Parse latex and convert to DOCX MathRun nodes */
+/**
+ * Parses a LaTeX mathematical expression string and converts it into grouped DOCX MathRun arrays (paragraphs).
+ *
+ * @param docx - The docx library instance.
+ * @param value - Raw LaTeX string.
+ * @returns 2D array of DOCX MathRun nodes grouped into paragraphs.
+ */
 export const parseLatex = (
   docx: typeof DOCX,
   value: string,
@@ -535,6 +586,14 @@ export interface IMathPluginOptions {
 const BLOCK_MARKER_REGEX =
   /\n\s*(?:#{1,6}\s+|---|\*\*\*|___|```|>|\s*[-*+]\s+|\s*\d+\.\s+|\|)/;
 
+/**
+ * Validates a math string against length constraints and markdown block marker collisions.
+ *
+ * @param value - Raw equation text to validate.
+ * @param isInline - Whether the equation is inline math (`$..$`).
+ * @param maxInlineLength - Maximum permitted length for inline math.
+ * @returns Error message string if invalid, or `null` if valid.
+ */
 const validateMathString = (
   value: string,
   isInline: boolean,
@@ -549,6 +608,16 @@ const validateMathString = (
   return null;
 };
 
+/**
+ * Generates fallback DOCX TextRun nodes when an inline equation fails parsing or validation.
+ *
+ * @param docx - The docx library instance.
+ * @param errorMessage - Description of the syntax/validation error.
+ * @param rawValue - Original unparsed formula string.
+ * @param options - Math plugin configuration options.
+ * @param runProps - Optional run properties from markdown AST.
+ * @returns Array of fallback TextRun nodes.
+ */
 const createMathErrorRuns = (
   docx: typeof DOCX,
   errorMessage: string,
@@ -576,6 +645,15 @@ const createMathErrorRuns = (
   ];
 };
 
+/**
+ * Generates fallback DOCX Paragraph nodes when a block equation fails parsing or validation.
+ *
+ * @param docx - The docx library instance.
+ * @param errorMessage - Description of the syntax/validation error.
+ * @param rawValue - Original unparsed formula string.
+ * @param options - Math plugin configuration options.
+ * @returns Array of fallback Paragraph nodes.
+ */
 const createMathErrorParagraphs = (
   docx: typeof DOCX,
   errorMessage: string,
@@ -609,7 +687,11 @@ const createMathErrorParagraphs = (
 };
 
 /**
- * Math Plugin
+ * Creates the md2docx math plugin for compiling LaTeX math expressions (MDAST `math` and `inlineMath`)
+ * to native Microsoft Word OpenXML Math elements (`m:oMath`).
+ *
+ * @param options - Configuration options for error modes and inline length constraints.
+ * @returns Configured md2docx plugin object with inline and block handlers.
  */
 export const mathPlugin: (options?: IMathPluginOptions) => IPlugin<{
   type: "" | "math" | "inlineMath";
