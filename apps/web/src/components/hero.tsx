@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, Layers, Play } from "lucide-react";
 import Link from "next/link";
 import { CliTerminal } from "./cli-terminal";
 import { Button } from "./ui/button";
@@ -84,6 +84,17 @@ export const Hero = () => {
             <Link href="/playground">
               <Play className="mr-2 h-4 w-4 fill-current" />
               Launch Live Playground
+            </Link>
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            className="w-full sm:w-auto font-semibold"
+            asChild
+          >
+            <Link href="/multi-section">
+              <Layers className="mr-2 h-4 w-4 text-primary" />
+              Multi-Section Demo
             </Link>
           </Button>
           <Button
