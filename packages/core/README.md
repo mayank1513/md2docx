@@ -134,13 +134,110 @@ function toDocx(
 #### Parameters
 
 - **`astInputs`**: An MDAST `Root` node, or an array of section descriptors `{ ast: Root, props?: ISectionProps }[]` for multi-section documents.
-- **`docxProps`** _(optional)_: Global document properties passed to `docx.Document` (title, author, subject, styles, etc.).
+  > ⚠️ **Deprecation Notice (Next Major Release)**: Passing an array of multiple AST inputs (`{ ast: Root, props?: ISectionProps }[]`) is deprecated and scheduled for removal in the next major version. Future multi-section support will be authored natively via markdown section directives within a single AST.
+- **`docxProps`** _(optional)_: Global document properties passed to `docx.Document`:
+  - `title`, `creator`, `description`, `subject`, `keywords`, `styles`, etc.
+  - `definitionsScope` _(`"shared" | "section"`, default: `"shared"`)_: Controls the visibility and resolution scope of Markdown reference link definitions (`[ref]: url`) and footnotes across multiple sections:
+    - `"shared"`: Aggregates link definitions and footnotes across all sections. Links defined anywhere in the document resolve globally. Footnote ID numbering uses deterministic section offsets so footnotes across sections never collide or overwrite one another. Local section definitions take precedence on key collisions.
+    - `"section"`: Strictly isolates link definitions and footnotes within the section where they are declared.
 - **`defaultSectionProps`** _(optional)_: Layout and conversion configuration applied to sections:
   - `useTitle` _(boolean, default: `true`)_: Maps top-level `# Heading` to Word's `Title` style and demotes nested headings proportionally.
   - `plugins` _(IPlugin[])_: Array of conversion plugins.
   - `trimInnerSpaces` _(boolean, default: `true`)_: Normalizes repeated whitespace in text runs.
   - Plus standard `docx` `ISectionOptions` (margins, paper size, orientation, headers, footers).
 - **`outputType`** _(optional, default: `'blob'`)_: Target binary format (`"blob"`, `"buffer"`, or `"arraybuffer"`).
+
+---
+
+## 📑 Multi-Section Documents & Definitions Scope
+
+> ⚠️ **Deprecation Notice (Next Major Release)**: Passing an array of multiple AST inputs (`{ ast: Root, props?: ISectionProps }[]`) to `toDocx` is deprecated and will be removed in the next major version. Next-generation multi-section authoring will be handled seamlessly within a single Markdown AST via section break syntax.
+
+`@m2d/core` natively compiles multi-section Word documents where individual chapters or appendices have independent layouts (such as switching from **Portrait** for body text to **Landscape** for wide architecture tables):
+
+```typescript
+import { toDocx } from "@m2d/core";
+import { PageOrientation } from "docx";
+import { tablePlugin } from "@m2d/table";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+
+const parser = unified().use(remarkParse).use(remarkGfm);
+
+// 1. Chapter 1: Standard Portrait Executive Summary
+const chapter1Ast = parser.parse(`
+# Executive Summary
+Cross-section reference link to [Technical Architecture][arch-ref].
+Footnote reference in chapter 1[^fn1].
+
+[^fn1]: Executive overview footnote.
+`);
+
+// 2. Chapter 2: Landscape Data Matrix (Wide Table)
+const chapter2Ast = parser.parse(`
+# Benchmark Data Matrix
+| Metric | Throughput | Latency | Status |
+| :--- | :---: | :---: | :--- |
+| Core Pipeline | 14,200 ops/s | 1.2 ms | Verified |
+
+Footnote reference in chapter 2[^fn2].
+
+[^fn2]: Benchmark performance telemetry.
+`);
+
+// 3. Chapter 3: Appendix with Shared Reference Definitions
+const chapter3Ast = parser.parse(`
+# Appendix & Reference Index
+Additional notes and global resources.
+
+[arch-ref]: https://md2docx.com/docs/architecture "Technical Architecture Reference"
+`);
+
+// 4. Compile into a single unified Word document
+const docxBlob = await toDocx(
+  [
+    {
+      ast: chapter1Ast,
+      props: {
+        properties: {
+          page: { size: { orientation: PageOrientation.PORTRAIT } },
+        },
+      },
+    },
+    {
+      ast: chapter2Ast,
+      props: {
+        properties: {
+          page: { size: { orientation: PageOrientation.LANDSCAPE } },
+        },
+      },
+    },
+    {
+      ast: chapter3Ast,
+      props: {
+        properties: {
+          page: { size: { orientation: PageOrientation.PORTRAIT } },
+        },
+      },
+    },
+  ],
+  {
+    title: "System Evaluation",
+    definitionsScope: "shared", // default: resolves [arch-ref] and offsets [^fn1], [^fn2]
+  },
+  {
+    plugins: [tablePlugin()],
+  },
+);
+```
+
+### Definitions & Footnotes Guarantees
+
+1. **Collision-Free Footnote Offsets**: Multi-section documents automatically calculate sequential footnote ID offsets (`footnoteOffsets[sectionIndex]`). Section 2 footnotes will never overwrite Section 1 footnotes in the global Word document package.
+2. **Deterministic Precedence**: If Section 1 declares `[target]: https://local.com` and Section 3 declares `[target]: https://global.com`, Section 1 preserves its local definition while Section 2 inherits the global definition.
+3. **CommonMark Case-Insensitivity**: Both footnote identifiers (`[^MyNote]`) and link labels (`[MyLink][mylink]`) are matched case-insensitively in compliance with the CommonMark and GFM specifications.
+4. **Defensive Reference Handling**: Dangling footnote references (`[^missing]`) and undefined reference links (`[missing][undef]`) render cleanly as text without throwing unhandled runtime exceptions.
 
 ---
 

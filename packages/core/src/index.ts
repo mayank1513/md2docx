@@ -7,19 +7,20 @@ import {
   getDefinitions,
   type IDocxProps,
   type ISectionProps,
+  warnOnce,
 } from "./utils";
 
 /**
  * Represents the input Markdown AST tree(s) for conversion.
- * Supports either:
- * - A single `Root` node (direct conversion)
- * - An array of objects `{ ast: Root, props?: ISectionProps }` for fine-grained section-level control.
+ *
+ * @deprecated Passing an array of multiple AST inputs (`{ ast: Root, props?: ISectionProps }[]`) is deprecated
+ * and scheduled for removal in the next major version. Future multi-section documents will be modeled natively within a single AST tree.
  */
 type IInputMDAST = Root | { ast: Root; props?: ISectionProps }[];
 
 /**
  * Converts an MDAST (Markdown Abstract Syntax Tree) into a DOCX document.
- * @param astInputs - A single or multiple MDAST trees with optional section properties.
+ * @param astInputs - Single `Root` MDAST tree (passing an array of multiple ASTs is deprecated and will be removed in the next major version).
  * @param docxProps - General document properties. @see https://docx.js.org/#/usage/document
  * @param defaultSectionProps - Default properties for each document section. @see https://docx.js.org/#/usage/sections
  * @param outputType - The desired output format (default: `"blob"`). @see https://docx.js.org/#/usage/packers
@@ -31,6 +32,13 @@ export const toDocx = async (
   defaultSectionProps: ISectionProps = DEFAULT_SECTION_PROPS,
   outputType: OutputType = "blob",
 ) => {
+  if (Array.isArray(astInputs)) {
+    warnOnce(
+      "m2d-multi-ast-deprecated",
+      "Passing an array of multiple ASTs `{ ast, props }[]` to toDocx is deprecated and will be removed in the next major version.",
+    );
+  }
+
   // Stores footnotes indexed by their unique ID
   const footnotes: Record<number, { children: Paragraph[] }> = {};
 

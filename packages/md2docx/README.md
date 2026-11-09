@@ -80,13 +80,13 @@ md2docx(
 ): Promise<OutputTypeResult>;
 ```
 
-| Param                 | Description                                                         |
-| --------------------- | ------------------------------------------------------------------- |
-| `md`                  | Markdown string input.                                              |
-| `docxProps`           | Passed directly to `@m2d/core` → document metadata, styles, etc.    |
-| `defaultSectionProps` | Defaults for sections — page size, margins, plugins.                |
-| `outputType`          | `"blob"` (browser default) — or `"buffer"`, `"base64"`, `"stream"`. |
-| `pluginProps`         | Optional config passed to specific `@m2d/*` plugins.                |
+| Param                 | Description                                                                                                                          |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `md`                  | Markdown string input.                                                                                                               |
+| `docxProps`           | Passed directly to `@m2d/core` → document metadata (`title`, `creator`), styles, and `definitionsScope` (`"shared"` or `"section"`). |
+| `defaultSectionProps` | Defaults for sections — page size, margins, plugins, orientation.                                                                    |
+| `outputType`          | `"blob"` (browser default) — or `"buffer"`, `"base64"`, `"stream"`.                                                                  |
+| `pluginProps`         | Optional config passed to specific `@m2d/*` plugins.                                                                                 |
 
 ---
 

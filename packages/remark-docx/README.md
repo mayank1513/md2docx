@@ -116,7 +116,7 @@ import { IDocxProps, ISectionProps } from "mdast2docx";
 
 remarkDocx(
   outputType?: "blob" | "buffer" | "base64" | "uint8array", // Default: "blob"
-  docxProps?: IDocxProps,                                  // Global Word document options
+  docxProps?: IDocxProps,                                  // Global Word document options (title, styles, definitionsScope: "shared" | "section")
   sectionProps?: ISectionProps,                            // Section margins, headers, and plugins
   pluginProps?: {                                          // Options passed to auto-injected plugins
     table?: TablePluginOptions;

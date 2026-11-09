@@ -28,6 +28,8 @@ await toDocx(mdast, {}, {
 
 ## Multi-Section Documents
 
+> ⚠️ **Deprecation Notice (Next Major Version)**: Passing an array of multiple AST inputs (`{ ast: Root, props?: ISectionProps }[]`) to `toDocx` is deprecated and will be removed in the next major version. In the next major release, multi-section documents will be modeled natively via standard Markdown section directives within a single unified AST.
+
 To define multi-section documents (e.g. landscape appendix, cover page with different margins, multi-chapter books), pass an array of AST section descriptors to `toDocx`:
 
 ```typescript
@@ -38,8 +40,10 @@ const document = await toDocx([
   {
     ast: coverPageAst,
     props: {
-      page: {
-        margin: { top: 720, bottom: 720, left: 720, right: 720 },
+      properties: {
+        page: {
+          margin: { top: 720, bottom: 720, left: 720, right: 720 },
+        },
       },
     },
   },
@@ -53,9 +57,11 @@ const document = await toDocx([
   {
     ast: appendixTableAst,
     props: {
-      page: {
-        size: {
-          orientation: PageOrientation.LANDSCAPE,
+      properties: {
+        page: {
+          size: {
+            orientation: PageOrientation.LANDSCAPE,
+          },
         },
       },
     },
@@ -68,3 +74,110 @@ Each section supports the full range of `docx` `ISectionOptions` properties, inc
 - Header and footer definitions
 - Page numbering restarts and formats
 - Column layouts
+
+---
+
+## Definitions Scope & Reference Management
+
+When converting multi-section documents, Markdown link definitions (`[label]: https://example.com`) and footnotes (`[^note]: Note body`) need clear scoping rules. `@m2d/core` provides the `definitionsScope` configuration option under `IDocxProps`:
+
+```typescript
+export type DefinitionsScope = "shared" | "section";
+
+export interface IDocxProps {
+  /**
+   * Scope of reference link definitions and footnotes across multiple sections.
+   * - "shared" (default): Definitions declared in any section are available across all sections.
+   * - "section": Definitions are isolated to the section in which they are defined.
+   * @default "shared"
+   */
+  definitionsScope?: DefinitionsScope;
+}
+```
+
+### Scope Modes Comparison
+
+| Feature / Behavior | `definitionsScope: "shared"` (Default) | `definitionsScope: "section"` |
+| :--- | :--- | :--- |
+| **Link Definitions Scope** | Global — references declared in Section 3 resolve in Section 1 and 2 | Isolated — references only resolve within the same section |
+| **Footnote Scoping** | Global aggregation with collision-free sequential ID offset calculation | Isolated per-section definitions |
+| **Collision Resolution** | Local section definition overrides shared definitions on collision | Local section definitions only |
+| **Identifier Matching** | Case-insensitive per CommonMark/GFM spec (`UPPERCASE` normalized) | Case-insensitive per CommonMark/GFM spec |
+| **Missing References** | Gracefully renders children inline; never throws unhandled errors | Gracefully renders children inline; never throws unhandled errors |
+
+### Multi-Section AST Aggregation Pipeline
+
+```mermaid
+flowchart TD
+    subgraph S1["Section 1: Executive Summary"]
+        A1["MDAST Section 1"] --> D1["Extract Local Definitions & Footnotes"]
+        A1 --> R1["Reference Links & Footnotes"]
+    end
+
+    subgraph S2["Section 2: Landscape Appendix"]
+        A2["MDAST Section 2"] --> D2["Extract Local Definitions & Footnotes"]
+        A2 --> R2["Reference Links & Footnotes"]
+    end
+
+    subgraph Scope["Definitions Scoping Engine"]
+        D1 --> AGG["Global Definitions Map\n(Local overrides preserved)"]
+        D2 --> AGG
+        AGG --> OFF["Footnote Offset Counter\n(Section 1: 0..N, Section 2: N..M)"]
+    end
+
+    OFF --> B1["Compile Section 1 (Portrait)"]
+    OFF --> B2["Compile Section 2 (Landscape)"]
+    B1 --> DOCX["Unified docx.Document"]
+    B2 --> DOCX
+```
+
+### Complete Implementation Example
+
+```typescript
+import { toDocx } from "@m2d/core";
+import { PageOrientation } from "docx";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkGfm from "remark-gfm";
+
+const parser = unified().use(remarkParse).use(remarkGfm);
+
+const section1 = parser.parse(`
+# Quarterly Report
+Refer to the [System Overview][overview] for details.
+Key finding on latency[^latency-note].
+
+[^latency-note]: Observed under peak p99 loads.
+`);
+
+const section2 = parser.parse(`
+# Performance Topology Matrix
+Wide table rendered with landscape dimensions.
+
+| Region | P50 (ms) | P99 (ms) | Availability |
+| :--- | :---: | :---: | ---: |
+| us-east-1 | 12 | 28 | 99.99% |
+| eu-west-1 | 14 | 31 | 99.98% |
+
+Further analysis is in the [System Overview][overview].
+`);
+
+const section3 = parser.parse(`
+# Appendix & References
+
+[overview]: https://internal.corp/arch/system-overview "Corporate System Overview"
+`);
+
+// Compile with shared definitions scope
+const docxBlob = await toDocx(
+  [
+    { ast: section1, props: { page: { size: { orientation: PageOrientation.PORTRAIT } } } },
+    { ast: section2, props: { page: { size: { orientation: PageOrientation.LANDSCAPE } } } },
+    { ast: section3, props: { page: { size: { orientation: PageOrientation.PORTRAIT } } } },
+  ],
+  {
+    title: "Quarterly Performance Report",
+    definitionsScope: "shared", // [overview] resolves across all sections; [^latency-note] gets unique ID 1
+  },
+);
+```
