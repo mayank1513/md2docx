@@ -326,6 +326,7 @@ describe("definitions and footnotes across sections", () => {
             {
               type: "linkReference",
               identifier: "target",
+              referenceType: "shortcut",
               children: [{ type: "text", value: "Target S1" }],
             },
           ],
@@ -347,6 +348,7 @@ describe("definitions and footnotes across sections", () => {
             {
               type: "linkReference",
               identifier: "target",
+              referenceType: "shortcut",
               children: [{ type: "text", value: "Target S2" }],
             },
           ],
@@ -378,6 +380,7 @@ describe("definitions and footnotes across sections", () => {
               type: "linkReference",
               identifier: "mYlInK",
               label: "mYlInK",
+              referenceType: "shortcut",
               children: [{ type: "text", value: "Case Test" }],
             },
             {
@@ -449,6 +452,7 @@ describe("definitions and footnotes across sections", () => {
               type: "linkReference",
               identifier: "nonexistent",
               label: "nonexistent",
+              referenceType: "shortcut",
               children: [{ type: "text", value: "Unresolved Link" }],
             },
           ],
