@@ -15,6 +15,7 @@ export function baseOptions(): BaseLayoutProps {
     links: [
       { text: "Documentation", url: "/docs" },
       { text: "Playground", url: "/playground" },
+      { text: "Multi-Section", url: "/multi-section" },
     ],
     githubUrl,
   };
