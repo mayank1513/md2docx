@@ -64,18 +64,255 @@ const matchLineComment = (
   return source.slice(cursor, end);
 };
 
-// Strings & Literals
-const JS_STRINGS =
-  /`(?:\\[\s\S]|[^`\\])*`|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/y;
-const PY_STRINGS =
-  /(?:[rRuUbB]|[fF][rR]?|[rR][fF])?(?:"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/y;
-const DBL_QUOTE_STRING = /"(?:\\.|[^"\\])*"/y;
-const SGL_OR_DBL_STRING = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/y;
-const SQL_STRINGS = /'(?:''|[^'])*'|"(?:""|[^"])*"/y;
+// ---------------------------------------------------------------------------
+// Strings & Literals: ReDoS-immune deterministic scanners
+// ---------------------------------------------------------------------------
+const matchDoubleQuoteString = (
+  source: string,
+  cursor: number,
+): string | undefined => {
+  if (source[cursor] !== '"') return undefined;
+  let i = cursor + 1;
+  while (i < source.length) {
+    if (source[i] === "\\") {
+      i += 2;
+    } else if (source[i] === '"') {
+      return source.slice(cursor, i + 1);
+    } else if (source[i] === "\r" || source[i] === "\n") {
+      return source.slice(cursor, i);
+    } else {
+      i++;
+    }
+  }
+  return source.slice(cursor);
+};
+
+const matchSingleOrDoubleQuoteString = (
+  source: string,
+  cursor: number,
+): string | undefined => {
+  const quote = source[cursor];
+  if (quote !== '"' && quote !== "'") return undefined;
+  let i = cursor + 1;
+  while (i < source.length) {
+    if (source[i] === "\\") {
+      i += 2;
+    } else if (source[i] === quote) {
+      return source.slice(cursor, i + 1);
+    } else if (source[i] === "\r" || source[i] === "\n") {
+      return source.slice(cursor, i);
+    } else {
+      i++;
+    }
+  }
+  return source.slice(cursor);
+};
+
+const matchJsString = (source: string, cursor: number): string | undefined => {
+  const quote = source[cursor];
+  if (quote === "`") {
+    let i = cursor + 1;
+    while (i < source.length) {
+      if (source[i] === "\\") {
+        i += 2;
+      } else if (source[i] === "`") {
+        return source.slice(cursor, i + 1);
+      } else {
+        i++;
+      }
+    }
+    return source.slice(cursor);
+  }
+  if (quote === '"' || quote === "'") {
+    let i = cursor + 1;
+    while (i < source.length) {
+      if (source[i] === "\\") {
+        i += 2;
+      } else if (source[i] === quote) {
+        return source.slice(cursor, i + 1);
+      } else if (source[i] === "\r" || source[i] === "\n") {
+        return source.slice(cursor, i);
+      } else {
+        i++;
+      }
+    }
+    return source.slice(cursor);
+  }
+  return undefined;
+};
+
+const matchPythonTripleQuote = (
+  source: string,
+  cursor: number,
+  prefixLen: number,
+  delimiter: '"""' | "'''",
+): string => {
+  let i = cursor + prefixLen + 3;
+  while (i < source.length) {
+    const nextIdx = source.indexOf(delimiter, i);
+    if (nextIdx === -1) {
+      return source.slice(cursor);
+    }
+    let backslashes = 0;
+    let b = nextIdx - 1;
+    while (b >= cursor + prefixLen + 3 && source[b] === "\\") {
+      backslashes++;
+      b--;
+    }
+    if (backslashes % 2 === 0) {
+      return source.slice(cursor, nextIdx + 3);
+    }
+    i = nextIdx + 1;
+  }
+  return source.slice(cursor);
+};
+
+const matchPythonString = (
+  source: string,
+  cursor: number,
+): string | undefined => {
+  let p = cursor;
+  const rem = source.length - p;
+  if (rem >= 2) {
+    const two = source.slice(p, p + 2).toLowerCase();
+    if (two === "fr" || two === "rf" || two === "br" || two === "rb") {
+      p += 2;
+    }
+  }
+  if (p === cursor && rem >= 1) {
+    const one = source[p].toLowerCase();
+    if (one === "r" || one === "u" || one === "b" || one === "f") {
+      p += 1;
+    }
+  }
+
+  if (source.startsWith('"""', p)) {
+    return matchPythonTripleQuote(source, cursor, p - cursor, '"""');
+  }
+  if (source.startsWith("'''", p)) {
+    return matchPythonTripleQuote(source, cursor, p - cursor, "'''");
+  }
+
+  const quote = source[p];
+  if (quote === '"' || quote === "'") {
+    let i = p + 1;
+    while (i < source.length) {
+      if (source[i] === "\\") {
+        i += 2;
+      } else if (source[i] === quote) {
+        return source.slice(cursor, i + 1);
+      } else if (source[i] === "\r" || source[i] === "\n") {
+        return source.slice(cursor, i);
+      } else {
+        i++;
+      }
+    }
+    return source.slice(cursor);
+  }
+
+  return undefined;
+};
+
+const matchSqlString = (source: string, cursor: number): string | undefined => {
+  const quote = source[cursor];
+  if (quote !== "'" && quote !== '"') return undefined;
+  let i = cursor + 1;
+  while (i < source.length) {
+    if (source[i] === quote) {
+      if (i + 1 < source.length && source[i + 1] === quote) {
+        i += 2;
+      } else {
+        return source.slice(cursor, i + 1);
+      }
+    } else {
+      i++;
+    }
+  }
+  return source.slice(cursor);
+};
+
+const matchMarkdownInlineCode = (
+  source: string,
+  cursor: number,
+): string | undefined => {
+  if (source[cursor] !== "`") return undefined;
+  let count = 0;
+  while (cursor + count < source.length && source[cursor + count] === "`") {
+    count++;
+  }
+  const fence = source.slice(cursor, cursor + count);
+  let i = cursor + count;
+  while (i < source.length && source[i] !== "\n" && source[i] !== "\r") {
+    if (source.startsWith(fence, i)) {
+      return source.slice(cursor, i + count);
+    }
+    i++;
+  }
+  return undefined;
+};
 
 // JavaScript Context-Sensitive Regex Literal Detection
-const JS_REGEX_LITERAL =
-  /\/(?:\\.|\[(?:\\.|[^\]\\\r\n])*\]|[^/\\[\r\n])+\/[dgimsuvy]*/y;
+const matchJsRegexLiteral = (
+  source: string,
+  cursor: number,
+): string | undefined => {
+  if (source[cursor] !== "/") return undefined;
+  const next = source[cursor + 1];
+  if (
+    next === "/" ||
+    next === "*" ||
+    next === "\r" ||
+    next === "\n" ||
+    next === undefined
+  ) {
+    return undefined;
+  }
+
+  let i = cursor + 1;
+  let inClass = false;
+
+  while (i < source.length) {
+    const ch = source[i];
+    if (ch === "\r" || ch === "\n") {
+      return undefined;
+    }
+    if (ch === "\\") {
+      i += 2;
+      continue;
+    }
+    if (inClass) {
+      if (ch === "]") {
+        inClass = false;
+      }
+      i++;
+      continue;
+    }
+    if (ch === "[") {
+      inClass = true;
+      i++;
+      continue;
+    }
+    if (ch === "/") {
+      i++;
+      while (
+        i < source.length &&
+        (source[i] === "d" ||
+          source[i] === "g" ||
+          source[i] === "i" ||
+          source[i] === "m" ||
+          source[i] === "s" ||
+          source[i] === "u" ||
+          source[i] === "v" ||
+          source[i] === "y")
+      ) {
+        i++;
+      }
+      return source.slice(cursor, i);
+    }
+    i++;
+  }
+  return undefined;
+};
 const CAN_START_REGEX =
   /(?:[({[=,:;!?&|+*%^~<>-]|\b(?:return|throw|case|delete|void|typeof|instanceof|in|of|yield|await|else|do))$/;
 const canStartRegex = (previous: string): boolean =>
@@ -103,14 +340,36 @@ const BASH_PUNCTUATION = /[{}()[\]]/y;
 const CSS_PUNCTUATION = /[{}();:,]/y;
 const GENERIC_PUNCTUATION = /[{}()[\];:,.]/y;
 
+const matchThematicBreak = (
+  source: string,
+  cursor: number,
+): string | undefined => {
+  let i = cursor;
+  let spaces = 0;
+  while (i < source.length && source[i] === " " && spaces < 3) {
+    i++;
+    spaces++;
+  }
+  if (i >= source.length) return undefined;
+  const marker = source[i];
+  if (marker !== "*" && marker !== "-" && marker !== "_") return undefined;
+  let count = 0;
+  let end = i;
+  while (end < source.length && source[end] !== "\r" && source[end] !== "\n") {
+    if (source[end] === marker) {
+      count++;
+    } else if (source[end] !== " " && source[end] !== "\t") {
+      return undefined;
+    }
+    end++;
+  }
+  return count >= 3 ? source.slice(cursor, end) : undefined;
+};
+
 // Markdown Block Structures (evaluated at line start before consuming indentation)
 type BlockRule = [TokenType, RegExp];
 const MD_BLOCK_RULES: BlockRule[] = [
   ["keyword", / {0,3}#{1,6}(?=\s|$)/y],
-  [
-    "keyword",
-    / {0,3}(?:\*[ \t]*){3,}(?=[ \t]*(?:\r?\n|\r|$))| {0,3}(?:-[ \t]*){3,}(?=[ \t]*(?:\r?\n|\r|$))| {0,3}(?:_[ \t]*){3,}(?=[ \t]*(?:\r?\n|\r|$))/y,
-  ],
   ["operator", / {0,3}(?:[-+*]|\d+[.)])(?=\s)/y],
   ["operator", / {0,3}>/y],
 ];
@@ -718,6 +977,12 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
         source[cursor - 1] === "\n" ||
         source[cursor - 1] === "\r")
     ) {
+      const hr = matchThematicBreak(source, cursor);
+      if (hr) {
+        push("keyword", hr);
+        cursor += hr.length;
+        continue;
+      }
       let blockMatched = false;
       for (const [type, regex] of MD_BLOCK_RULES) {
         regex.lastIndex = cursor;
@@ -795,26 +1060,23 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
     // -------------------------------------------------------------------------
     if (lang === "python") {
       // Handles raw (r""), format (f""), bytes (b""), and triple-quoted blocks
-      PY_STRINGS.lastIndex = cursor;
-      const match = PY_STRINGS.exec(source);
-      if (match && match.index === cursor && match[0].length > 0) {
-        push("string", match[0]);
-        cursor += match[0].length;
+      const match = matchPythonString(source, cursor);
+      if (match) {
+        push("string", match);
+        cursor += match.length;
         continue;
       }
     } else if (lang === "javascript") {
-      JS_STRINGS.lastIndex = cursor;
-      const match = JS_STRINGS.exec(source);
-      if (match && match.index === cursor) {
-        push("string", match[0]);
-        cursor += match[0].length;
+      const match = matchJsString(source, cursor);
+      if (match) {
+        push("string", match);
+        cursor += match.length;
         continue;
       }
     } else if (lang === "json" || lang === "jsonc") {
-      DBL_QUOTE_STRING.lastIndex = cursor;
-      const match = DBL_QUOTE_STRING.exec(source);
-      if (match && match.index === cursor) {
-        let peek = cursor + match[0].length;
+      const match = matchDoubleQuoteString(source, cursor);
+      if (match) {
+        let peek = cursor + match.length;
         while (
           peek < source.length &&
           (source[peek] === " " ||
@@ -825,16 +1087,15 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
           peek++;
         }
         const type = source[peek] === ":" ? "keyword" : "string";
-        push(type, match[0]);
-        cursor += match[0].length;
+        push(type, match);
+        cursor += match.length;
         continue;
       }
     } else if (lang === "sql") {
-      SQL_STRINGS.lastIndex = cursor;
-      const match = SQL_STRINGS.exec(source);
-      if (match && match.index === cursor) {
-        push("string", match[0]);
-        cursor += match[0].length;
+      const match = matchSqlString(source, cursor);
+      if (match) {
+        push("string", match);
+        cursor += match.length;
         continue;
       }
     } else if (
@@ -844,28 +1105,24 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       lang === "less" ||
       lang === "bash"
     ) {
-      SGL_OR_DBL_STRING.lastIndex = cursor;
-      const match = SGL_OR_DBL_STRING.exec(source);
-      if (match && match.index === cursor) {
-        push("string", match[0]);
-        cursor += match[0].length;
+      const match = matchSingleOrDoubleQuoteString(source, cursor);
+      if (match) {
+        push("string", match);
+        cursor += match.length;
         continue;
       }
     } else if (lang === "markdown") {
-      const inlineCode = /`+[^`\n]*`+/y;
-      inlineCode.lastIndex = cursor;
-      const match = inlineCode.exec(source);
-      if (match && match.index === cursor) {
-        push("string", match[0]);
-        cursor += match[0].length;
+      const match = matchMarkdownInlineCode(source, cursor);
+      if (match) {
+        push("string", match);
+        cursor += match.length;
         continue;
       }
     } else if (lang === "generic") {
-      JS_STRINGS.lastIndex = cursor;
-      const match = JS_STRINGS.exec(source);
-      if (match && match.index === cursor) {
-        push("string", match[0]);
-        cursor += match[0].length;
+      const match = matchJsString(source, cursor);
+      if (match) {
+        push("string", match);
+        cursor += match.length;
         continue;
       }
     }
@@ -876,12 +1133,9 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
     if (
       lang === "javascript" &&
       source[cursor] === "/" &&
-      source[cursor + 1] !== "/" &&
-      source[cursor + 1] !== "*" &&
       canStartRegex(previousSignificant)
     ) {
-      JS_REGEX_LITERAL.lastIndex = cursor;
-      const literal = JS_REGEX_LITERAL.exec(source)?.[0];
+      const literal = matchJsRegexLiteral(source, cursor);
       if (literal) {
         push("string", literal);
         cursor += literal.length;

@@ -27,7 +27,16 @@ describe("@m2d/code-lowlight", () => {
       expect(resolveTokenType(["hljs-punctuation"])).toBe("punctuation");
       expect(resolveTokenType(["hljs-addition"])).toBe("diffAdd");
       expect(resolveTokenType(["hljs-deletion"])).toBe("diffDelete");
+      expect(resolveTokenType(["hljs-literal"])).toBe("boolean");
+      expect(resolveTokenType(["hljs-type"])).toBe("builtin");
+      expect(resolveTokenType(["hljs-doctag"])).toBe("comment");
+      expect(resolveTokenType(["hljs-meta"])).toBe("comment");
+      expect(resolveTokenType(["hljs-attr"])).toBe("variable");
+      expect(resolveTokenType([123 as unknown as string, "hljs-keyword"])).toBe(
+        "keyword",
+      );
       expect(resolveTokenType(["unknown-class"])).toBeUndefined();
+      expect(resolveTokenType([])).toBeUndefined();
       expect(resolveTokenType(undefined)).toBeUndefined();
     });
 
@@ -37,6 +46,28 @@ describe("@m2d/code-lowlight", () => {
       expect(tokens.length).toBeGreaterThan(0);
       expect(tokens.find((t) => t.value === "const")?.type).toBe("keyword");
       expect(tokens.find((t) => t.value === "42")?.type).toBe("number");
+
+      // Root with empty or non-text children
+      const customHast = {
+        type: "root" as const,
+        children: [
+          {
+            type: "element" as const,
+            tagName: "span",
+            properties: { className: ["hljs-keyword"] },
+            children: [{ type: "text" as const, value: "export" }],
+          },
+          {
+            type: "element" as const,
+            tagName: "span",
+            properties: {},
+            children: [],
+          },
+        ],
+      };
+      const customTokens = hastToTokens(customHast);
+      expect(customTokens.length).toBe(1);
+      expect(customTokens[0]?.value).toBe("export");
     });
   });
 
@@ -80,6 +111,27 @@ describe("@m2d/code-lowlight", () => {
 
       expect(lines.length).toBe(2);
       expect(lines[0]?.[0]?.value).toBe("some arbitrary text");
+      expect(lines[0]?.[0]?.type).toBe("text");
+    });
+
+    test("handles tokenizer exceptions gracefully and falls back to plain text", () => {
+      const throwingLowlight = {
+        registered: () => true,
+        highlight: () => {
+          throw new Error("Highlight failed");
+        },
+        highlightAuto: () => {
+          throw new Error("Auto failed");
+        },
+      };
+
+      const tokenizer = createLowlightTokenizer(
+        throwingLowlight as unknown as typeof defaultLowlight,
+        true,
+      );
+      const lines = tokenizer("const x = 1;", "js");
+      expect(lines.length).toBe(1);
+      expect(lines[0]?.[0]?.value).toBe("const x = 1;");
       expect(lines[0]?.[0]?.type).toBe("text");
     });
   });

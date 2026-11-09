@@ -54,9 +54,16 @@ describe("@m2d/code", () => {
       expect(getTokenColor("string", GITHUB_LIGHT_THEME)).toBe("#032f62");
       expect(getTokenColor("comment", GITHUB_LIGHT_THEME)).toBe("#6a737d");
       expect(getTokenColor("number", GITHUB_LIGHT_THEME)).toBe("#005cc5");
+      expect(getTokenColor("boolean", GITHUB_LIGHT_THEME)).toBe("#005cc5");
+      expect(getTokenColor("builtin", GITHUB_LIGHT_THEME)).toBe("#e36209");
+      expect(getTokenColor("function", GITHUB_LIGHT_THEME)).toBe("#6f42c1");
+      expect(getTokenColor("variable", GITHUB_LIGHT_THEME)).toBe("#24292e");
+      expect(getTokenColor("operator", GITHUB_LIGHT_THEME)).toBe("#d73a49");
+      expect(getTokenColor("punctuation", GITHUB_LIGHT_THEME)).toBe("#24292e");
       expect(getTokenColor("text", GITHUB_LIGHT_THEME)).toBe("#24292e");
       expect(getTokenColor("diffAdd", GITHUB_LIGHT_THEME)).toBe("#22863a");
       expect(getTokenColor("diffDelete", GITHUB_LIGHT_THEME)).toBe("#b31d28");
+      expect(getTokenColor("diffHeader", GITHUB_LIGHT_THEME)).toBe("#6a737d");
     });
   });
 
@@ -596,6 +603,138 @@ def calculate(value: int) -> bool:
       const cssTokens = tokenize(dashes, "css");
       expect(performance.now() - startCss).toBeLessThan(50);
       expect(cssTokens.length).toBeGreaterThan(0);
+    });
+
+    test("handles strings with thousands of escaped quotes in linear time (zero ReDoS)", () => {
+      const pyEscaped = `"${'\\"'.repeat(5000)}"`;
+      const startPy = performance.now();
+      const pyTokens = tokenize(pyEscaped, "python");
+      expect(performance.now() - startPy).toBeLessThan(50);
+      expect(pyTokens[0]?.[0]?.type).toBe("string");
+
+      const jsEscaped = `"${'\\"'.repeat(5000)}"`;
+      const startJs = performance.now();
+      const jsTokens = tokenize(jsEscaped, "javascript");
+      expect(performance.now() - startJs).toBeLessThan(50);
+      expect(jsTokens[0]?.[0]?.type).toBe("string");
+
+      const sqlEscaped = `'${"''".repeat(5000)}'`;
+      const startSql = performance.now();
+      const sqlTokens = tokenize(sqlEscaped, "sql");
+      expect(performance.now() - startSql).toBeLessThan(50);
+      expect(sqlTokens[0]?.[0]?.type).toBe("string");
+    });
+
+    test("handles regex literals with thousands of escaped slashes in linear time", () => {
+      const regexMalicious = `/${"\\/".repeat(5000)}/gi`;
+      const startRegex = performance.now();
+      const tokens = tokenize(regexMalicious, "javascript");
+      expect(performance.now() - startRegex).toBeLessThan(50);
+      expect(tokens[0]?.[0]?.type).toBe("string");
+    });
+  });
+
+  describe("Expanded Code Features & Edge Cases", () => {
+    test("renders code block as paragraph with empty lines preserved", () => {
+      const plugin = codePlugin({ blockType: "paragraph" });
+      const codeNode: Code = {
+        type: "code",
+        lang: "js",
+        value: "const a = 1;\n\nconst b = 2;",
+      };
+
+      const result = plugin.block?.(
+        docx,
+        codeNode as unknown as Parameters<NonNullable<typeof plugin.block>>[1],
+        {},
+        () => [],
+        () => [],
+      );
+
+      expect(result?.length).toBe(1);
+      expect(result?.[0]).toBeInstanceOf(docx.Paragraph);
+    });
+
+    test("expands tabs when tabSize > 0", () => {
+      const code = "\tconst x = 1;\n\t\tconst y = 2;";
+      const lines = tokenize(code, "javascript");
+      expect(lines[0]?.[0]?.value).toBe("\t");
+
+      const plugin = codePlugin({ tabSize: 4 });
+      const codeNode: Code = {
+        type: "code",
+        lang: "js",
+        value: code,
+      };
+
+      const result = plugin.block?.(
+        docx,
+        codeNode as unknown as Parameters<NonNullable<typeof plugin.block>>[1],
+        {},
+        () => [],
+        () => [],
+      );
+
+      expect(result?.[0]).toBeInstanceOf(docx.Table);
+    });
+
+    test("falls back to default github-light theme for unknown theme names", () => {
+      const resolved = resolveTheme("non-existent-theme-xyz");
+      expect(resolved.name).toBe("github-light");
+    });
+
+    test("highlights diff additions and deletions in table rows", () => {
+      const plugin = codePlugin({ diffHighlight: true });
+      const diffCode: Code = {
+        type: "code",
+        lang: "diff",
+        value:
+          "--- a/file.ts\n+++ b/file.ts\n@@ -1 +1 @@\n-const old = 1;\n+const updated = 2;",
+      };
+
+      const result = plugin.block?.(
+        docx,
+        diffCode as unknown as Parameters<NonNullable<typeof plugin.block>>[1],
+        {},
+        () => [],
+        () => [],
+      );
+
+      expect(result?.[0]).toBeInstanceOf(docx.Table);
+    });
+
+    test("tokenizes Markdown thematic breaks (* * *, ---, ___)", () => {
+      const md = "* * *\n---\n___";
+      const lines = tokenize(md, "markdown");
+      expect(lines[0]?.[0]?.type).toBe("keyword");
+      expect(lines[1]?.[0]?.type).toBe("keyword");
+      expect(lines[2]?.[0]?.type).toBe("keyword");
+    });
+
+    test("tokenizes Python decorators and booleans", () => {
+      const py = "@classmethod\ndef get_bool():\n    return True or False";
+      const lines = tokenize(py, "python");
+      expect(lines[0]?.find((t) => t.type === "function")?.value).toBe(
+        "@classmethod",
+      );
+      expect(lines[2]?.find((t) => t.value === "True")?.type).toBe("boolean");
+      expect(lines[2]?.find((t) => t.value === "False")?.type).toBe("boolean");
+    });
+
+    test("tokenizes Bash variables and parameters", () => {
+      const bash = 'echo "$VAR" "$' + '{FOO}" "$?"';
+      const lines = tokenize(bash, "bash");
+      expect(lines.length).toBe(1);
+    });
+
+    test("tokenizes CSS custom properties and at-rules", () => {
+      const css =
+        "@media screen {\n  --brand-color: #336699;\n  color: var(--brand-color);\n}";
+      const lines = tokenize(css, "css");
+      expect(lines[0]?.find((t) => t.value === "@media")?.type).toBe("keyword");
+      expect(lines[1]?.find((t) => t.value === "--brand-color")?.type).toBe(
+        "keyword",
+      );
     });
   });
 });

@@ -10,6 +10,7 @@ import {
   createCodeShiki,
   createCodeShikiPlugin,
   createShikiTokenizer,
+  getSharedHighlighter,
   resolveTokenType,
   shikiLinesToTokens,
 } from "./index";
@@ -271,6 +272,67 @@ describe("@m2d/code-shiki", () => {
 
       expect(buffer).toBeInstanceOf(Uint8Array);
       expect((buffer as Uint8Array).byteLength).toBeGreaterThan(1000);
+    });
+
+    test("dynamically loads additional languages via getSharedHighlighter when already initialized", async () => {
+      const h1 = await getSharedHighlighter();
+      expect(h1).toBeDefined();
+
+      const h2 = await getSharedHighlighter(["rust", "ruby"]);
+      expect(h2.getLoadedLanguages()).toContain("rust");
+      expect(h2.getLoadedLanguages()).toContain("ruby");
+      expect(h1).toBe(h2);
+    });
+
+    test("dynamically loads missing AST languages when user passes custom highlighter", async () => {
+      const customHighlighter = await createHighlighter({
+        themes: ["github-light"],
+        langs: ["javascript"],
+      });
+
+      const plugin = codeShikiPlugin({
+        highlighter: customHighlighter,
+        theme: "github-light",
+      });
+
+      const ast: Root = {
+        type: "root",
+        children: [
+          {
+            type: "code",
+            lang: "json",
+            value: `{"loaded": true}`,
+          },
+        ],
+      };
+
+      await plugin.preprocess?.(
+        ast,
+        {},
+        {} as unknown as Parameters<NonNullable<typeof plugin.preprocess>>[2],
+      );
+      expect(customHighlighter.getLoadedLanguages()).toContain("json");
+    });
+
+    test("handles inline code interception with Shiki", () => {
+      const plugin = codeShikiPlugin({ theme: "github-light" });
+      const inlineNode = {
+        type: "inlineCode",
+        value: "const x = 1;",
+      };
+
+      const runs = plugin.inline?.(
+        docx,
+        inlineNode as unknown as Parameters<
+          NonNullable<typeof plugin.inline>
+        >[1],
+        {},
+        {},
+        {},
+        () => [],
+      );
+
+      expect(runs).toBeDefined();
     });
   });
 });
