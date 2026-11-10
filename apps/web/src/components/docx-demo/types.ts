@@ -4,6 +4,16 @@ export type PresetId = (typeof PRESETS)[number]["id"];
 
 export type TargetId = "md2docx" | "mdast2docx" | "remark-docx";
 
+export type CodeEngine = "code" | "lowlight" | "shiki";
+
+export interface CodeEngineOption {
+  id: CodeEngine;
+  name: string;
+  badge: string;
+  pkg: string;
+  desc: string;
+}
+
 export interface TargetOption {
   id: TargetId;
   name: string;

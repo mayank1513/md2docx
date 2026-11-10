@@ -1,4 +1,6 @@
 import { codePlugin } from "@m2d/code";
+import { codeLowlightPlugin } from "@m2d/code-lowlight";
+import { createCodeShikiPlugin } from "@m2d/code-shiki";
 import { frontmatterPlugin } from "@m2d/frontmatter";
 import { md2docx } from "@m2d/md2docx";
 import { type Mdast2DocxPluginProps, remarkDocx } from "@m2d/remark-docx";
@@ -18,7 +20,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
-import type { PluginId, TargetId } from "./types";
+import type { CodeEngine, PluginId, TargetId } from "./types";
 
 export interface GenerateDocxOptions {
   markdown: string;
@@ -26,13 +28,50 @@ export interface GenerateDocxOptions {
   enabledPlugins?: Partial<Record<PluginId, boolean>>;
   coverPage?: boolean;
   infoBox?: boolean;
+  codeEngine?: CodeEngine;
   title?: string;
   creator?: string;
 }
 
-export const getActiveClientPlugins = (
+let cachedShikiPromise: ReturnType<typeof createCodeShikiPlugin> | null = null;
+const getShikiPlugin = () => {
+  if (!cachedShikiPromise) {
+    cachedShikiPromise = createCodeShikiPlugin({
+      langs: [
+        "javascript",
+        "typescript",
+        "python",
+        "json",
+        "html",
+        "css",
+        "sql",
+        "sh",
+        "diff",
+        "markdown",
+      ],
+      themes: ["github-light", "github-dark", "monokai"],
+    });
+  }
+  return cachedShikiPromise;
+};
+
+export const resolveCodePlugin = async (codeEngine: CodeEngine = "code") => {
+  if (codeEngine === "lowlight") {
+    return codeLowlightPlugin();
+  }
+  if (codeEngine === "shiki") {
+    return await getShikiPlugin();
+  }
+  return codePlugin();
+};
+
+export const getActiveClientPlugins = async (
   enabledPlugins?: Partial<Record<PluginId, boolean>>,
-  options?: { coverPage?: boolean; infoBox?: boolean },
+  options?: {
+    coverPage?: boolean;
+    infoBox?: boolean;
+    codeEngine?: CodeEngine;
+  },
 ) => {
   const list = [];
   if (enabledPlugins?.frontmatter !== false) {
@@ -43,7 +82,9 @@ export const getActiveClientPlugins = (
       }),
     );
   }
-  if (enabledPlugins?.code !== false) list.push(codePlugin());
+  if (enabledPlugins?.code !== false) {
+    list.push(await resolveCodePlugin(options?.codeEngine));
+  }
   if (enabledPlugins?.mermaid !== false) list.push(mermaidPlugin());
   if (enabledPlugins?.html !== false) list.push(htmlPlugin());
   if (enabledPlugins?.list !== false) list.push(listPlugin());
@@ -60,6 +101,7 @@ export const generateDocxBlob = async ({
   enabledPlugins,
   coverPage = false,
   infoBox = true,
+  codeEngine = "code",
   title = "Md2Docx Document",
   creator,
 }: GenerateDocxOptions): Promise<Blob> => {
@@ -75,7 +117,20 @@ export const generateDocxBlob = async ({
     } else if (coverPage || !infoBox) {
       pluginProps.frontmatter = { coverPage, infoBox };
     }
-    if (enabledPlugins?.code === false) pluginProps.code = false;
+
+    // Handle code engine:
+    // If code is disabled, pass false in pluginProps.
+    // If non-default engine (lowlight or shiki), disable built-in code and pass the engine via sectionProps.plugins
+    // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
+    let customPlugins: Array<any> | undefined;
+    if (enabledPlugins?.code === false) {
+      pluginProps.code = false;
+    } else if (codeEngine !== "code") {
+      pluginProps.code = false;
+      const activeCodePlugin = await resolveCodePlugin(codeEngine);
+      customPlugins = [activeCodePlugin];
+    }
+
     if (enabledPlugins?.mermaid === false) pluginProps.mermaid = false;
     if (enabledPlugins?.image === false) pluginProps.image = false;
     if (enabledPlugins?.html === false) pluginProps.html = false;
@@ -84,11 +139,13 @@ export const generateDocxBlob = async ({
     if (enabledPlugins?.math === false) pluginProps.math = false;
     if (enabledPlugins?.emoji === false) pluginProps.emoji = false;
 
+    const sectionProps = customPlugins ? { plugins: customPlugins } : undefined;
+
     if (target === "md2docx") {
       return (await md2docx(
         markdown,
         docxProps,
-        undefined,
+        sectionProps,
         "blob",
         pluginProps,
       )) as Blob;
@@ -99,15 +156,16 @@ export const generateDocxBlob = async ({
       .use(remarkGfm)
       .use(remarkMath)
       .use(remarkFrontmatter)
-      .use(remarkDocx, "blob", docxProps, undefined, pluginProps);
+      .use(remarkDocx, "blob", docxProps, sectionProps, pluginProps);
     const res = await processor.process(markdown);
     return res.result as Blob;
   }
 
   // target === "mdast2docx"
-  const plugins = getActiveClientPlugins(enabledPlugins, {
+  const plugins = await getActiveClientPlugins(enabledPlugins, {
     coverPage,
     infoBox,
+    codeEngine,
   });
   const processor = unified()
     .use(remarkParse)

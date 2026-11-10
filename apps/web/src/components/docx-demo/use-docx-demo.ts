@@ -8,6 +8,7 @@ import {
 } from "./constants";
 import { generateDocxBlob } from "./generator";
 import type {
+  CodeEngine,
   ExecutionMode,
   PluginId,
   PresetId,
@@ -28,6 +29,7 @@ export const useDocxDemo = () => {
   const [executionMode, setExecutionMode] = useState<ExecutionMode>("client");
   const [coverPage, setCoverPage] = useState(false);
   const [infoBox, setInfoBox] = useState(true);
+  const [codeEngine, setCodeEngine] = useState<CodeEngine>("code");
 
   /** Captured MDAST reference from @m2d/react-markdown preview */
   const previewAstRef = useRef<NonNullable<AstRef["current"]>>([]);
@@ -161,6 +163,7 @@ export const useDocxDemo = () => {
           enabledPlugins,
           coverPage,
           infoBox,
+          codeEngine,
           title:
             selectedPreset === "full"
               ? "Markdown Syntax Showcase"
@@ -194,6 +197,7 @@ export const useDocxDemo = () => {
     enabledPlugins,
     coverPage,
     infoBox,
+    codeEngine,
     selectedPreset,
   ]);
 
@@ -217,6 +221,7 @@ export const useDocxDemo = () => {
         enabledPlugins,
         coverPage,
         infoBox,
+        codeEngine,
         title: docxProps.title,
         creator: docxProps.creator,
       });
@@ -267,6 +272,7 @@ export const useDocxDemo = () => {
           plugins: enabledPlugins,
           coverPage,
           infoBox,
+          codeEngine,
         }),
       });
 
@@ -317,8 +323,16 @@ export const useDocxDemo = () => {
         executionMode,
         coverPage,
         infoBox,
+        codeEngine,
       ),
-    [selectedTarget, enabledPlugins, executionMode, coverPage, infoBox],
+    [
+      selectedTarget,
+      enabledPlugins,
+      executionMode,
+      coverPage,
+      infoBox,
+      codeEngine,
+    ],
   );
 
   const handleExportDocx = () => {
@@ -348,6 +362,8 @@ export const useDocxDemo = () => {
     setCoverPage,
     infoBox,
     setInfoBox,
+    codeEngine,
+    setCodeEngine,
     toggleCoverPage,
     toggleInfoBox,
     enabledPlugins,

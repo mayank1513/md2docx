@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { codePlugin } from "@m2d/code";
+import { codeLowlightPlugin } from "@m2d/code-lowlight";
+import { createCodeShikiPlugin } from "@m2d/code-shiki";
 import {
   type Mdast2DocxNodePluginProps,
   remarkDocx as remarkDocxNode,
@@ -36,9 +38,42 @@ interface LayoutOptions {
   infoBox?: boolean;
 }
 
-const getServerPlugins = (
+let cachedServerShiki: ReturnType<typeof createCodeShikiPlugin> | null = null;
+const getServerShikiPlugin = () => {
+  if (!cachedServerShiki) {
+    cachedServerShiki = createCodeShikiPlugin({
+      langs: [
+        "javascript",
+        "typescript",
+        "python",
+        "json",
+        "html",
+        "css",
+        "sql",
+        "sh",
+        "diff",
+        "markdown",
+      ],
+      themes: ["github-light", "github-dark", "monokai"],
+    });
+  }
+  return cachedServerShiki;
+};
+
+const resolveServerCodePlugin = async (codeEngine = "code") => {
+  if (codeEngine === "lowlight") {
+    return codeLowlightPlugin();
+  }
+  if (codeEngine === "shiki") {
+    return await getServerShikiPlugin();
+  }
+  return codePlugin();
+};
+
+const getServerPlugins = async (
   enabled?: Record<string, boolean>,
   layoutOptions?: LayoutOptions,
+  codeEngine = "code",
 ) => {
   const plugins = [];
   if (enabled?.frontmatter !== false) {
@@ -49,7 +84,9 @@ const getServerPlugins = (
       }),
     );
   }
-  if (enabled?.code !== false) plugins.push(codePlugin());
+  if (enabled?.code !== false) {
+    plugins.push(await resolveServerCodePlugin(codeEngine));
+  }
   if (enabled?.html !== false) plugins.push(nodeHtmlPlugin());
   if (enabled?.list !== false) plugins.push(listPlugin());
   if (enabled?.table !== false) plugins.push(tablePlugin());
@@ -70,6 +107,7 @@ const generateDocxResponse = async (
   pluginsConfig?: Record<string, boolean>,
   layoutOptions?: LayoutOptions,
   target = "md2docx",
+  codeEngine = "code",
 ): Promise<NextResponse> => {
   const start = performance.now();
   let buffer: unknown;
@@ -87,7 +125,18 @@ const generateDocxResponse = async (
         infoBox: layoutOptions?.infoBox,
       };
     }
-    if (pluginsConfig?.code === false) pluginProps.code = false;
+
+    // Handle code engine:
+    // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
+    let customPlugins: Array<any> | undefined;
+    if (pluginsConfig?.code === false) {
+      pluginProps.code = false;
+    } else if (codeEngine !== "code") {
+      pluginProps.code = false;
+      const activeCodePlugin = await resolveServerCodePlugin(codeEngine);
+      customPlugins = [activeCodePlugin];
+    }
+
     if (pluginsConfig?.html === false) pluginProps.html = false;
     if (pluginsConfig?.list === false) pluginProps.list = false;
     if (pluginsConfig?.table === false) pluginProps.table = false;
@@ -96,12 +145,14 @@ const generateDocxResponse = async (
     if (pluginsConfig?.image === false) pluginProps.image = false;
     if (pluginsConfig?.emoji === false) pluginProps.emoji = false;
 
+    const sectionProps = customPlugins ? { plugins: customPlugins } : undefined;
+
     const processor = unified()
       .use(remarkParse)
       .use(remarkGfm)
       .use(remarkMath)
       .use(remarkFrontmatter)
-      .use(remarkDocxNode, "arraybuffer", fileProps, undefined, pluginProps);
+      .use(remarkDocxNode, "arraybuffer", fileProps, sectionProps, pluginProps);
 
     const res = await processor.process(markdown);
     buffer = res.result;
@@ -111,8 +162,14 @@ const generateDocxResponse = async (
     buffer = await toDocx(
       mdast,
       fileProps,
-      // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-      { plugins: getServerPlugins(pluginsConfig, layoutOptions) as any },
+      {
+        plugins: (await getServerPlugins(
+          pluginsConfig,
+          layoutOptions,
+          codeEngine,
+          // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
+        )) as any,
+      },
       "arraybuffer",
     );
   }
@@ -165,6 +222,7 @@ export const POST = async (req: NextRequest) => {
     const body = await req.json();
     const md = body?.markdown || "# Empty Document";
     const target = (body?.target as string) || "md2docx";
+    const codeEngine = (body?.codeEngine as string) || "code";
     const plugins = body?.plugins as Record<string, boolean> | undefined;
     const coverPage = body?.coverPage as boolean | undefined;
     const infoBox = body?.infoBox as boolean | undefined;
@@ -178,6 +236,7 @@ export const POST = async (req: NextRequest) => {
         infoBox,
       },
       target,
+      codeEngine,
     );
   } catch (error) {
     console.error("Error generating DOCX from body:", error);

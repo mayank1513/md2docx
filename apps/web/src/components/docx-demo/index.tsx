@@ -26,6 +26,8 @@ export const DocxDemo = () => {
     infoBox,
     toggleCoverPage,
     toggleInfoBox,
+    codeEngine,
+    setCodeEngine,
     enabledPlugins,
     togglePlugin,
     setAllPlugins,
@@ -69,9 +71,11 @@ export const DocxDemo = () => {
         <PluginPipeline
           enabledPlugins={enabledPlugins}
           activePluginCount={activePluginCount}
+          codeEngine={codeEngine}
           coverPage={coverPage}
           infoBox={infoBox}
           onTogglePlugin={togglePlugin}
+          onSelectCodeEngine={setCodeEngine}
           onSetAllPlugins={setAllPlugins}
           onToggleCoverPage={toggleCoverPage}
           onToggleInfoBox={toggleInfoBox}

@@ -1,20 +1,23 @@
 import {
   BookOpen,
   Check,
+  Code2,
   FileText,
   LayoutTemplate,
   Sparkles,
 } from "lucide-react";
 import { Badge } from "../ui/badge";
-import { AVAILABLE_PLUGINS } from "./constants";
-import type { PluginId } from "./types";
+import { AVAILABLE_PLUGINS, CODE_ENGINES } from "./constants";
+import type { CodeEngine, PluginId } from "./types";
 
 interface PluginPipelineProps {
   enabledPlugins: Record<PluginId, boolean>;
   activePluginCount: number;
+  codeEngine: CodeEngine;
   coverPage: boolean;
   infoBox: boolean;
   onTogglePlugin: (id: PluginId) => void;
+  onSelectCodeEngine: (engine: CodeEngine) => void;
   onSetAllPlugins: (enable: boolean) => void;
   onToggleCoverPage: () => void;
   onToggleInfoBox: () => void;
@@ -23,9 +26,11 @@ interface PluginPipelineProps {
 export const PluginPipeline = ({
   enabledPlugins,
   activePluginCount,
+  codeEngine,
   coverPage,
   infoBox,
   onTogglePlugin,
+  onSelectCodeEngine,
   onSetAllPlugins,
   onToggleCoverPage,
   onToggleInfoBox,
@@ -68,6 +73,12 @@ export const PluginPipeline = ({
         {AVAILABLE_PLUGINS.map((plugin) => {
           const Icon = plugin.icon;
           const isEnabled = enabledPlugins[plugin.id];
+          const engineMeta =
+            plugin.id === "code"
+              ? CODE_ENGINES.find((e) => e.id === codeEngine)
+              : null;
+          const displayName = engineMeta?.badge || plugin.name;
+          const displayDesc = engineMeta?.desc || plugin.desc;
           return (
             <button
               key={plugin.id}
@@ -78,7 +89,7 @@ export const PluginPipeline = ({
                   ? "bg-primary/5 border-primary/40 shadow-xs"
                   : "bg-muted/30 border-border/40 opacity-50 hover:opacity-80"
               }`}
-              title={`Click to ${isEnabled ? "disable" : "enable"} ${plugin.name}`}
+              title={`Click to ${isEnabled ? "disable" : "enable"} ${displayName}`}
             >
               <div className="flex items-center justify-between mb-1.5">
                 <Icon
@@ -102,16 +113,48 @@ export const PluginPipeline = ({
                     isEnabled ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
-                  {plugin.name}
+                  {displayName}
                 </div>
                 <div className="text-[10px] text-muted-foreground truncate">
-                  {plugin.desc}
+                  {displayDesc}
                 </div>
               </div>
             </button>
           );
         })}
       </div>
+
+      {/* Code Syntax Highlighting Engine sub-bar */}
+      {enabledPlugins.code && (
+        <div className="mt-3 pt-3 border-t border-border/50 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Code2 className="w-3.5 h-3.5 text-primary" />
+            <span className="font-semibold text-foreground">
+              Syntax Highlighting Engine:
+            </span>
+            <span className="hidden sm:inline">
+              Select syntax highlighter for code fences and inline tokens
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 bg-muted/50 p-0.5 rounded-lg border border-border/60">
+            {CODE_ENGINES.map((engine) => (
+              <button
+                key={engine.id}
+                type="button"
+                onClick={() => onSelectCodeEngine(engine.id)}
+                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all cursor-pointer ${
+                  codeEngine === engine.id
+                    ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+                title={engine.desc}
+              >
+                {engine.name} ({engine.badge})
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Frontmatter Layout Synthesizer sub-bar */}
       {enabledPlugins.frontmatter && (

@@ -9,7 +9,12 @@ import {
   ListOrdered,
   Smile,
 } from "lucide-react";
-import type { PluginDefinition, PluginId, TargetOption } from "./types";
+import type {
+  CodeEngineOption,
+  PluginDefinition,
+  PluginId,
+  TargetOption,
+} from "./types";
 
 export const ALL_PLUGINS_SAMPLE = `---
 title: "md2docx Feature Showcase"
@@ -374,6 +379,30 @@ export const AVAILABLE_PLUGINS: PluginDefinition[] = [
     fnName: "emojiPlugin",
     icon: Smile,
     desc: "GitHub Shortcodes & Twemoji",
+  },
+];
+
+export const CODE_ENGINES: CodeEngineOption[] = [
+  {
+    id: "code",
+    name: "Built-in",
+    badge: "@m2d/code",
+    pkg: "@m2d/code",
+    desc: "Lightweight zero-dependency regex highlighter",
+  },
+  {
+    id: "lowlight",
+    name: "Lowlight",
+    badge: "@m2d/code-lowlight",
+    pkg: "@m2d/code-lowlight",
+    desc: "Highlight.js AST grammar engine",
+  },
+  {
+    id: "shiki",
+    name: "Shiki",
+    badge: "@m2d/code-shiki",
+    pkg: "@m2d/code-shiki",
+    desc: "VS Code TextMate high-fidelity grammar engine",
   },
 ];
 
