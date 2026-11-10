@@ -38,6 +38,9 @@ const SQL_NUMBER = /\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b/iy;
 const GENERIC_NUMBER = /\b\d+(?:\.\d+)?\b/y;
 
 // Comments: ReDoS-immune deterministic scanners (no polynomial backtracking)
+/**
+ * Matches an opening and closing block comment sequence (defaults to /* ... *\/).
+ */
 const matchBlockComment = (
   source: string,
   cursor: number,
@@ -51,6 +54,9 @@ const matchBlockComment = (
     : source.slice(cursor, end + closeSeq.length);
 };
 
+/**
+ * Matches a line comment starting with a specified prefix until newline or EOF.
+ */
 const matchLineComment = (
   source: string,
   cursor: number,
@@ -67,80 +73,74 @@ const matchLineComment = (
 // ---------------------------------------------------------------------------
 // Strings & Literals: ReDoS-immune deterministic scanners
 // ---------------------------------------------------------------------------
+
+/**
+ * Scans an escaped character sequence enclosed by quotes, respecting backslash escapes.
+ * Terminated on an unescaped matching quote, or on unescaped line breaks when `multiline` is false.
+ */
+const scanEscapedString = (
+  source: string,
+  quoteStart: number,
+  quote: string,
+  multiline = false,
+  sliceStart = quoteStart,
+): string => {
+  let i = quoteStart + 1;
+  const len = source.length;
+  while (i < len) {
+    if (source[i] === "\\") {
+      i += 2;
+    } else if (source[i] === quote) {
+      return source.slice(sliceStart, i + 1);
+    } else if (!multiline && (source[i] === "\r" || source[i] === "\n")) {
+      return source.slice(sliceStart, i);
+    } else {
+      i++;
+    }
+  }
+  return source.slice(sliceStart);
+};
+
+/**
+ * Matches a double-quoted string literal with escape handling, terminated before unescaped newlines.
+ */
 const matchDoubleQuoteString = (
   source: string,
   cursor: number,
 ): string | undefined => {
   if (source[cursor] !== '"') return undefined;
-  let i = cursor + 1;
-  while (i < source.length) {
-    if (source[i] === "\\") {
-      i += 2;
-    } else if (source[i] === '"') {
-      return source.slice(cursor, i + 1);
-    } else if (source[i] === "\r" || source[i] === "\n") {
-      return source.slice(cursor, i);
-    } else {
-      i++;
-    }
-  }
-  return source.slice(cursor);
+  return scanEscapedString(source, cursor, '"');
 };
 
+/**
+ * Matches a single- or double-quoted string literal with escape handling, terminated before unescaped newlines.
+ */
 const matchSingleOrDoubleQuoteString = (
   source: string,
   cursor: number,
 ): string | undefined => {
   const quote = source[cursor];
   if (quote !== '"' && quote !== "'") return undefined;
-  let i = cursor + 1;
-  while (i < source.length) {
-    if (source[i] === "\\") {
-      i += 2;
-    } else if (source[i] === quote) {
-      return source.slice(cursor, i + 1);
-    } else if (source[i] === "\r" || source[i] === "\n") {
-      return source.slice(cursor, i);
-    } else {
-      i++;
-    }
-  }
-  return source.slice(cursor);
+  return scanEscapedString(source, cursor, quote);
 };
 
+/**
+ * Matches JavaScript string literals including multiline template backticks and quoted strings.
+ */
 const matchJsString = (source: string, cursor: number): string | undefined => {
   const quote = source[cursor];
   if (quote === "`") {
-    let i = cursor + 1;
-    while (i < source.length) {
-      if (source[i] === "\\") {
-        i += 2;
-      } else if (source[i] === "`") {
-        return source.slice(cursor, i + 1);
-      } else {
-        i++;
-      }
-    }
-    return source.slice(cursor);
+    return scanEscapedString(source, cursor, "`", true);
   }
   if (quote === '"' || quote === "'") {
-    let i = cursor + 1;
-    while (i < source.length) {
-      if (source[i] === "\\") {
-        i += 2;
-      } else if (source[i] === quote) {
-        return source.slice(cursor, i + 1);
-      } else if (source[i] === "\r" || source[i] === "\n") {
-        return source.slice(cursor, i);
-      } else {
-        i++;
-      }
-    }
-    return source.slice(cursor);
+    return scanEscapedString(source, cursor, quote, false);
   }
   return undefined;
 };
 
+/**
+ * Matches Python triple-quoted multiline string literals (""" or ''').
+ */
 const matchPythonTripleQuote = (
   source: string,
   cursor: number,
@@ -167,6 +167,9 @@ const matchPythonTripleQuote = (
   return source.slice(cursor);
 };
 
+/**
+ * Matches Python single, double, triple-quoted, or prefixed string literals (r, f, b, u).
+ */
 const matchPythonString = (
   source: string,
   cursor: number,
@@ -195,24 +198,15 @@ const matchPythonString = (
 
   const quote = source[p];
   if (quote === '"' || quote === "'") {
-    let i = p + 1;
-    while (i < source.length) {
-      if (source[i] === "\\") {
-        i += 2;
-      } else if (source[i] === quote) {
-        return source.slice(cursor, i + 1);
-      } else if (source[i] === "\r" || source[i] === "\n") {
-        return source.slice(cursor, i);
-      } else {
-        i++;
-      }
-    }
-    return source.slice(cursor);
+    return scanEscapedString(source, p, quote, false, cursor);
   }
 
   return undefined;
 };
 
+/**
+ * Matches SQL string literals delimited by single or double quotes, handling escaped doubled quotes ('').
+ */
 const matchSqlString = (source: string, cursor: number): string | undefined => {
   const quote = source[cursor];
   if (quote !== "'" && quote !== '"') return undefined;
@@ -231,6 +225,9 @@ const matchSqlString = (source: string, cursor: number): string | undefined => {
   return source.slice(cursor);
 };
 
+/**
+ * Matches Markdown inline backtick code spans (`code` or ``code``) within a single line.
+ */
 const matchMarkdownInlineCode = (
   source: string,
   cursor: number,
@@ -252,6 +249,9 @@ const matchMarkdownInlineCode = (
 };
 
 // JavaScript Context-Sensitive Regex Literal Detection
+/**
+ * Matches JavaScript RegExp literals (/pattern/flags) ensuring character class and slash escapes.
+ */
 const matchJsRegexLiteral = (
   source: string,
   cursor: number,
@@ -921,8 +921,11 @@ export const normalizeLanguage = (language?: string): Language => {
   return "generic";
 };
 
-const isNextCall = (source: string, indexAfterWord: number): boolean => {
-  let idx = indexAfterWord;
+/**
+ * Skips horizontal whitespace characters (spaces and tabs) starting from a cursor position.
+ */
+const skipInlineWhitespace = (source: string, startIndex: number): number => {
+  let idx = startIndex;
   const len = source.length;
   while (idx < len) {
     const code = source.charCodeAt(idx);
@@ -930,9 +933,39 @@ const isNextCall = (source: string, indexAfterWord: number): boolean => {
       idx++;
       continue;
     }
-    return code === 40; // '('
+    break;
   }
-  return false;
+  return idx;
+};
+
+/**
+ * Checks whether the next non-whitespace character following an identifier is an opening parenthesis '('.
+ */
+const isNextCall = (source: string, indexAfterWord: number): boolean => {
+  const nextIdx = skipInlineWhitespace(source, indexAfterWord);
+  return nextIdx < source.length && source.charCodeAt(nextIdx) === 40;
+};
+
+interface IdentifierDefinitions {
+  keywords?: Set<string>;
+  booleans?: Set<string>;
+  builtins?: Set<string>;
+}
+
+/**
+ * Classifies an identifier token against keywords, booleans, builtins, and function call patterns.
+ */
+const classifyIdentifier = (
+  word: string,
+  source: string,
+  cursor: number,
+  definitions: IdentifierDefinitions,
+): TokenType => {
+  if (definitions.keywords?.has(word)) return "keyword";
+  if (definitions.booleans?.has(word)) return "boolean";
+  if (definitions.builtins?.has(word)) return "builtin";
+  if (isNextCall(source, cursor + word.length)) return "function";
+  return "variable";
 };
 
 // ---------------------------------------------------------------------------
@@ -970,6 +1003,26 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
     }
   };
 
+  const pushMatch = (text: string | undefined, type: TokenType): boolean => {
+    if (text) {
+      push(type, text);
+      cursor += text.length;
+      return true;
+    }
+    return false;
+  };
+
+  const tryMatch = (regex: RegExp, type: TokenType): boolean => {
+    regex.lastIndex = cursor;
+    const match = regex.exec(source);
+    if (match && match.index === cursor) {
+      push(type, match[0]);
+      cursor += match[0].length;
+      return true;
+    }
+    return false;
+  };
+
   while (cursor < len) {
     // -------------------------------------------------------------------------
     // Phase 0: Markdown Block Anchors (at start of line before whitespace)
@@ -980,19 +1033,10 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
         source[cursor - 1] === "\n" ||
         source[cursor - 1] === "\r")
     ) {
-      const hr = matchThematicBreak(source, cursor);
-      if (hr) {
-        push("keyword", hr);
-        cursor += hr.length;
-        continue;
-      }
+      if (pushMatch(matchThematicBreak(source, cursor), "keyword")) continue;
       let blockMatched = false;
       for (const [type, regex] of MD_BLOCK_RULES) {
-        regex.lastIndex = cursor;
-        const match = regex.exec(source);
-        if (match && match.index === cursor && match[0].length > 0) {
-          push(type, match[0]);
-          cursor += match[0].length;
+        if (tryMatch(regex, type)) {
           blockMatched = true;
           break;
         }
@@ -1063,19 +1107,9 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
     // -------------------------------------------------------------------------
     if (lang === "python") {
       // Handles raw (r""), format (f""), bytes (b""), and triple-quoted blocks
-      const match = matchPythonString(source, cursor);
-      if (match) {
-        push("string", match);
-        cursor += match.length;
-        continue;
-      }
+      if (pushMatch(matchPythonString(source, cursor), "string")) continue;
     } else if (lang === "javascript") {
-      const match = matchJsString(source, cursor);
-      if (match) {
-        push("string", match);
-        cursor += match.length;
-        continue;
-      }
+      if (pushMatch(matchJsString(source, cursor), "string")) continue;
     } else if (lang === "json" || lang === "jsonc") {
       const match = matchDoubleQuoteString(source, cursor);
       if (match) {
@@ -1095,12 +1129,7 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
         continue;
       }
     } else if (lang === "sql") {
-      const match = matchSqlString(source, cursor);
-      if (match) {
-        push("string", match);
-        cursor += match.length;
-        continue;
-      }
+      if (pushMatch(matchSqlString(source, cursor), "string")) continue;
     } else if (
       lang === "html" ||
       lang === "css" ||
@@ -1108,26 +1137,14 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       lang === "less" ||
       lang === "bash"
     ) {
-      const match = matchSingleOrDoubleQuoteString(source, cursor);
-      if (match) {
-        push("string", match);
-        cursor += match.length;
+      if (pushMatch(matchSingleOrDoubleQuoteString(source, cursor), "string")) {
         continue;
       }
     } else if (lang === "markdown") {
-      const match = matchMarkdownInlineCode(source, cursor);
-      if (match) {
-        push("string", match);
-        cursor += match.length;
+      if (pushMatch(matchMarkdownInlineCode(source, cursor), "string"))
         continue;
-      }
     } else if (lang === "generic") {
-      const match = matchJsString(source, cursor);
-      if (match) {
-        push("string", match);
-        cursor += match.length;
-        continue;
-      }
+      if (pushMatch(matchJsString(source, cursor), "string")) continue;
     }
 
     // -------------------------------------------------------------------------
@@ -1138,59 +1155,24 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       source[cursor] === "/" &&
       canStartRegex(previousSignificant)
     ) {
-      const literal = matchJsRegexLiteral(source, cursor);
-      if (literal) {
-        push("string", literal);
-        cursor += literal.length;
-        continue;
-      }
+      if (pushMatch(matchJsRegexLiteral(source, cursor), "string")) continue;
     }
 
     // -------------------------------------------------------------------------
     // Phase 5: Numbers (MUST PRECEDE IDENTIFIERS & OPERATORS)
     // -------------------------------------------------------------------------
     if (lang === "javascript") {
-      JS_NUMBER.lastIndex = cursor;
-      const match = JS_NUMBER.exec(source);
-      if (match && match.index === cursor) {
-        push("number", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(JS_NUMBER, "number")) continue;
     } else if (lang === "python") {
-      PY_NUMBER.lastIndex = cursor;
-      const match = PY_NUMBER.exec(source);
-      if (match && match.index === cursor) {
-        push("number", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(PY_NUMBER, "number")) continue;
     } else if (lang === "css" || lang === "scss" || lang === "less") {
       // Hex colors MUST precede selector classes/IDs (e.g. #fff must match as number)
       const CSS_HEX_COLOR = /#[0-9a-fA-F]{3,8}\b/y;
-      CSS_HEX_COLOR.lastIndex = cursor;
-      let match = CSS_HEX_COLOR.exec(source);
-      if (match && match.index === cursor) {
-        push("number", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(CSS_HEX_COLOR, "number")) continue;
       const CSS_MEASURE = /-?(?:\d+(?:\.\d+)?|\.\d+)(?:%|[a-zA-Z]+)?/y;
-      CSS_MEASURE.lastIndex = cursor;
-      match = CSS_MEASURE.exec(source);
-      if (match && match.index === cursor) {
-        push("number", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(CSS_MEASURE, "number")) continue;
     } else if (lang === "sql") {
-      SQL_NUMBER.lastIndex = cursor;
-      const match = SQL_NUMBER.exec(source);
-      if (match && match.index === cursor) {
-        push("number", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(SQL_NUMBER, "number")) continue;
     } else if (lang === "json" || lang === "jsonc") {
       const JSON_NUM = /-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?/y;
       JSON_NUM.lastIndex = cursor;
@@ -1209,13 +1191,7 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
         }
       }
     } else {
-      GENERIC_NUMBER.lastIndex = cursor;
-      const match = GENERIC_NUMBER.exec(source);
-      if (match && match.index === cursor) {
-        push("number", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(GENERIC_NUMBER, "number")) continue;
     }
 
     // -------------------------------------------------------------------------
@@ -1226,18 +1202,11 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       const idMatch = JS_IDENTIFIER.exec(source);
       if (idMatch && idMatch.index === cursor) {
         const word = idMatch[0];
-        let type: TokenType;
-        if (JS_KEYWORDS.has(word)) {
-          type = "keyword";
-        } else if (JS_BOOLEANS.has(word)) {
-          type = "boolean";
-        } else if (JS_BUILTINS.has(word)) {
-          type = "builtin";
-        } else if (isNextCall(source, cursor + word.length)) {
-          type = "function";
-        } else {
-          type = "variable";
-        }
+        const type = classifyIdentifier(word, source, cursor, {
+          keywords: JS_KEYWORDS,
+          booleans: JS_BOOLEANS,
+          builtins: JS_BUILTINS,
+        });
         push(type, word);
         cursor += word.length;
         continue;
@@ -1258,18 +1227,11 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       const idMatch = PY_IDENTIFIER.exec(source);
       if (idMatch && idMatch.index === cursor) {
         const word = idMatch[0];
-        let type: TokenType;
-        if (PY_KEYWORDS.has(word)) {
-          type = "keyword";
-        } else if (PY_BOOLEANS.has(word)) {
-          type = "boolean";
-        } else if (PY_BUILTINS.has(word)) {
-          type = "builtin";
-        } else if (isNextCall(source, cursor + word.length)) {
-          type = "function";
-        } else {
-          type = "variable";
-        }
+        const type = classifyIdentifier(word, source, cursor, {
+          keywords: PY_KEYWORDS,
+          booleans: PY_BOOLEANS,
+          builtins: PY_BUILTINS,
+        });
         push(type, word);
         cursor += word.length;
         continue;
@@ -1306,14 +1268,10 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       match = BASH_IDENTIFIER.exec(source);
       if (match && match.index === cursor) {
         const word = match[0];
-        let type: TokenType;
-        if (BASH_KEYWORDS.has(word)) {
-          type = "keyword";
-        } else if (BASH_BUILTINS.has(word)) {
-          type = "builtin";
-        } else {
-          type = "variable";
-        }
+        const type = classifyIdentifier(word, source, cursor, {
+          keywords: BASH_KEYWORDS,
+          builtins: BASH_BUILTINS,
+        });
         push(type, word);
         cursor += word.length;
         continue;
@@ -1333,13 +1291,7 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       HTML_ATTR.lastIndex = cursor;
       match = HTML_ATTR.exec(source);
       if (match && match.index === cursor) {
-        let peek = cursor + match[0].length;
-        while (
-          peek < source.length &&
-          (source[peek] === " " || source[peek] === "\t")
-        ) {
-          peek++;
-        }
+        const peek = skipInlineWhitespace(source, cursor + match[0].length);
         if (source[peek] === "=") {
           push("function", match[0]);
           cursor += match[0].length;
@@ -1370,13 +1322,7 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       CSS_PROP.lastIndex = cursor;
       match = CSS_PROP.exec(source);
       if (match && match.index === cursor) {
-        let peek = cursor + match[0].length;
-        while (
-          peek < source.length &&
-          (source[peek] === " " || source[peek] === "\t")
-        ) {
-          peek++;
-        }
+        const peek = skipInlineWhitespace(source, cursor + match[0].length);
         if (source[peek] === ":" && source[peek + 1] !== ":") {
           push("keyword", match[0]);
           cursor += match[0].length;
@@ -1404,26 +1350,15 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       }
     } else if (lang === "json" || lang === "jsonc") {
       const JSON_BOOL = /\b(?:true|false|null)\b/y;
-      JSON_BOOL.lastIndex = cursor;
-      const match = JSON_BOOL.exec(source);
-      if (match && match.index === cursor) {
-        push("boolean", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(JSON_BOOL, "boolean")) continue;
     } else {
       GENERIC_IDENTIFIER.lastIndex = cursor;
       const idMatch = GENERIC_IDENTIFIER.exec(source);
       if (idMatch && idMatch.index === cursor) {
         const word = idMatch[0];
-        let type: TokenType;
-        if (GENERIC_KEYWORDS.has(word)) {
-          type = "keyword";
-        } else if (isNextCall(source, cursor + word.length)) {
-          type = "function";
-        } else {
-          type = "variable";
-        }
+        const type = classifyIdentifier(word, source, cursor, {
+          keywords: GENERIC_KEYWORDS,
+        });
         push(type, word);
         cursor += word.length;
         continue;
@@ -1434,81 +1369,37 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
     // Phase 7: Operators & Punctuation
     // -------------------------------------------------------------------------
     if (lang === "javascript") {
-      JS_OPERATORS.lastIndex = cursor;
-      let match = JS_OPERATORS.exec(source);
-      if (match && match.index === cursor) {
-        push("operator", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
-      JS_PUNCTUATION.lastIndex = cursor;
-      match = JS_PUNCTUATION.exec(source);
-      if (match && match.index === cursor) {
-        push("punctuation", match[0]);
-        cursor += match[0].length;
+      if (
+        tryMatch(JS_OPERATORS, "operator") ||
+        tryMatch(JS_PUNCTUATION, "punctuation")
+      ) {
         continue;
       }
     } else if (lang === "python") {
-      PY_OPERATORS.lastIndex = cursor;
-      let match = PY_OPERATORS.exec(source);
-      if (match && match.index === cursor) {
-        push("operator", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
-      PY_PUNCTUATION.lastIndex = cursor;
-      match = PY_PUNCTUATION.exec(source);
-      if (match && match.index === cursor) {
-        push("punctuation", match[0]);
-        cursor += match[0].length;
+      if (
+        tryMatch(PY_OPERATORS, "operator") ||
+        tryMatch(PY_PUNCTUATION, "punctuation")
+      ) {
         continue;
       }
     } else if (lang === "sql") {
-      SQL_OPERATORS.lastIndex = cursor;
-      let match = SQL_OPERATORS.exec(source);
-      if (match && match.index === cursor) {
-        push("operator", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
-      SQL_PUNCTUATION.lastIndex = cursor;
-      match = SQL_PUNCTUATION.exec(source);
-      if (match && match.index === cursor) {
-        push("punctuation", match[0]);
-        cursor += match[0].length;
+      if (
+        tryMatch(SQL_OPERATORS, "operator") ||
+        tryMatch(SQL_PUNCTUATION, "punctuation")
+      ) {
         continue;
       }
     } else if (lang === "bash") {
-      BASH_OPERATORS.lastIndex = cursor;
-      let match = BASH_OPERATORS.exec(source);
-      if (match && match.index === cursor) {
-        push("operator", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
-      BASH_PUNCTUATION.lastIndex = cursor;
-      match = BASH_PUNCTUATION.exec(source);
-      if (match && match.index === cursor) {
-        push("punctuation", match[0]);
-        cursor += match[0].length;
+      if (
+        tryMatch(BASH_OPERATORS, "operator") ||
+        tryMatch(BASH_PUNCTUATION, "punctuation")
+      ) {
         continue;
       }
     } else if (lang === "json" || lang === "jsonc") {
-      JSON_PUNCTUATION.lastIndex = cursor;
-      const match = JSON_PUNCTUATION.exec(source);
-      if (match && match.index === cursor) {
-        push("punctuation", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(JSON_PUNCTUATION, "punctuation")) continue;
     } else if (lang === "css" || lang === "scss" || lang === "less") {
-      CSS_PUNCTUATION.lastIndex = cursor;
-      const match = CSS_PUNCTUATION.exec(source);
-      if (match && match.index === cursor) {
-        push("punctuation", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(CSS_PUNCTUATION, "punctuation")) continue;
     } else if (lang === "html") {
       const HTML_OP_PUNCT = /[<>/=]/y;
       HTML_OP_PUNCT.lastIndex = cursor;
@@ -1520,26 +1411,12 @@ export const tokenizeCode = (source: string, language?: string): Token[] => {
       }
     } else if (lang === "markdown") {
       const MD_PUNCT = /[*_~`#]/y;
-      MD_PUNCT.lastIndex = cursor;
-      const match = MD_PUNCT.exec(source);
-      if (match && match.index === cursor) {
-        push("punctuation", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
+      if (tryMatch(MD_PUNCT, "punctuation")) continue;
     } else {
-      GENERIC_OPERATORS.lastIndex = cursor;
-      let match = GENERIC_OPERATORS.exec(source);
-      if (match && match.index === cursor) {
-        push("operator", match[0]);
-        cursor += match[0].length;
-        continue;
-      }
-      GENERIC_PUNCTUATION.lastIndex = cursor;
-      match = GENERIC_PUNCTUATION.exec(source);
-      if (match && match.index === cursor) {
-        push("punctuation", match[0]);
-        cursor += match[0].length;
+      if (
+        tryMatch(GENERIC_OPERATORS, "operator") ||
+        tryMatch(GENERIC_PUNCTUATION, "punctuation")
+      ) {
         continue;
       }
     }
