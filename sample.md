@@ -85,6 +85,7 @@ A comprehensive living document showcasing standard Markdown, GitHub Flavored Ma
 ### Text Formatting
 
 You can emphasize text using **bold**, _italic_, **_bold and italic_**, ~~strikethrough~~, `inline code`, and ==highlighted text==.
+
 - **Bold text**: `**bold**` or `__bold__`
 - _Italic text_: `*italic*` or `_italic_`
 - _**Bold and Italic**_: `***bold and italic***`
@@ -100,6 +101,7 @@ You can emphasize text using **bold**, _italic_, **_bold and italic_**, ~~strike
 > — _md2docx Design Philosophy_
 
 Nested blockquote:
+
 > Outer quote level 1
 > > Nested quote level 2
 > > > Deeply nested quote level 3
@@ -584,6 +586,7 @@ DOCX
 ### Inline Formatting & Badges
 
 You can use raw HTML tags such as:
+
 - <kbd>Ctrl</kbd> + <kbd>C</kbd> / <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>
 - <mark style="background-color: #fef08a; padding: 2px 6px; border-radius: 4px;">Highlighted text with background</mark>
 - Status: <span style="color: #16a34a; font-weight: bold;">● Active</span> / <span style="color: #dc2626; font-weight: bold;">■ Inactive</span>

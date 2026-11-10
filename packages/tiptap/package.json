@@ -54,7 +54,7 @@
     }
   },
   "devDependencies": {
-    "@tiptap/core": "^3.32.0",
+    "@tiptap/core": "^3.33.0",
     "@types/node": "latest",
     "tsup": "latest",
     "typescript": "latest"

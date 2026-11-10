@@ -32,12 +32,14 @@ See the **[jscpd](../jscpd/SKILL.md)** skill for full option reference.
 ## Refactoring Strategies
 
 **Extract function** — when the duplicate is a block of logic:
+
 ```ts
 // Before: same block in two places
 // After: shared function called from both places
 ```
 
 **Extract module/utility** — when the duplicate spans multiple files in different domains:
+
 ```ts
 // Move shared logic to a shared utility file and import it
 ```
@@ -47,6 +49,7 @@ See the **[jscpd](../jscpd/SKILL.md)** skill for full option reference.
 **Template/base class** — when the duplicate is structural (e.g., repeated class shape).
 
 **Parameterize** — for `(renamed)` clones. The two sides are the same algorithm over different names or values, so the things that differ become parameters:
+
 ```ts
 // Before: computeCartTotal(items) and computeBasketTotal(entries), same body, other names;
 //         limits-dev.js and limits-prod.js, same shape, other numbers
@@ -56,6 +59,7 @@ See the **[jscpd](../jscpd/SKILL.md)** skill for full option reference.
 A renamed clone whose only difference is a literal is a missing constant or config entry, not a missing function.
 
 **Unify near-miss copies** — for `[~N gap]` clones. Read the unmatched lines: the gap is the one place the copies diverged, typically a guard, a log call or an extra field. Extract the common body and pass the divergence in:
+
 ```ts
 // Before: saveUser and saveAccount, identical except one inserted validation line
 // After: one saveRecord(record, { validate }) with the inserted line behind the option,
@@ -64,6 +68,7 @@ A renamed clone whose only difference is a literal is a missing constant or conf
 If the gap changes the meaning rather than adding a step, keep two functions but extract the shared halves.
 
 **Merge similar functions** — for `[~N ast]` clones. The structure matches but names, literals and some statements do not. Diff the two functions first; the `ast` score tells how much is shared (`0.9` is a copy with one edit, `0.75` a copy with a couple of added statements plus renames). Extract the shared skeleton and inject what differs, as arguments, a strategy object, or a callback:
+
 ```ts
 // Before: buildInvoice(order, customer, taxRate) and buildCreditNote(refund, account, vatRate):
 //         same loop, same rounding, one extra guard and one extra log call in the second
@@ -72,6 +77,7 @@ If the gap changes the meaning rather than adding a step, keep two functions but
 Below about `0.8` the pair usually shares an idiom, not an implementation; leave those alone unless the summary shows the file is a hotspot anyway.
 
 Always ensure:
+
 - All call sites are updated, not just the two reported by jscpd
 - Tests still pass after refactoring
 - The extracted abstraction has a clear, descriptive name

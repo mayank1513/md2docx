@@ -163,6 +163,7 @@ export interface IImagePluginOptions {
 ## 📚 Deep Dive Guides
 
 Explore our detailed documentation guides:
+
 - 🛡️ **[Error Handling & Fallbacks Guide](./docs/error-handling-and-fallbacks.mdx)**: Comprehensive guide on error modes, collapsible headings, and Word TOC safety.
 - 🔌 **[Custom Resolvers & Caching Guide](./docs/custom-resolvers-and-caching.mdx)**: Authenticated image fetching, custom headers, and multi-tier IndexedDB cache configuration.
 

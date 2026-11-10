@@ -3,6 +3,7 @@
 This monorepo uses standardized agent rules and progressive skills defined in [`.agents/rules.md`](./.agents/rules.md).
 
 All AI coding assistants and contributors must align with the conventions outlined in:
+
 - **Monorepo Rules & Guidelines**: [`.agents/rules.md`](./.agents/rules.md)
 - **Scaffolding Skill**: [`.agents/skills/template-code-generator/SKILL.md`](./.agents/skills/template-code-generator/SKILL.md)
 - **Git Commit Generator**: [`.agents/skills/git-commit-generator/SKILL.md`](./.agents/skills/git-commit-generator/SKILL.md)

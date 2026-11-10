@@ -27,6 +27,7 @@ Turboforge uses [Plop.js](https://plopjs.com/) and [Handlebars](https://handleba
 ### Interactive Mode
 
 Run the prompt menu to choose from all available generators:
+
 ```bash
 pnpm gen
 ```
@@ -35,6 +36,7 @@ _(On Windows PowerShell where script execution policy is restricted, use `pnpm.c
 ### Direct Generator Invocation
 
 Bypass the top-level menu by specifying the generator name:
+
 ```bash
 pnpm gen pkg
 pnpm gen docs
@@ -98,6 +100,7 @@ pnpm gen exp
 
 Add template files under `tooling/generators/templates/<generator-name>/`.
 Available Plop helpers:
+
 - `{{kebabCase name}}`: `foo-bar`
 - `{{camelCase name}}`: `fooBar`
 - `{{pascalCase name}}`: `FooBar`
@@ -110,6 +113,7 @@ Available Plop helpers:
 ### Step 2: Implement the Generator Config
 
 Create `tooling/generators/src/<name>.ts`:
+
 ```typescript
 import path from "node:path";
 import type { ActionType, PlopGeneratorConfig } from "plop";
@@ -142,6 +146,7 @@ export const myGenerator: PlopGeneratorConfig = {
 ### Step 3: Register in Generator Index
 
 Add the generator to `tooling/generators/src/index.ts`:
+
 ```typescript
 import { myGenerator } from "./my-generator.ts";
 
@@ -156,6 +161,7 @@ export default async (plop: NodePlopAPI) => {
 ## 5. Post-Generation Verification Workflow
 
 After generating any package or code artifact:
+
 1. **Sync Dependencies & Metadata**:
 
    ```bash

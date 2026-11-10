@@ -33,6 +33,7 @@
 ## ✨ Why Md2Docx?
 
 Modern applications, technical platforms, and **Generative AI** tools produce structured output in **Markdown**. `Md2Docx` transforms Markdown Abstract Syntax Trees (MDAST) into professionally formatted Word documents with native tables, vector diagrams, editable equations, and custom section layouts.
+
 - 📐 **Authentic Word Elements**: Converts Markdown directly into native Microsoft Word OpenXML elements (`docx.Table`, `docx.Math`, `docx.ImageRun`, outline numbering).
 - 🧩 **Pluggable Core & Rich Plugin Suite**: Fully extensible Unified/MDAST architecture. Use the all-in-one package, cherry-pick official `@m2d/*` plugins, or author custom plugins for bespoke syntax.
 - 🌐 **Isomorphic Runtimes**: Zero-server client-side generation (`Blob`) in browsers, or high-throughput batch generation (`Buffer`) in Node.js.

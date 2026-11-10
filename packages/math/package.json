@@ -50,9 +50,9 @@
     "remark-math": "^6.0.0"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5",
+    "@types/node": "^26.6.6",
     "@unified-latex/unified-latex-types": "^1.8.4",
-    "docx": "^9.14.0",
+    "docx": "^9.15.3",
     "remark-math": "^6.0.0",
     "remark-parse": "^11.0.0",
     "tsup": "latest",

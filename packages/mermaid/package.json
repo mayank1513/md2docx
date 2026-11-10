@@ -44,14 +44,14 @@
   "dependencies": {
     "@m2d/cache": "workspace:*",
     "@m2d/core": "workspace:*",
-    "mermaid": "^12.2.0"
+    "mermaid": "^12.3.0"
   },
   "peerDependencies": {
     "docx": "^9.3.0"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5",
-    "docx": "^9.14.0",
+    "@types/node": "^26.6.6",
+    "docx": "^9.15.3",
     "remark-parse": "^11.0.0",
     "tsup": "latest",
     "typescript": "latest",

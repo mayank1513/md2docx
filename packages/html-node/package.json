@@ -44,14 +44,14 @@
   "dependencies": {
     "@m2d/core": "workspace:*",
     "@m2d/html": "workspace:*",
-    "linkedom": "^0.18.14"
+    "linkedom": "^0.18.15"
   },
   "peerDependencies": {
     "docx": "^9.3.0"
   },
   "devDependencies": {
     "@types/node": "latest",
-    "docx": "^9.14.0",
+    "docx": "^9.15.3",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "tsup": "latest",

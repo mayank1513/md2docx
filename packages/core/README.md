@@ -244,6 +244,7 @@ const docxBlob = await toDocx(
 ## 📚 Deep Dive Guides & Architecture
 
 Explore our dedicated documentation guides for advanced configurations and internal know-how:
+
 - ⚡ **[Caching Architecture Guide](./docs/caching.mdx)**: Multi-tiered cache design, why TTL avoids write-amplification, lock-free IndexedDB concurrency, and `shouldCache` validation.
 - 🔌 **[Plugin Authoring Guide](./docs/plugin-authoring.mdx)**: How to create custom plugins, hook into `preprocess`, `block`, `inline`, and `postprocess` lifecycles, and handle errors.
 - 📑 **[Sections & Layout Guide](./docs/sections-and-layout.mdx)**: Crafting multi-section documents, landscape pages, custom margins, and heading hierarchy.

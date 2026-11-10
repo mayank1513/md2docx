@@ -19,12 +19,14 @@ Generate a high-fidelity Conventional Commit message for staged changes. If the 
 ## 2. Validate (The "Fork in the Road")
 
 Analyze the `METADATA` from the script:
+
 - **Condition A (Complexity)**: `FILE_COUNT > 12` OR `LOC_INSERTIONS > 500`.
 - **Condition B (Scope Divergence)**: `DETECTED_SCOPES` count > 1.
 
 > Note: `DETECTED_SCOPES` are derived from `.turboforge/packages.json` by the script. Treat them as the single source of truth. Do not infer scopes from directory names.
 
 **Decision Tree:**
+
 1. **If Low Complexity & Single Scope**: Proceed to generate the message directly.
 2. **If High Complexity OR Multi-Scope**:
    - Present the `DETECTED_SCOPES`.
@@ -83,6 +85,7 @@ Analyze the `METADATA` from the script:
 ## Output Quality Gate
 
 Before returning:
+
 - Does it explain what changed (not just files)?
 - Will it make sense in git log later?
 - Is the type correct per rules?

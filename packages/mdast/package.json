@@ -67,8 +67,8 @@
   "devDependencies": {
     "@types/node": "latest",
     "@types/unist": "^3.0.3",
-    "docx": "^9.14.0",
-    "mermaid": "^12.2.0",
+    "docx": "^9.15.3",
+    "mermaid": "^12.3.0",
     "tsup": "latest",
     "typescript": "latest"
   },
