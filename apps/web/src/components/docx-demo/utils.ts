@@ -49,6 +49,103 @@ const formatPluginProps = (
   return `{\n${lines.join("\n")}\n${indent.slice(2)}}`;
 };
 
+const buildMdast2DocxSnippet = (
+  enabledPlugins: Record<PluginId, boolean>,
+  coverPage: boolean,
+  infoBox: boolean,
+  isServer: boolean,
+): string => {
+  const activePlugins = AVAILABLE_PLUGINS.filter((p) => enabledPlugins[p.id]);
+  const nodePluginIds = new Set(["html", "image", "mermaid"]);
+  const coreImports: string[] = [];
+  const nodeImports: string[] = [];
+  const invocations: string[] = [];
+  let hasCode = false;
+  let hasFrontmatter = false;
+
+  for (const p of activePlugins) {
+    if (p.id === "code") {
+      hasCode = true;
+      invocations.push("codePlugin()");
+    } else if (p.id === "frontmatter") {
+      hasFrontmatter = true;
+      const opts: string[] = [];
+      if (coverPage) opts.push("coverPage: true");
+      if (!infoBox) opts.push("infoBox: false");
+      invocations.push(
+        opts.length > 0
+          ? `frontmatterPlugin({ ${opts.join(", ")} })`
+          : "frontmatterPlugin()",
+      );
+    } else if (isServer && nodePluginIds.has(p.id)) {
+      const nodeFn =
+        p.id === "mermaid"
+          ? "mermaidNodePlugin"
+          : `node${p.id[0].toUpperCase()}${p.id.slice(1)}Plugin`;
+      nodeImports.push(nodeFn);
+      invocations.push(`${nodeFn}()`);
+    } else {
+      coreImports.push(p.fnName);
+      invocations.push(`${p.fnName}()`);
+    }
+  }
+
+  const importLines: string[] = ['import { toDocx } from "mdast2docx";'];
+  if (hasCode) importLines.push('import { codePlugin } from "@m2d/code";');
+  if (hasFrontmatter)
+    importLines.push('import { frontmatterPlugin } from "@m2d/frontmatter";');
+  if (nodeImports.length > 0) {
+    importLines.push(
+      `import {\n  ${nodeImports.join(",\n  ")},\n} from "mdast2docx/plugins/node";`,
+    );
+  }
+  if (coreImports.length > 0) {
+    importLines.push(
+      `import {\n  ${coreImports.join(",\n  ")},\n} from "mdast2docx/plugins";`,
+    );
+  }
+  if (isServer) importLines.push('import fs from "node:fs";');
+  importLines.push(
+    'import { unified } from "unified";',
+    'import remarkParse from "remark-parse";',
+    'import remarkGfm from "remark-gfm";',
+    'import remarkMath from "remark-math";',
+    'import remarkFrontmatter from "remark-frontmatter";',
+  );
+
+  const outFormat = isServer ? '"buffer"' : '"blob"';
+  const outDocTitle = isServer ? "Server Document" : "My Document";
+  const outVar = isServer ? "docxBuffer" : "docxBlob";
+  const outComment = isServer
+    ? "// 2. Compile to native Word Buffer on Node.js"
+    : "// 2. Compile MDAST tree into Word OpenXML document (.docx)";
+  const saveCall = isServer
+    ? '\nfs.writeFileSync("output.docx", docxBuffer);'
+    : "";
+
+  return `${importLines.join("\n")}
+
+// 1. Parse Markdown into MDAST tree
+const mdast = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath)
+  .use(remarkFrontmatter)
+  .parse(markdown);
+
+${outComment}
+const ${outVar} = await toDocx(
+  mdast,
+  { title: "${outDocTitle}" },
+  {
+    plugins: [
+      ${invocations.join(",\n      ")}
+    ]
+  },
+  ${outFormat}
+);${saveCall}`;
+};
+
 /**
  * Dynamically generates code snippet tailored to the user's selected Target, Plugins, and Execution Mode.
  */
@@ -157,87 +254,7 @@ fs.writeFileSync("output.docx", result.result as Buffer);`;
     }
 
     // mdast2docx (Server)
-    const activePlugins = AVAILABLE_PLUGINS.filter((p) => enabledPlugins[p.id]);
-    const nodePluginIds = new Set(["html", "image", "mermaid"]);
-    const serverCoreImports: string[] = [];
-    const serverNodeImports: string[] = [];
-    const serverPluginInvocations: string[] = [];
-    let hasCode = false;
-    let hasFrontmatter = false;
-
-    for (const p of activePlugins) {
-      if (p.id === "code") {
-        hasCode = true;
-        serverPluginInvocations.push("codePlugin()");
-      } else if (p.id === "frontmatter") {
-        hasFrontmatter = true;
-        const opts: string[] = [];
-        if (coverPage) opts.push("coverPage: true");
-        if (!infoBox) opts.push("infoBox: false");
-        serverPluginInvocations.push(
-          opts.length > 0
-            ? `frontmatterPlugin({ ${opts.join(", ")} })`
-            : "frontmatterPlugin()",
-        );
-      } else if (nodePluginIds.has(p.id)) {
-        const nodeFn =
-          p.id === "mermaid"
-            ? "mermaidNodePlugin"
-            : `node${p.id[0].toUpperCase()}${p.id.slice(1)}Plugin`;
-        serverNodeImports.push(nodeFn);
-        serverPluginInvocations.push(`${nodeFn}()`);
-      } else {
-        serverCoreImports.push(p.fnName);
-        serverPluginInvocations.push(`${p.fnName}()`);
-      }
-    }
-
-    const importLines: string[] = ['import { toDocx } from "mdast2docx";'];
-    if (hasCode) importLines.push('import { codePlugin } from "@m2d/code";');
-    if (hasFrontmatter)
-      importLines.push('import { frontmatterPlugin } from "@m2d/frontmatter";');
-    if (serverNodeImports.length > 0) {
-      importLines.push(
-        `import {\n  ${serverNodeImports.join(",\n  ")},\n} from "mdast2docx/plugins/node";`,
-      );
-    }
-    if (serverCoreImports.length > 0) {
-      importLines.push(
-        `import {\n  ${serverCoreImports.join(",\n  ")},\n} from "mdast2docx/plugins";`,
-      );
-    }
-    importLines.push(
-      'import fs from "node:fs";',
-      'import { unified } from "unified";',
-      'import remarkParse from "remark-parse";',
-      'import remarkGfm from "remark-gfm";',
-      'import remarkMath from "remark-math";',
-      'import remarkFrontmatter from "remark-frontmatter";',
-    );
-
-    return `${importLines.join("\n")}
-
-// 1. Parse Markdown to MDAST
-const mdast = unified()
-  .use(remarkParse)
-  .use(remarkGfm)
-  .use(remarkMath)
-  .use(remarkFrontmatter)
-  .parse(markdown);
-
-// 2. Compile to native Word Buffer on Node.js
-const docxBuffer = (await toDocx(
-  mdast,
-  { title: "Server Document" },
-  {
-    plugins: [
-      ${serverPluginInvocations.join(",\n      ")}
-    ],
-  },
-  "buffer",
-)) as Buffer;
-
-fs.writeFileSync("output.docx", docxBuffer);`;
+    return buildMdast2DocxSnippet(enabledPlugins, coverPage, infoBox, true);
   }
 
   // Client Mode
@@ -330,68 +347,5 @@ const docxBlob = result.result;`;
   }
 
   // mdast2docx (Client)
-  const activePlugins = AVAILABLE_PLUGINS.filter((p) => enabledPlugins[p.id]);
-  const clientCoreImports: string[] = [];
-  const clientPluginInvocations: string[] = [];
-  let hasCode = false;
-  let hasFrontmatter = false;
-
-  for (const p of activePlugins) {
-    if (p.id === "code") {
-      hasCode = true;
-      clientPluginInvocations.push("codePlugin()");
-    } else if (p.id === "frontmatter") {
-      hasFrontmatter = true;
-      const opts: string[] = [];
-      if (coverPage) opts.push("coverPage: true");
-      if (!infoBox) opts.push("infoBox: false");
-      clientPluginInvocations.push(
-        opts.length > 0
-          ? `frontmatterPlugin({ ${opts.join(", ")} })`
-          : "frontmatterPlugin()",
-      );
-    } else {
-      clientCoreImports.push(p.fnName);
-      clientPluginInvocations.push(`${p.fnName}()`);
-    }
-  }
-
-  const importLines: string[] = ['import { toDocx } from "mdast2docx";'];
-  if (hasCode) importLines.push('import { codePlugin } from "@m2d/code";');
-  if (hasFrontmatter)
-    importLines.push('import { frontmatterPlugin } from "@m2d/frontmatter";');
-  if (clientCoreImports.length > 0) {
-    importLines.push(
-      `import {\n  ${clientCoreImports.join(",\n  ")},\n} from "mdast2docx/plugins";`,
-    );
-  }
-  importLines.push(
-    'import { unified } from "unified";',
-    'import remarkParse from "remark-parse";',
-    'import remarkGfm from "remark-gfm";',
-    'import remarkMath from "remark-math";',
-    'import remarkFrontmatter from "remark-frontmatter";',
-  );
-
-  return `${importLines.join("\n")}
-
-// 1. Parse Markdown into MDAST tree
-const mdast = unified()
-  .use(remarkParse)
-  .use(remarkGfm)
-  .use(remarkMath)
-  .use(remarkFrontmatter)
-  .parse(markdown);
-
-// 2. Compile MDAST tree into Word OpenXML document (.docx)
-const docxBlob = await toDocx(
-  mdast,
-  { title: "My Document" },
-  {
-    plugins: [
-      ${clientPluginInvocations.join(",\n      ")}
-    ]
-  },
-  "blob"
-);`;
+  return buildMdast2DocxSnippet(enabledPlugins, coverPage, infoBox, false);
 };

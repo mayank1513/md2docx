@@ -132,6 +132,20 @@ const createRunsForLine = (
   );
 };
 
+const resolveNodeStyling = (
+  node: unknown,
+  defaults: ICodePluginOptions,
+  customThemes?: Record<string, Partial<ICodeTheme>>,
+) => {
+  const nodeData = (node as { data?: Record<string, unknown> }).data ?? {};
+  const activeThemeName = (nodeData.theme as string) ?? defaults.theme;
+  const theme = resolveTheme(activeThemeName, customThemes);
+  const fontFamily = (nodeData.fontFamily as string) ?? defaults.fontFamily;
+  const fontSize = (nodeData.fontSize as number) ?? defaults.fontSize;
+
+  return { theme, fontFamily, fontSize };
+};
+
 /**
  * Code highlighting and formatting plugin for md2docx.
  */
@@ -153,15 +167,11 @@ export const codePlugin: CodePluginFactory = (
       const rawCode = (node as unknown as { value?: string }).value ?? "";
       const rawLang = (node as unknown as { lang?: string }).lang;
 
-      // Extract node-level overrides
-      const nodeData =
-        (node as unknown as { data?: Record<string, unknown> }).data ?? {};
-      const activeThemeName = (nodeData.theme as string) ?? mergedOptions.theme;
-      const theme = resolveTheme(activeThemeName, options.customThemes);
-
-      const fontFamily =
-        (nodeData.fontFamily as string) ?? mergedOptions.fontFamily;
-      const fontSize = (nodeData.fontSize as number) ?? mergedOptions.fontSize;
+      const { theme, fontFamily, fontSize } = resolveNodeStyling(
+        node,
+        mergedOptions,
+        options.customThemes,
+      );
       const tabSize = mergedOptions.tabSize;
 
       const codeLines = parseCodeLines(
@@ -223,13 +233,11 @@ export const codePlugin: CodePluginFactory = (
 
       (node as unknown as { type: string }).type = "";
       const rawValue = (node as unknown as { value?: string }).value ?? "";
-      const nodeData =
-        (node as unknown as { data?: Record<string, unknown> }).data ?? {};
-      const activeThemeName = (nodeData.theme as string) ?? mergedOptions.theme;
-      const theme = resolveTheme(activeThemeName, options.customThemes);
-      const fontFamily =
-        (nodeData.fontFamily as string) ?? mergedOptions.fontFamily;
-      const fontSize = (nodeData.fontSize as number) ?? mergedOptions.fontSize;
+      const { theme, fontFamily, fontSize } = resolveNodeStyling(
+        node,
+        mergedOptions,
+        options.customThemes,
+      );
 
       return [
         new docx.TextRun({
