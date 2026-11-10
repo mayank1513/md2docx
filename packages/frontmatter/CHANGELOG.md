@@ -1,5 +1,25 @@
 # @m2d/frontmatter
 
+## 1.0.0
+
+### Major Changes
+
+- [#25](https://github.com/md2docx/md2docx/pull/25) [`2d33aa4`](https://github.com/md2docx/md2docx/commit/2d33aa4570638ec573597e4110b5832c1670a069) Thanks [@mayank1513](https://github.com/mayank1513)! - **BREAKING CHANGE:** Fix `frontmatterPlugin` signature by removing the unused `_docx` first parameter.
+  
+  We apologize for the design mistake in earlier versions where `_docx` was accepted as a dummy first parameter `frontmatterPlugin(_docx, options)`.
+  
+  `frontmatterPlugin` now directly accepts options as its first argument: `frontmatterPlugin(options?: FrontmatterPluginOptions)`.
+  
+  ### Migration Guide
+  Before:
+  ```ts
+  frontmatterPlugin(undefined, { coverPage: true });
+  ```
+  After:
+  ```ts
+  frontmatterPlugin({ coverPage: true });
+  ```
+
 ## 0.1.1
 
 ### Patch Changes

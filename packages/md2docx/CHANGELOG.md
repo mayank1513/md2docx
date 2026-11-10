@@ -1,5 +1,20 @@
 # @m2d/md2docx
 
+## 0.2.0
+
+### Minor Changes
+
+- [#25](https://github.com/md2docx/md2docx/pull/25) [`6effeb9`](https://github.com/md2docx/md2docx/commit/6effeb979bcd0c459963e61917b86ef4c16157f7) Thanks [@mayank1513](https://github.com/mayank1513)! - - Wire `@m2d/code` syntax highlighting plugin by default into `remark-docx` and `remark-docx-node`
+  - Support passing `false` in `pluginProps` (e.g. `code: false`, `mermaid: false`, `table: false`) to cleanly disable any default plugin
+  - Support seamless custom plugin substitution by passing `pluginProps: { [pluginName]: false }` alongside `sectionProps: { plugins: [...] }`
+  - Remove legacy `undefined` argument when invoking `frontmatterPlugin` and align `Mdast2DocxPluginProps['frontmatter']` type to `Parameters<typeof frontmatterPlugin>[0]`
+  - Simplify default plugin instantiation into a declarative iteration loop
+
+### Patch Changes
+
+- Updated dependencies [[`6effeb9`](https://github.com/md2docx/md2docx/commit/6effeb979bcd0c459963e61917b86ef4c16157f7)]:
+  - @m2d/remark-docx@1.6.0
+
 ## 0.1.4
 
 ### Patch Changes

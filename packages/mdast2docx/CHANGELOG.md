@@ -1,5 +1,18 @@
 # mdast2docx
 
+## 1.8.0
+
+### Minor Changes
+
+- [`56c5a33`](https://github.com/md2docx/md2docx/commit/56c5a335acffe4696ba19f9f48d20829772b5350) Thanks [@mayank1513](https://github.com/mayank1513)! - - `mdast2docx`: Re-export `@m2d/code` syntax highlighting plugin from `mdast2docx/plugins`
+  - `@m2d/tiptap`: Support syntax-highlighted code blocks in DOCX exports via updated `@m2d/md2docx`
+
+### Patch Changes
+
+- Updated dependencies [[`6a895fe`](https://github.com/md2docx/md2docx/commit/6a895fe59cec069d45e1fe13776a3817cb9e47fd), [`2d33aa4`](https://github.com/md2docx/md2docx/commit/2d33aa4570638ec573597e4110b5832c1670a069), [`9947530`](https://github.com/md2docx/md2docx/commit/9947530c1c279e90bfb3f64b59bab2ef119795e8)]:
+  - @m2d/code@0.1.0
+  - @m2d/frontmatter@1.0.0
+
 ## 1.7.2
 
 ### Patch Changes

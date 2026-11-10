@@ -2,7 +2,7 @@
   "name": "@m2d/remark-docx",
   "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
   "private": false,
-  "version": "1.5.2",
+  "version": "1.6.0",
   "publishConfig": {
     "access": "public",
     "provenance": true
