@@ -1,5 +1,6 @@
 import {
   Calculator,
+  Code2,
   FileSpreadsheet,
   FileText,
   GitBranch,
@@ -312,6 +313,13 @@ export const TARGETS: TargetOption[] = [
 
 export const AVAILABLE_PLUGINS: PluginDefinition[] = [
   {
+    id: "code",
+    name: "@m2d/code",
+    fnName: "codePlugin",
+    icon: Code2,
+    desc: "Syntax Highlighting",
+  },
+  {
     id: "frontmatter",
     name: "@m2d/frontmatter",
     fnName: "frontmatterPlugin",
@@ -374,6 +382,7 @@ export const PRESET_PLUGINS: Record<
   Record<PluginId, boolean>
 > = {
   all: {
+    code: true,
     frontmatter: true,
     math: true,
     mermaid: true,
@@ -384,6 +393,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   "tech-spec": {
+    code: true,
     frontmatter: true,
     math: false,
     mermaid: true,
@@ -394,6 +404,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   academic: {
+    code: false,
     frontmatter: true,
     math: true,
     mermaid: false,
@@ -404,6 +415,7 @@ export const PRESET_PLUGINS: Record<
     emoji: false,
   },
   executive: {
+    code: false,
     frontmatter: true,
     math: false,
     mermaid: false,
@@ -414,6 +426,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   full: {
+    code: true,
     frontmatter: true,
     math: true,
     mermaid: true,
@@ -424,6 +437,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   math: {
+    code: false,
     frontmatter: false,
     math: true,
     mermaid: false,
@@ -434,6 +448,7 @@ export const PRESET_PLUGINS: Record<
     emoji: false,
   },
   mermaid: {
+    code: false,
     frontmatter: false,
     math: false,
     mermaid: true,
@@ -444,6 +459,7 @@ export const PRESET_PLUGINS: Record<
     emoji: false,
   },
   table: {
+    code: false,
     frontmatter: false,
     math: false,
     mermaid: false,

@@ -13,6 +13,7 @@ export interface TargetOption {
 }
 
 export type PluginId =
+  | "code"
   | "frontmatter"
   | "math"
   | "mermaid"

@@ -65,6 +65,7 @@ export const useDocxDemo = () => {
   const setAllPlugins = (enable: boolean) => {
     setIsPresetActive(false);
     setEnabledPlugins({
+      code: enable,
       frontmatter: enable,
       math: enable,
       mermaid: enable,
@@ -262,6 +263,7 @@ export const useDocxDemo = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           markdown,
+          target: selectedTarget,
           plugins: enabledPlugins,
           coverPage,
           infoBox,
@@ -281,12 +283,15 @@ export const useDocxDemo = () => {
 
       downloadBlob(
         blob,
-        getPresetDocxFilename(selectedPreset, "node-server", "server"),
+        getPresetDocxFilename(selectedPreset, selectedTarget, "server"),
       );
+
+      const targetLabel =
+        TARGETS.find((t) => t.id === selectedTarget)?.name || "Server API";
 
       setTiming({
         mode: "server",
-        targetName: "@m2d/remark-docx-node (Server API)",
+        targetName: `${targetLabel} (Server)`,
         renderTimeMs: serverRenderMs,
         networkTimeMs,
         totalTimeMs,

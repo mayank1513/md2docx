@@ -1,5 +1,10 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { codePlugin } from "@m2d/code";
+import {
+  type Mdast2DocxNodePluginProps,
+  remarkDocx as remarkDocxNode,
+} from "@m2d/remark-docx-node";
 import { toDocx } from "mdast2docx";
 import {
   emojiPlugin,
@@ -38,12 +43,13 @@ const getServerPlugins = (
   const plugins = [];
   if (enabled?.frontmatter !== false) {
     plugins.push(
-      frontmatterPlugin(undefined, {
+      frontmatterPlugin({
         coverPage: layoutOptions?.coverPage,
         infoBox: layoutOptions?.infoBox,
       }),
     );
   }
+  if (enabled?.code !== false) plugins.push(codePlugin());
   if (enabled?.html !== false) plugins.push(nodeHtmlPlugin());
   if (enabled?.list !== false) plugins.push(listPlugin());
   if (enabled?.table !== false) plugins.push(tablePlugin());
@@ -63,16 +69,54 @@ const generateDocxResponse = async (
   fileProps: Parameters<typeof toDocx>[1] = {},
   pluginsConfig?: Record<string, boolean>,
   layoutOptions?: LayoutOptions,
+  target = "md2docx",
 ): Promise<NextResponse> => {
   const start = performance.now();
-  const mdast = docxProcessor.parse(markdown);
-  const buffer = await toDocx(
-    mdast,
-    fileProps,
-    // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-    { plugins: getServerPlugins(pluginsConfig, layoutOptions) as any },
-    "arraybuffer",
-  );
+  let buffer: unknown;
+
+  if (target === "md2docx" || target === "remark-docx") {
+    const pluginProps: Mdast2DocxNodePluginProps = {};
+    if (pluginsConfig?.frontmatter === false) {
+      pluginProps.frontmatter = false;
+    } else if (
+      layoutOptions?.coverPage ||
+      layoutOptions?.infoBox !== undefined
+    ) {
+      pluginProps.frontmatter = {
+        coverPage: layoutOptions?.coverPage,
+        infoBox: layoutOptions?.infoBox,
+      };
+    }
+    if (pluginsConfig?.code === false) pluginProps.code = false;
+    if (pluginsConfig?.html === false) pluginProps.html = false;
+    if (pluginsConfig?.list === false) pluginProps.list = false;
+    if (pluginsConfig?.table === false) pluginProps.table = false;
+    if (pluginsConfig?.math === false) pluginProps.math = false;
+    if (pluginsConfig?.mermaid === false) pluginProps.mermaid = false;
+    if (pluginsConfig?.image === false) pluginProps.image = false;
+    if (pluginsConfig?.emoji === false) pluginProps.emoji = false;
+
+    const processor = unified()
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkMath)
+      .use(remarkFrontmatter)
+      .use(remarkDocxNode, "arraybuffer", fileProps, undefined, pluginProps);
+
+    const res = await processor.process(markdown);
+    buffer = res.result;
+  } else {
+    // target === "mdast2docx"
+    const mdast = docxProcessor.parse(markdown);
+    buffer = await toDocx(
+      mdast,
+      fileProps,
+      // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
+      { plugins: getServerPlugins(pluginsConfig, layoutOptions) as any },
+      "arraybuffer",
+    );
+  }
+
   const renderTimeMs = Math.round(performance.now() - start);
 
   return new NextResponse(new Uint8Array(buffer as ArrayBuffer), {
@@ -91,15 +135,22 @@ const generateDocxResponse = async (
 /**
  * Generate a docx file from markdown on server side.
  * GET: Converts monorepo root sample.md
- * POST: Converts request body { markdown, plugins, coverPage, infoBox }
+ * POST: Converts request body { markdown, target, plugins, coverPage, infoBox }
  */
 export const GET = async () => {
   try {
     const samplePath = path.resolve(process.cwd(), "../../sample.md");
     const md = readFileSync(samplePath, "utf-8");
-    return await generateDocxResponse(md, "sample.docx", {
-      title: "Markdown Syntax Showcase",
-    });
+    return await generateDocxResponse(
+      md,
+      "sample.docx",
+      {
+        title: "Markdown Syntax Showcase",
+      },
+      undefined,
+      undefined,
+      "md2docx",
+    );
   } catch (error) {
     console.error("Error generating DOCX:", error);
     return NextResponse.json(
@@ -113,13 +164,21 @@ export const POST = async (req: NextRequest) => {
   try {
     const body = await req.json();
     const md = body?.markdown || "# Empty Document";
+    const target = (body?.target as string) || "md2docx";
     const plugins = body?.plugins as Record<string, boolean> | undefined;
     const coverPage = body?.coverPage as boolean | undefined;
     const infoBox = body?.infoBox as boolean | undefined;
-    return await generateDocxResponse(md, "document.docx", {}, plugins, {
-      coverPage,
-      infoBox,
-    });
+    return await generateDocxResponse(
+      md,
+      "document.docx",
+      {},
+      plugins,
+      {
+        coverPage,
+        infoBox,
+      },
+      target,
+    );
   } catch (error) {
     console.error("Error generating DOCX from body:", error);
     return NextResponse.json(

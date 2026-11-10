@@ -1,6 +1,7 @@
+import { codePlugin } from "@m2d/code";
 import { frontmatterPlugin } from "@m2d/frontmatter";
 import { md2docx } from "@m2d/md2docx";
-import { remarkDocx } from "@m2d/remark-docx";
+import { type Mdast2DocxPluginProps, remarkDocx } from "@m2d/remark-docx";
 import type { Root } from "mdast";
 import { toDocx } from "mdast2docx";
 import {
@@ -36,12 +37,13 @@ export const getActiveClientPlugins = (
   const list = [];
   if (enabledPlugins?.frontmatter !== false) {
     list.push(
-      frontmatterPlugin(undefined, {
+      frontmatterPlugin({
         coverPage: options?.coverPage,
         infoBox: options?.infoBox,
       }),
     );
   }
+  if (enabledPlugins?.code !== false) list.push(codePlugin());
   if (enabledPlugins?.mermaid !== false) list.push(mermaidPlugin());
   if (enabledPlugins?.html !== false) list.push(htmlPlugin());
   if (enabledPlugins?.list !== false) list.push(listPlugin());
@@ -61,38 +63,52 @@ export const generateDocxBlob = async ({
   title = "Md2Docx Document",
   creator,
 }: GenerateDocxOptions): Promise<Blob> => {
-  const plugins = getActiveClientPlugins(enabledPlugins, {
-    coverPage,
-    infoBox,
-  });
   const docxProps = {
     title,
     creator: creator ?? `${target} Browser Engine`,
   };
 
-  if (target === "md2docx") {
-    return (await md2docx(
-      markdown,
-      docxProps,
-      // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-      { plugins: plugins as any },
-      "blob",
-    )) as Blob;
-  }
+  if (target === "md2docx" || target === "remark-docx") {
+    const pluginProps: Mdast2DocxPluginProps = {};
+    if (enabledPlugins?.frontmatter === false) {
+      pluginProps.frontmatter = false;
+    } else if (coverPage || !infoBox) {
+      pluginProps.frontmatter = { coverPage, infoBox };
+    }
+    if (enabledPlugins?.code === false) pluginProps.code = false;
+    if (enabledPlugins?.mermaid === false) pluginProps.mermaid = false;
+    if (enabledPlugins?.image === false) pluginProps.image = false;
+    if (enabledPlugins?.html === false) pluginProps.html = false;
+    if (enabledPlugins?.table === false) pluginProps.table = false;
+    if (enabledPlugins?.list === false) pluginProps.list = false;
+    if (enabledPlugins?.math === false) pluginProps.math = false;
+    if (enabledPlugins?.emoji === false) pluginProps.emoji = false;
 
-  if (target === "remark-docx") {
+    if (target === "md2docx") {
+      return (await md2docx(
+        markdown,
+        docxProps,
+        undefined,
+        "blob",
+        pluginProps,
+      )) as Blob;
+    }
+
     const processor = unified()
       .use(remarkParse)
       .use(remarkGfm)
       .use(remarkMath)
       .use(remarkFrontmatter)
-      // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-      .use(remarkDocx, "blob", docxProps, { plugins: plugins as any });
+      .use(remarkDocx, "blob", docxProps, undefined, pluginProps);
     const res = await processor.process(markdown);
     return res.result as Blob;
   }
 
   // target === "mdast2docx"
+  const plugins = getActiveClientPlugins(enabledPlugins, {
+    coverPage,
+    infoBox,
+  });
   const processor = unified()
     .use(remarkParse)
     .use(remarkGfm)
