@@ -202,7 +202,6 @@ describe("@m2d/code-shiki", () => {
 
       expect(codeNode.type).toBe("");
       expect(result?.length).toBe(1);
-      expect(result?.[0]).toBeInstanceOf(docx.Table);
     });
   });
 

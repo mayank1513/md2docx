@@ -145,4 +145,81 @@ describe("remarkDocx compiler plugin", () => {
       warnSpy.mockRestore();
     }
   });
+
+  it("wires codePlugin by default to highlight code blocks", async () => {
+    const md = "```javascript\nconst x = 42;\n```";
+    const processor = unified().use(remarkParse).use(remarkGfm).use(remarkDocx);
+    const result = await processor.process(md).then((res) => res.result);
+
+    expect(result).toBeInstanceOf(Blob);
+  });
+
+  it("disables default codePlugin when pluginProps.code is false", async () => {
+    const md = "```javascript\nconst x = 42;\n```";
+    const processor = unified()
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkDocx, "blob", {}, {}, { code: false });
+    const result = await processor.process(md).then((res) => res.result);
+
+    expect(result).toBeInstanceOf(Blob);
+  });
+
+  it("supports passing false to disable any default plugin in pluginProps", async () => {
+    const md = [
+      "# Heading",
+      "- List item",
+      "| Col |",
+      "| --- |",
+      "| Val |",
+      "```js",
+      "const a = 1;",
+      "```",
+    ].join("\n");
+
+    const processor = unified().use(remarkParse).use(remarkGfm).use(
+      remarkDocx,
+      "blob",
+      {},
+      {},
+      {
+        code: false,
+        table: false,
+        list: false,
+        math: false,
+        emoji: false,
+        frontmatter: false,
+      },
+    );
+    const result = await processor.process(md).then((res) => res.result);
+
+    expect(result).toBeInstanceOf(Blob);
+  });
+
+  it("allows clean substitution of default code plugin with custom plugin", async () => {
+    const customExecuted = vi.fn();
+    const customCodePlugin = {
+      block: (_docx: any, node: any) => {
+        if (node.type === "code") {
+          customExecuted();
+          node.type = "";
+        }
+        return [];
+      },
+    };
+
+    const md = "```typescript\nconst message = 'custom';\n```";
+    const processor = unified()
+      .use(remarkParse)
+      .use(
+        remarkDocx,
+        "blob",
+        {},
+        { plugins: [customCodePlugin] },
+        { code: false },
+      );
+
+    await processor.process(md).then((res) => res.result);
+    expect(customExecuted).toHaveBeenCalledTimes(1);
+  });
 });

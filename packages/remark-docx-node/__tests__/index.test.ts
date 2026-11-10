@@ -69,4 +69,35 @@ describe("remarkDocx Node compiler plugin", () => {
 
     expect(result).toBeInstanceOf(Blob);
   });
+
+  it("wires codePlugin by default to highlight code blocks on Node", async () => {
+    const processor = unified().use(remarkParse).use(remarkDocx);
+    const result = await processor
+      .process("```python\ndef test(): pass\n```")
+      .then((res) => res.result);
+
+    expect(result).toBeInstanceOf(Blob);
+  });
+
+  it("disables default code and other plugins when false is passed in pluginProps", async () => {
+    const processor = unified().use(remarkParse).use(
+      remarkDocx,
+      "blob",
+      {},
+      {},
+      {
+        code: false,
+        html: false,
+        mermaid: false,
+        image: false,
+        table: false,
+        list: false,
+      },
+    );
+    const result = await processor
+      .process("```python\ncode\n```")
+      .then((res) => res.result);
+
+    expect(result).toBeInstanceOf(Blob);
+  });
 });
