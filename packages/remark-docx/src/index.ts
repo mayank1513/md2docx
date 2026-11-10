@@ -1,4 +1,10 @@
-import { type IDocxProps, type ISectionProps, toDocx } from "@m2d/core";
+import { codePlugin } from "@m2d/code";
+import {
+  type IDocxProps,
+  type IPlugin,
+  type ISectionProps,
+  toDocx,
+} from "@m2d/core";
 import { DEFAULT_SECTION_PROPS, warnOnce } from "@m2d/core/utils";
 import { emojiPlugin } from "@m2d/emoji";
 import { frontmatterPlugin, parseFrontmatter } from "@m2d/frontmatter";
@@ -27,14 +33,20 @@ export interface RemarkSectionProps extends ISectionProps {
 }
 
 export interface Mdast2DocxPluginProps {
-  mermaid?: Parameters<typeof mermaidPlugin>[0];
-  list?: Parameters<typeof listPlugin>[0];
-  table?: Parameters<typeof tablePlugin>[0];
-  emoji?: Parameters<typeof emojiPlugin>[0];
-  image?: Parameters<typeof imagePlugin>[0];
-  frontmatter?: Parameters<typeof frontmatterPlugin>[1];
+  code?: Parameters<typeof codePlugin>[0] | false;
+  mermaid?: Parameters<typeof mermaidPlugin>[0] | false;
+  list?: Parameters<typeof listPlugin>[0] | false;
+  table?: Parameters<typeof tablePlugin>[0] | false;
+  emoji?: Parameters<typeof emojiPlugin>[0] | false;
+  image?: Parameters<typeof imagePlugin>[0] | false;
+  html?: false;
+  math?: Parameters<typeof mathPlugin>[0] | false;
+  frontmatter?: Parameters<typeof frontmatterPlugin>[0] | false;
 }
 
+/**
+ * Parses markdown header or footer options into MDAST Root structures.
+ */
 const parseMarkdownToAst = (
   parser: (md: string) => Root,
   input: unknown,
@@ -62,6 +74,7 @@ const parseMarkdownToAst = (
  *                     Defaults to `"blob"`.
  * @param docxProps - Global DOCX document properties passed to `toDocx`. Optional.
  * @param sectionProps - Section-level props including plugin overrides. Optional.
+ * @param pluginProps - Configurations for default plugins, or pass `false` to disable any default plugin.
  * @returns A unified plugin that injects a DOCX compiler.
  */
 export const remarkDocx: Plugin<
@@ -80,34 +93,40 @@ export const remarkDocx: Plugin<
 ) {
   // @ts-expect-error -- compiler type does not support Promise
   this.compiler = (node: Root): Promise<OutputByType[OutputType]> => {
-    // If plugins are not defined in sectionProps, use the default set
-    if (!sectionProps.plugins) {
-      const plugins = [
-        frontmatterPlugin(undefined, pluginProps?.frontmatter),
-        mermaidPlugin(pluginProps?.mermaid),
-        htmlPlugin(),
-        listPlugin(pluginProps?.list),
-        mathPlugin(),
-        tablePlugin(pluginProps?.table),
-        emojiPlugin(pluginProps?.emoji),
-        imagePlugin(pluginProps?.image),
-      ];
-      if (typeof window === "undefined") {
-        warnOnce(
-          "remark-docx-client-on-node",
-          "Running client-side @m2d/remark-docx in a Node.js environment. Client plugins (html, image, mermaid) are skipped. Please use '@m2d/remark-docx-node' for native image and diagram support on Node.",
-        );
-        sectionProps.plugins = [
-          frontmatterPlugin(undefined, pluginProps?.frontmatter),
-          listPlugin(pluginProps?.list),
-          mathPlugin(),
-          tablePlugin(pluginProps?.table),
-          emojiPlugin(pluginProps?.emoji),
-        ];
-      } else {
-        sectionProps.plugins = plugins;
-      }
+    const userPlugins = sectionProps.plugins ?? [];
+    const defaultPlugins: IPlugin[] = [];
+
+    (
+      [
+        [pluginProps?.frontmatter, frontmatterPlugin],
+        [pluginProps?.code, codePlugin],
+        [pluginProps?.list, listPlugin],
+        [pluginProps?.math, mathPlugin],
+        [pluginProps?.table, tablePlugin],
+        [pluginProps?.emoji, emojiPlugin],
+      ] as [unknown, (arg?: unknown) => IPlugin][]
+    ).forEach(([prop, plugin]) => {
+      if (prop !== false) defaultPlugins.push(plugin(prop));
+    });
+
+    if (typeof window === "undefined") {
+      warnOnce(
+        "remark-docx-client-on-node",
+        "Running client-side @m2d/remark-docx in a Node.js environment. Client plugins (html, image, mermaid) are skipped. Please use '@m2d/remark-docx-node' for native image and diagram support on Node.",
+      );
+    } else {
+      (
+        [
+          [pluginProps?.html, htmlPlugin],
+          [pluginProps?.mermaid, mermaidPlugin],
+          [pluginProps?.image, imagePlugin],
+        ] as [unknown, (arg?: unknown) => IPlugin][]
+      ).forEach(([prop, plugin]) => {
+        if (prop !== false) defaultPlugins.push(plugin(prop));
+      });
     }
+
+    sectionProps.plugins = [...defaultPlugins, ...userPlugins];
 
     let frontmatterHeader: unknown;
     let frontmatterFooter: unknown;

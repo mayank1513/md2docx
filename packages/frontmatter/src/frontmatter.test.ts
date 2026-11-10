@@ -95,7 +95,7 @@ name = "Bob"
 [package]
 title = "Advanced TOML"
 `;
-    const plugin = frontmatterPlugin(undefined, {
+    const plugin = frontmatterPlugin({
       parser: (input, type) => {
         if (type === "toml") {
           return { title: "Custom Parsed TOML" };
@@ -157,7 +157,7 @@ department: "Engineering"
   });
 
   test("should skip null, undefined, objects, and forbidden prototype keys", () => {
-    const plugin = frontmatterPlugin(undefined, {
+    const plugin = frontmatterPlugin({
       parser: () => ({
         title: "Valid",
         __proto__: "evil",
@@ -193,7 +193,7 @@ department: "Engineering"
   });
 
   test("should support custom transform function", () => {
-    const plugin = frontmatterPlugin(undefined, {
+    const plugin = frontmatterPlugin({
       transform: (data, props) => {
         props.title = `Transformed: ${data.title}`;
       },
@@ -211,7 +211,7 @@ department: "Engineering"
 
   describe("Cover Page generation", () => {
     test("should synthesize a cover page and remove matching duplicate body heading", () => {
-      const plugin = frontmatterPlugin(undefined, {
+      const plugin = frontmatterPlugin({
         coverPage: true,
       });
 
@@ -271,7 +271,7 @@ version: "2.0.0"
     });
 
     test("should retain duplicate heading when removeMatchingHeading is false", () => {
-      const plugin = frontmatterPlugin(undefined, {
+      const plugin = frontmatterPlugin({
         coverPage: {
           removeMatchingHeading: false,
           organization: "OpenSource Org",
@@ -307,7 +307,7 @@ version: "2.0.0"
 
   describe("Metadata Info-Box generation", () => {
     test("should insert blockquote info-box after first H1 heading", () => {
-      const plugin = frontmatterPlugin(undefined, {
+      const plugin = frontmatterPlugin({
         infoBox: {
           header: "Document Metadata",
         },
@@ -352,7 +352,7 @@ status: "Draft"
     });
 
     test("should insert info-box as table when format is table", () => {
-      const plugin = frontmatterPlugin(undefined, {
+      const plugin = frontmatterPlugin({
         infoBox: {
           format: "table",
           position: "top",
@@ -407,11 +407,11 @@ keywords: "docx, markdown, openxml, remark"
         ],
       });
 
-      const p1 = frontmatterPlugin(undefined, {
+      const p1 = frontmatterPlugin({
         coverPage: true,
         infoBox: false,
       });
-      const p2 = frontmatterPlugin(undefined, {
+      const p2 = frontmatterPlugin({
         coverPage: true,
         infoBox: true,
       });

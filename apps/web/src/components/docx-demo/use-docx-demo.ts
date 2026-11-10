@@ -8,6 +8,7 @@ import {
 } from "./constants";
 import { generateDocxBlob } from "./generator";
 import type {
+  CodeEngine,
   ExecutionMode,
   PluginId,
   PresetId,
@@ -17,6 +18,9 @@ import type {
 } from "./types";
 import { downloadBlob, generateSnippet, getPresetDocxFilename } from "./utils";
 
+/**
+ * Manages full interactive state, preset loading, live preview, and DOCX generation for the demo playground.
+ */
 export const useDocxDemo = () => {
   const [selectedPreset, setSelectedPreset] = useState<PresetId>("all");
   const [isPresetActive, setIsPresetActive] = useState(true);
@@ -28,6 +32,7 @@ export const useDocxDemo = () => {
   const [executionMode, setExecutionMode] = useState<ExecutionMode>("client");
   const [coverPage, setCoverPage] = useState(false);
   const [infoBox, setInfoBox] = useState(true);
+  const [codeEngine, setCodeEngine] = useState<CodeEngine>("code");
 
   /** Captured MDAST reference from @m2d/react-markdown preview */
   const previewAstRef = useRef<NonNullable<AstRef["current"]>>([]);
@@ -65,6 +70,7 @@ export const useDocxDemo = () => {
   const setAllPlugins = (enable: boolean) => {
     setIsPresetActive(false);
     setEnabledPlugins({
+      code: enable,
       frontmatter: enable,
       math: enable,
       mermaid: enable,
@@ -160,6 +166,7 @@ export const useDocxDemo = () => {
           enabledPlugins,
           coverPage,
           infoBox,
+          codeEngine,
           title:
             selectedPreset === "full"
               ? "Markdown Syntax Showcase"
@@ -193,6 +200,7 @@ export const useDocxDemo = () => {
     enabledPlugins,
     coverPage,
     infoBox,
+    codeEngine,
     selectedPreset,
   ]);
 
@@ -216,6 +224,7 @@ export const useDocxDemo = () => {
         enabledPlugins,
         coverPage,
         infoBox,
+        codeEngine,
         title: docxProps.title,
         creator: docxProps.creator,
       });
@@ -262,9 +271,11 @@ export const useDocxDemo = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           markdown,
+          target: selectedTarget,
           plugins: enabledPlugins,
           coverPage,
           infoBox,
+          codeEngine,
         }),
       });
 
@@ -281,12 +292,15 @@ export const useDocxDemo = () => {
 
       downloadBlob(
         blob,
-        getPresetDocxFilename(selectedPreset, "node-server", "server"),
+        getPresetDocxFilename(selectedPreset, selectedTarget, "server"),
       );
+
+      const targetLabel =
+        TARGETS.find((t) => t.id === selectedTarget)?.name || "Server API";
 
       setTiming({
         mode: "server",
-        targetName: "@m2d/remark-docx-node (Server API)",
+        targetName: `${targetLabel} (Server)`,
         renderTimeMs: serverRenderMs,
         networkTimeMs,
         totalTimeMs,
@@ -312,8 +326,16 @@ export const useDocxDemo = () => {
         executionMode,
         coverPage,
         infoBox,
+        codeEngine,
       ),
-    [selectedTarget, enabledPlugins, executionMode, coverPage, infoBox],
+    [
+      selectedTarget,
+      enabledPlugins,
+      executionMode,
+      coverPage,
+      infoBox,
+      codeEngine,
+    ],
   );
 
   const handleExportDocx = () => {
@@ -343,6 +365,8 @@ export const useDocxDemo = () => {
     setCoverPage,
     infoBox,
     setInfoBox,
+    codeEngine,
+    setCodeEngine,
     toggleCoverPage,
     toggleInfoBox,
     enabledPlugins,

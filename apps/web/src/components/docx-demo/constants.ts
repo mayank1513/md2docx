@@ -1,5 +1,6 @@
 import {
   Calculator,
+  Code2,
   FileSpreadsheet,
   FileText,
   GitBranch,
@@ -8,7 +9,12 @@ import {
   ListOrdered,
   Smile,
 } from "lucide-react";
-import type { PluginDefinition, PluginId, TargetOption } from "./types";
+import type {
+  CodeEngineOption,
+  PluginDefinition,
+  PluginId,
+  TargetOption,
+} from "./types";
 
 export const ALL_PLUGINS_SAMPLE = `---
 title: "md2docx Feature Showcase"
@@ -312,6 +318,13 @@ export const TARGETS: TargetOption[] = [
 
 export const AVAILABLE_PLUGINS: PluginDefinition[] = [
   {
+    id: "code",
+    name: "@m2d/code",
+    fnName: "codePlugin",
+    icon: Code2,
+    desc: "Syntax Highlighting",
+  },
+  {
     id: "frontmatter",
     name: "@m2d/frontmatter",
     fnName: "frontmatterPlugin",
@@ -369,11 +382,36 @@ export const AVAILABLE_PLUGINS: PluginDefinition[] = [
   },
 ];
 
+export const CODE_ENGINES: CodeEngineOption[] = [
+  {
+    id: "code",
+    name: "Built-in",
+    badge: "@m2d/code",
+    pkg: "@m2d/code",
+    desc: "Lightweight zero-dependency regex highlighter",
+  },
+  {
+    id: "lowlight",
+    name: "Lowlight",
+    badge: "@m2d/code-lowlight",
+    pkg: "@m2d/code-lowlight",
+    desc: "Highlight.js AST grammar engine",
+  },
+  {
+    id: "shiki",
+    name: "Shiki",
+    badge: "@m2d/code-shiki",
+    pkg: "@m2d/code-shiki",
+    desc: "VS Code TextMate high-fidelity grammar engine",
+  },
+];
+
 export const PRESET_PLUGINS: Record<
   (typeof PRESETS)[number]["id"],
   Record<PluginId, boolean>
 > = {
   all: {
+    code: true,
     frontmatter: true,
     math: true,
     mermaid: true,
@@ -384,6 +422,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   "tech-spec": {
+    code: true,
     frontmatter: true,
     math: false,
     mermaid: true,
@@ -394,6 +433,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   academic: {
+    code: false,
     frontmatter: true,
     math: true,
     mermaid: false,
@@ -404,6 +444,7 @@ export const PRESET_PLUGINS: Record<
     emoji: false,
   },
   executive: {
+    code: false,
     frontmatter: true,
     math: false,
     mermaid: false,
@@ -414,6 +455,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   full: {
+    code: true,
     frontmatter: true,
     math: true,
     mermaid: true,
@@ -424,6 +466,7 @@ export const PRESET_PLUGINS: Record<
     emoji: true,
   },
   math: {
+    code: false,
     frontmatter: false,
     math: true,
     mermaid: false,
@@ -434,6 +477,7 @@ export const PRESET_PLUGINS: Record<
     emoji: false,
   },
   mermaid: {
+    code: false,
     frontmatter: false,
     math: false,
     mermaid: true,
@@ -444,6 +488,7 @@ export const PRESET_PLUGINS: Record<
     emoji: false,
   },
   table: {
+    code: false,
     frontmatter: false,
     math: false,
     mermaid: false,

@@ -9,6 +9,9 @@
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@m2d/code": "workspace:*",
+    "@m2d/code-lowlight": "workspace:*",
+    "@m2d/code-shiki": "workspace:*",
     "@m2d/frontmatter": "workspace:*",
     "@m2d/md2docx": "workspace:*",
     "@m2d/react-markdown": "workspace:*",

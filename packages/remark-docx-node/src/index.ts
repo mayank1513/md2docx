@@ -1,4 +1,10 @@
-import { type IDocxProps, type ISectionProps, toDocx } from "@m2d/core";
+import { codePlugin } from "@m2d/code";
+import {
+  type IDocxProps,
+  type IPlugin,
+  type ISectionProps,
+  toDocx,
+} from "@m2d/core";
 import { DEFAULT_SECTION_PROPS } from "@m2d/core/utils";
 import { emojiPlugin } from "@m2d/emoji";
 import { frontmatterPlugin, parseFrontmatter } from "@m2d/frontmatter";
@@ -27,15 +33,20 @@ export interface RemarkSectionProps extends ISectionProps {
 }
 
 export interface Mdast2DocxNodePluginProps {
-  html?: Parameters<typeof nodeHtmlPlugin>[0];
-  mermaid?: Parameters<typeof nodeMermaidPlugin>[0];
-  list?: Parameters<typeof listPlugin>[0];
-  table?: Parameters<typeof tablePlugin>[0];
-  emoji?: Parameters<typeof emojiPlugin>[0];
-  image?: Parameters<typeof nodeImagePlugin>[0];
-  frontmatter?: Parameters<typeof frontmatterPlugin>[1];
+  code?: Parameters<typeof codePlugin>[0] | false;
+  html?: Parameters<typeof nodeHtmlPlugin>[0] | false;
+  mermaid?: Parameters<typeof nodeMermaidPlugin>[0] | false;
+  list?: Parameters<typeof listPlugin>[0] | false;
+  table?: Parameters<typeof tablePlugin>[0] | false;
+  emoji?: Parameters<typeof emojiPlugin>[0] | false;
+  image?: Parameters<typeof nodeImagePlugin>[0] | false;
+  math?: Parameters<typeof mathPlugin>[0] | false;
+  frontmatter?: Parameters<typeof frontmatterPlugin>[0] | false;
 }
 
+/**
+ * Parses markdown header or footer options into MDAST Root structures.
+ */
 const parseMarkdownToAst = (
   parser: (md: string) => Root,
   input: unknown,
@@ -58,13 +69,13 @@ const parseMarkdownToAst = (
 
 /**
  * A unified compiler plugin to convert MDAST to DOCX on Node.js using `mdast2docx/plugins/node`.
- * Automatically configures `nodeHtmlPlugin`, `nodeImagePlugin`, and `nodeMermaidPlugin` for server-side rasterization and parsing.
+ * Automatically configures `codePlugin`, `nodeHtmlPlugin`, `nodeImagePlugin`, and `nodeMermaidPlugin` for server-side rasterization and parsing.
  *
  * @param outputType - The output type for DOCX generation (e.g. "blob", "buffer", "base64").
  *                     Defaults to `"blob"`.
  * @param docxProps - Global DOCX document properties passed to `toDocx`. Optional.
  * @param sectionProps - Section-level props including plugin overrides. Optional.
- * @param pluginProps - Configurations for node plugins (nodeHtml, nodeMermaid, list, table, emoji, nodeImage).
+ * @param pluginProps - Configurations for node plugins, or pass `false` to disable any default plugin.
  * @returns A unified plugin that injects a DOCX compiler.
  */
 export const remarkDocx: Plugin<
@@ -83,18 +94,26 @@ export const remarkDocx: Plugin<
 ) {
   // @ts-expect-error -- compiler type does not support Promise
   this.compiler = (node: Root): Promise<OutputByType[OutputType]> => {
-    if (!sectionProps.plugins) {
-      sectionProps.plugins = [
-        frontmatterPlugin(undefined, pluginProps?.frontmatter),
-        nodeHtmlPlugin(pluginProps?.html),
-        nodeMermaidPlugin(pluginProps?.mermaid),
-        listPlugin(pluginProps?.list),
-        mathPlugin(),
-        tablePlugin(pluginProps?.table),
-        emojiPlugin(pluginProps?.emoji),
-        nodeImagePlugin(pluginProps?.image),
-      ];
-    }
+    const userPlugins = sectionProps.plugins ?? [];
+    const defaultPlugins: IPlugin[] = [];
+
+    (
+      [
+        [pluginProps?.frontmatter, frontmatterPlugin],
+        [pluginProps?.code, codePlugin],
+        [pluginProps?.html, nodeHtmlPlugin],
+        [pluginProps?.mermaid, nodeMermaidPlugin],
+        [pluginProps?.list, listPlugin],
+        [pluginProps?.math, mathPlugin],
+        [pluginProps?.table, tablePlugin],
+        [pluginProps?.emoji, emojiPlugin],
+        [pluginProps?.image, nodeImagePlugin],
+      ] as [unknown, (arg?: unknown) => IPlugin][]
+    ).forEach(([prop, plugin]) => {
+      if (prop !== false) defaultPlugins.push(plugin(prop));
+    });
+
+    sectionProps.plugins = [...defaultPlugins, ...userPlugins];
 
     let frontmatterHeader: unknown;
     let frontmatterFooter: unknown;

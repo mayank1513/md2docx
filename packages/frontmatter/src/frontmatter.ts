@@ -67,7 +67,7 @@ export interface FrontmatterPluginOptions {
    * @example
    * ```ts
    * import { parse as parseToml } from "smol-toml";
-   * frontmatterPlugin(undefined, {
+   * frontmatterPlugin({
    *   parser: (raw, type) => type === "toml" ? parseToml(raw) : parseFrontmatter(raw, type)
    * });
    * ```
@@ -333,6 +333,9 @@ export const extractFrontmatterNode = (
   );
 };
 
+/**
+ * Recursively extracts plain text from an AST node and its children.
+ */
 const getNodeText = (node: unknown): string => {
   if (!node || typeof node !== "object") return "";
   if (
@@ -379,6 +382,9 @@ const DEFAULT_FIELD_LABELS: Record<string, string> = {
   lastModifiedBy: "Modified By",
 };
 
+/**
+ * Synthesizes AST nodes representing a standalone document cover page from frontmatter metadata.
+ */
 const buildCoverPageNodes = (
   data: FrontmatterData,
   docxProps: IDocxProps,
@@ -486,6 +492,9 @@ const buildCoverPageNodes = (
   return nodes;
 };
 
+/**
+ * Synthesizes a callout blockquote or table info-box AST node from frontmatter metadata.
+ */
 const buildInfoBoxNode = (
   data: FrontmatterData,
   docxProps: IDocxProps,
@@ -593,7 +602,6 @@ const buildInfoBoxNode = (
  * Front-matter plugin for md2docx.
  */
 export const frontmatterPlugin = (
-  _docx?: unknown,
   options: FrontmatterPluginOptions = {},
 ): IPlugin => ({
   preprocess: (tree, _definitions, docxProps) => {

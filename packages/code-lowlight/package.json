@@ -1,0 +1,89 @@
+{
+  "name": "@m2d/code-lowlight",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Lowlight (highlight.js) syntax highlighting and code block formatting plugin for md2docx.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/code-lowlight"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/code-lowlight/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@m2d/code": "workspace:*",
+    "@m2d/core": "workspace:*",
+    "lowlight": "^3.3.0"
+  },
+  "peerDependencies": {
+    "docx": "^9.3.0"
+  },
+  "devDependencies": {
+    "@types/hast": "^3.0.5",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^26.6.5",
+    "docx": "^9.14.0",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "@md2docx/code-lowlight",
+      "@mdast2docx/code-lowlight"
+    ],
+    "icon": "Highlighter",
+    "description": "Lowlight Code Highlighting Plugin"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "@m2d/code-lowlight",
+    "lowlight",
+    "highlight.js",
+    "syntax-highlighting",
+    "code-block",
+    "docx",
+    "md2docx",
+    "openxml",
+    "turboforge"
+  ]
+}

@@ -17,7 +17,7 @@ import { unified } from "unified";
  * @param docxProps - Document properties passed to `@m2d/core`.
  * @param sectionProps - Default section properties (page size, margins, plugins).
  * @param outputType - Desired DOCX output format (`"blob"`, `"buffer"`, `"base64"`, etc.). Default: `"blob"`.
- * @param pluginProps - Configurations for sub-plugins (mermaid, emoji, list, table, image).
+ * @param pluginProps - Configurations for default plugins (code, mermaid, list, table, emoji, image, html, math, frontmatter), or pass `false` to disable any default plugin.
  * @returns The generated DOCX output in the requested format.
  */
 export const md2docx = async (

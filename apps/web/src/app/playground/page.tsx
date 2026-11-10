@@ -29,6 +29,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { name } from "@/meta.json";
 
+/**
+ * Full-screen workbench page for authoring, inspecting AST, testing plugins, and exporting DOCX documents.
+ */
 export default function PlaygroundPage() {
   const {
     selectedPreset,
@@ -47,6 +50,8 @@ export default function PlaygroundPage() {
     infoBox,
     toggleCoverPage,
     toggleInfoBox,
+    codeEngine,
+    setCodeEngine,
     enabledPlugins,
     togglePlugin,
     setAllPlugins,
@@ -380,9 +385,11 @@ export default function PlaygroundPage() {
                 <PluginPipeline
                   enabledPlugins={enabledPlugins}
                   activePluginCount={activePluginCount}
+                  codeEngine={codeEngine}
                   coverPage={coverPage}
                   infoBox={infoBox}
                   onTogglePlugin={togglePlugin}
+                  onSelectCodeEngine={setCodeEngine}
                   onSetAllPlugins={setAllPlugins}
                   onToggleCoverPage={toggleCoverPage}
                   onToggleInfoBox={toggleInfoBox}

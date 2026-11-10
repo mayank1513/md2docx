@@ -1,0 +1,97 @@
+{
+  "name": "@m2d/code",
+  "author": "Mayank Kumar Chaudhari <https://mayankchaudhari.com>",
+  "private": false,
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "description": "Token-level syntax highlighting and code block formatting plugin for md2docx with gutter line numbering, themes, and git diff support.",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/md2docx/md2docx",
+    "directory": "packages/code"
+  },
+  "bugs": "https://github.com/md2docx/md2docx/issues",
+  "homepage": "https://github.com/md2docx/md2docx/blob/main/packages/code/README.md",
+  "sideEffects": false,
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@m2d/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "docx": "^9.3.0"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^26.6.5",
+    "docx": "^9.14.0",
+    "tsup": "latest",
+    "typescript": "latest"
+  },
+  "forge": {
+    "aliases": [
+      "@md2docx/code",
+      "@mdast2docx/code"
+    ],
+    "icon": "Code2",
+    "description": "Code Highlighting & Gutter Plugin"
+  },
+  "funding": [
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/md2docx"
+    },
+    {
+      "type": "github",
+      "url": "https://github.com/sponsors/mayank1513"
+    }
+  ],
+  "keywords": [
+    "@m2d/code",
+    "code",
+    "code-block",
+    "syntax-highlighting",
+    "syntax-highlighter",
+    "gutter",
+    "line-numbers",
+    "diff",
+    "git-diff",
+    "themes",
+    "docx",
+    "md2docx",
+    "mdast2docx",
+    "openxml",
+    "markdown",
+    "plugin",
+    "monokai",
+    "github-dark",
+    "github-light",
+    "turboforge"
+  ]
+}

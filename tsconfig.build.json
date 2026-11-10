@@ -6,6 +6,15 @@
     "paths": {
       "@m2d/cache": ["./packages/cache/src", "./packages/cache/dist"],
       "@m2d/cli": ["./packages/cli/src", "./packages/cli/dist"],
+      "@m2d/code": ["./packages/code/src", "./packages/code/dist"],
+      "@m2d/code-lowlight": [
+        "./packages/code-lowlight/src",
+        "./packages/code-lowlight/dist"
+      ],
+      "@m2d/code-shiki": [
+        "./packages/code-shiki/src",
+        "./packages/code-shiki/dist"
+      ],
       "@m2d/core": ["./packages/core/src", "./packages/core/dist"],
       "@m2d/frontmatter": [
         "./packages/frontmatter/src",

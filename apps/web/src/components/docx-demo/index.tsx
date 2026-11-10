@@ -8,6 +8,9 @@ import { PluginPipeline } from "./plugin-pipeline";
 import { PreviewPanel } from "./preview-panel";
 import { useDocxDemo } from "./use-docx-demo";
 
+/**
+ * Interactive playground component showcasing the multi-target DOCX compilation engine and plugin ecosystem.
+ */
 export const DocxDemo = () => {
   const {
     selectedPreset,
@@ -26,6 +29,8 @@ export const DocxDemo = () => {
     infoBox,
     toggleCoverPage,
     toggleInfoBox,
+    codeEngine,
+    setCodeEngine,
     enabledPlugins,
     togglePlugin,
     setAllPlugins,
@@ -69,9 +74,11 @@ export const DocxDemo = () => {
         <PluginPipeline
           enabledPlugins={enabledPlugins}
           activePluginCount={activePluginCount}
+          codeEngine={codeEngine}
           coverPage={coverPage}
           infoBox={infoBox}
           onTogglePlugin={togglePlugin}
+          onSelectCodeEngine={setCodeEngine}
           onSetAllPlugins={setAllPlugins}
           onToggleCoverPage={toggleCoverPage}
           onToggleInfoBox={toggleInfoBox}

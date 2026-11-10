@@ -1,6 +1,9 @@
+import { codePlugin } from "@m2d/code";
+import { codeLowlightPlugin } from "@m2d/code-lowlight";
+import { createCodeShikiPlugin } from "@m2d/code-shiki";
 import { frontmatterPlugin } from "@m2d/frontmatter";
 import { md2docx } from "@m2d/md2docx";
-import { remarkDocx } from "@m2d/remark-docx";
+import { type Mdast2DocxPluginProps, remarkDocx } from "@m2d/remark-docx";
 import type { Root } from "mdast";
 import { toDocx } from "mdast2docx";
 import {
@@ -17,7 +20,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
-import type { PluginId, TargetId } from "./types";
+import type { CodeEngine, PluginId, TargetId } from "./types";
 
 export interface GenerateDocxOptions {
   markdown: string;
@@ -25,22 +28,71 @@ export interface GenerateDocxOptions {
   enabledPlugins?: Partial<Record<PluginId, boolean>>;
   coverPage?: boolean;
   infoBox?: boolean;
+  codeEngine?: CodeEngine;
   title?: string;
   creator?: string;
 }
 
-export const getActiveClientPlugins = (
+let cachedShikiPromise: ReturnType<typeof createCodeShikiPlugin> | null = null;
+/**
+ * Retrieves or initializes the shared browser-side Shiki highlighter plugin singleton.
+ */
+const getShikiPlugin = () => {
+  if (!cachedShikiPromise) {
+    cachedShikiPromise = createCodeShikiPlugin({
+      langs: [
+        "javascript",
+        "typescript",
+        "python",
+        "json",
+        "html",
+        "css",
+        "sql",
+        "sh",
+        "diff",
+        "markdown",
+      ],
+      themes: ["github-light", "github-dark", "monokai"],
+    });
+  }
+  return cachedShikiPromise;
+};
+
+/**
+ * Resolves the code highlighting plugin based on the selected syntax engine.
+ */
+export const resolveCodePlugin = async (codeEngine: CodeEngine = "code") => {
+  if (codeEngine === "lowlight") {
+    return codeLowlightPlugin();
+  }
+  if (codeEngine === "shiki") {
+    return await getShikiPlugin();
+  }
+  return codePlugin();
+};
+
+/**
+ * Collects active client-side plugins for mdast2docx AST compilation.
+ */
+export const getActiveClientPlugins = async (
   enabledPlugins?: Partial<Record<PluginId, boolean>>,
-  options?: { coverPage?: boolean; infoBox?: boolean },
+  options?: {
+    coverPage?: boolean;
+    infoBox?: boolean;
+    codeEngine?: CodeEngine;
+  },
 ) => {
   const list = [];
   if (enabledPlugins?.frontmatter !== false) {
     list.push(
-      frontmatterPlugin(undefined, {
+      frontmatterPlugin({
         coverPage: options?.coverPage,
         infoBox: options?.infoBox,
       }),
     );
+  }
+  if (enabledPlugins?.code !== false) {
+    list.push(await resolveCodePlugin(options?.codeEngine));
   }
   if (enabledPlugins?.mermaid !== false) list.push(mermaidPlugin());
   if (enabledPlugins?.html !== false) list.push(htmlPlugin());
@@ -52,47 +104,81 @@ export const getActiveClientPlugins = (
   return list;
 };
 
+/**
+ * Compiles Markdown to a DOCX Blob in the browser using the specified compilation target.
+ */
 export const generateDocxBlob = async ({
   markdown,
   target = "md2docx",
   enabledPlugins,
   coverPage = false,
   infoBox = true,
+  codeEngine = "code",
   title = "Md2Docx Document",
   creator,
 }: GenerateDocxOptions): Promise<Blob> => {
-  const plugins = getActiveClientPlugins(enabledPlugins, {
-    coverPage,
-    infoBox,
-  });
   const docxProps = {
     title,
     creator: creator ?? `${target} Browser Engine`,
   };
 
-  if (target === "md2docx") {
-    return (await md2docx(
-      markdown,
-      docxProps,
-      // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-      { plugins: plugins as any },
-      "blob",
-    )) as Blob;
-  }
+  if (target === "md2docx" || target === "remark-docx") {
+    const pluginProps: Mdast2DocxPluginProps = {};
+    if (enabledPlugins?.frontmatter === false) {
+      pluginProps.frontmatter = false;
+    } else if (coverPage || !infoBox) {
+      pluginProps.frontmatter = { coverPage, infoBox };
+    }
 
-  if (target === "remark-docx") {
+    // Handle code engine:
+    // If code is disabled, pass false in pluginProps.
+    // If non-default engine (lowlight or shiki), disable built-in code and pass the engine via sectionProps.plugins
+    // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
+    let customPlugins: Array<any> | undefined;
+    if (enabledPlugins?.code === false) {
+      pluginProps.code = false;
+    } else if (codeEngine !== "code") {
+      pluginProps.code = false;
+      const activeCodePlugin = await resolveCodePlugin(codeEngine);
+      customPlugins = [activeCodePlugin];
+    }
+
+    if (enabledPlugins?.mermaid === false) pluginProps.mermaid = false;
+    if (enabledPlugins?.image === false) pluginProps.image = false;
+    if (enabledPlugins?.html === false) pluginProps.html = false;
+    if (enabledPlugins?.table === false) pluginProps.table = false;
+    if (enabledPlugins?.list === false) pluginProps.list = false;
+    if (enabledPlugins?.math === false) pluginProps.math = false;
+    if (enabledPlugins?.emoji === false) pluginProps.emoji = false;
+
+    const sectionProps = customPlugins ? { plugins: customPlugins } : undefined;
+
+    if (target === "md2docx") {
+      return (await md2docx(
+        markdown,
+        docxProps,
+        sectionProps,
+        "blob",
+        pluginProps,
+      )) as Blob;
+    }
+
     const processor = unified()
       .use(remarkParse)
       .use(remarkGfm)
       .use(remarkMath)
       .use(remarkFrontmatter)
-      // biome-ignore lint/suspicious/noExplicitAny: generic AST plugin compatibility
-      .use(remarkDocx, "blob", docxProps, { plugins: plugins as any });
+      .use(remarkDocx, "blob", docxProps, sectionProps, pluginProps);
     const res = await processor.process(markdown);
     return res.result as Blob;
   }
 
   // target === "mdast2docx"
+  const plugins = await getActiveClientPlugins(enabledPlugins, {
+    coverPage,
+    infoBox,
+    codeEngine,
+  });
   const processor = unified()
     .use(remarkParse)
     .use(remarkGfm)

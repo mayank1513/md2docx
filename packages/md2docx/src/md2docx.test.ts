@@ -57,6 +57,34 @@ describe("md2docx", () => {
     expect(result).toBeInstanceOf(Blob);
   });
 
+  it("should accept code options or false in pluginProps to disable default plugins", async () => {
+    const disabledProps = {
+      code: false as const,
+      mermaid: false as const,
+      table: false as const,
+    };
+    const resultDisabled = await md2docx(
+      "# Test",
+      {},
+      undefined,
+      "blob",
+      disabledProps,
+    );
+    expect(resultDisabled).toBeInstanceOf(Blob);
+
+    const configuredCodeProps = {
+      code: { lineNumbers: true, theme: "monokai" as const },
+    };
+    const resultConfigured = await md2docx(
+      "```ts\nconst x = 1;\n```",
+      {},
+      undefined,
+      "blob",
+      configuredCodeProps,
+    );
+    expect(resultConfigured).toBeInstanceOf(Blob);
+  });
+
   it("should handle complex markdown with multiple features", async () => {
     const markdown = `
 # Title
