@@ -1,5 +1,5 @@
 import type { EmptyNode, IPlugin } from "@m2d/core";
-import { AlignmentType, BorderStyle, ShadingType, WidthType } from "docx";
+import { AlignmentType, BorderStyle } from "docx";
 import { cleanHex, resolveTheme } from "./themes";
 import { parseCodeLines } from "./tokenizer";
 import type {
@@ -18,7 +18,7 @@ export const defaultCodeOptions: Required<
   gutterStart: 1,
   fontFamily: "Consolas",
   fontSize: 19,
-  blockType: "table",
+  blockType: "paragraph",
   highlightInline: true,
   diffHighlight: true,
   tabSize: 2,
@@ -123,6 +123,7 @@ const createRunsForLine = (
         text: item.text,
         font: { name: fontFamily },
         size: fontSize,
+        style: "code",
         color: item.color,
         ...(lineBreak && index === 0 ? { break: 1 } : {}),
         italics: item.italics,
@@ -143,7 +144,7 @@ export const codePlugin: CodePluginFactory = (
   };
 
   return {
-    block: (docx, node) => {
+    block: (docx, node, paraProps) => {
       if (node.type !== "code") return [];
 
       // Mark node as handled so md2docx core skips its default code handler
@@ -151,20 +152,12 @@ export const codePlugin: CodePluginFactory = (
 
       const rawCode = (node as unknown as { value?: string }).value ?? "";
       const rawLang = (node as unknown as { lang?: string }).lang;
-      const rawMeta = (node as unknown as { meta?: string }).meta;
 
       // Extract node-level overrides
       const nodeData =
         (node as unknown as { data?: Record<string, unknown> }).data ?? {};
       const activeThemeName = (nodeData.theme as string) ?? mergedOptions.theme;
       const theme = resolveTheme(activeThemeName, options.customThemes);
-
-      const hasMetaLineNumbers = Boolean(
-        rawMeta && /\b(showLineNumbers|lineNumbers|lines)\b/i.test(rawMeta),
-      );
-      const showLineNumbers =
-        (nodeData.lineNumbers as boolean | undefined) ??
-        (hasMetaLineNumbers || mergedOptions.lineNumbers);
 
       const fontFamily =
         (nodeData.fontFamily as string) ?? mergedOptions.fontFamily;
@@ -178,247 +171,49 @@ export const codePlugin: CodePluginFactory = (
         options.tokenizer,
       );
 
-      const subtleBorder = {
-        style: BorderStyle.SINGLE,
-        size: 1,
-        color: cleanHex(theme.border ?? theme.gutterBackground),
-      };
-      const noneBorder = {
-        style: BorderStyle.NONE,
-      };
+      const children: import("docx").TextRun[] = [];
 
-      // 1. Two-Column Table with Gutter & Line Numbers
-      if (showLineNumbers) {
-        const totalLines = codeLines.length;
-        const lineNumDigits = String(
-          totalLines + mergedOptions.gutterStart - 1,
-        ).length;
-        const gutterWidthPercent =
-          options.gutterWidthPercent ??
-          Math.max(6, Math.min(15, lineNumDigits * 2 + 3));
-        const codeWidthPercent = 100 - gutterWidthPercent;
-
-        const rows = codeLines.map((line, idx) => {
-          const lineNumber = idx + mergedOptions.gutterStart;
-          const runs = createRunsForLine(
-            docx,
-            line,
-            theme,
-            fontFamily,
-            fontSize,
-            tabSize,
-          );
-
-          let gutterBg = theme.gutterBackground;
-          let codeBg = theme.background;
-          let gutterTextColor = theme.gutterText;
-
-          if (line.diffType === "add") {
-            gutterBg = theme.diffAddBackground;
-            codeBg = theme.diffAddBackground;
-            gutterTextColor = theme.diffAddText;
-          } else if (line.diffType === "delete") {
-            gutterBg = theme.diffDeleteBackground;
-            codeBg = theme.diffDeleteBackground;
-            gutterTextColor = theme.diffDeleteText;
-          }
-
-          return new docx.TableRow({
-            cantSplit: true,
-            children: [
-              new docx.TableCell({
-                width: { size: gutterWidthPercent, type: WidthType.PERCENTAGE },
-                shading: {
-                  type: ShadingType.SOLID,
-                  fill: cleanHex(gutterBg),
-                },
-                margins: {
-                  top: 20,
-                  bottom: 20,
-                  left: 60,
-                  right: 60,
-                },
-                children: [
-                  new docx.Paragraph({
-                    alignment: AlignmentType.RIGHT,
-                    spacing: { before: 0, after: 0, line: 240 },
-                    children: [
-                      new docx.TextRun({
-                        text: String(lineNumber),
-                        font: { name: fontFamily },
-                        size: fontSize,
-                        color: cleanHex(gutterTextColor),
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-              new docx.TableCell({
-                width: { size: codeWidthPercent, type: WidthType.PERCENTAGE },
-                shading: {
-                  type: ShadingType.SOLID,
-                  fill: cleanHex(codeBg),
-                },
-                margins: {
-                  top: 20,
-                  bottom: 20,
-                  left: 100,
-                  right: 60,
-                },
-                children: [
-                  new docx.Paragraph({
-                    alignment: AlignmentType.LEFT,
-                    spacing: { before: 0, after: 0, line: 240 },
-                    children:
-                      runs.length > 0
-                        ? runs
-                        : [
-                            new docx.TextRun({
-                              text: " ",
-                              font: { name: fontFamily },
-                              size: fontSize,
-                            }),
-                          ],
-                  }),
-                ],
-              }),
-            ],
-          });
-        });
-
-        const table = new docx.Table({
-          width: { size: 100, type: WidthType.PERCENTAGE },
-          borders: {
-            top: subtleBorder,
-            bottom: subtleBorder,
-            left: subtleBorder,
-            right: subtleBorder,
-            insideHorizontal: noneBorder,
-            insideVertical: subtleBorder,
-          },
-          rows,
-        });
-
-        return [table];
-      }
-
-      // 2. Line numbers false - Single Shaded Block (Table or Paragraph)
-      if (mergedOptions.blockType === "paragraph") {
-        const paragraphRuns: import("docx").TextRun[] = [];
-
-        codeLines.forEach((line, lineIndex) => {
-          const lineRuns = createRunsForLine(
-            docx,
-            line,
-            theme,
-            fontFamily,
-            fontSize,
-            tabSize,
-            lineIndex > 0,
-          );
-
-          if (lineRuns.length === 0) {
-            lineRuns.push(
-              new docx.TextRun({
-                text: " ",
-                font: { name: fontFamily },
-                size: fontSize,
-                ...(lineIndex > 0 ? { break: 1 } : {}),
-              }),
-            );
-          }
-
-          paragraphRuns.push(...lineRuns);
-        });
-
-        const para = new docx.Paragraph({
-          alignment: AlignmentType.LEFT,
-          keepLines: true,
-          spacing: { before: 100, after: 100, line: 240 },
-          shading: {
-            type: ShadingType.SOLID,
-            fill: cleanHex(theme.background),
-          },
-          border: {
-            top: subtleBorder,
-            bottom: subtleBorder,
-            left: subtleBorder,
-            right: subtleBorder,
-          },
-          children: paragraphRuns,
-        });
-
-        return [para];
-      }
-
-      // Default: Table with 1-column padded rows
-      const rows = codeLines.map((line) => {
-        const runs = createRunsForLine(
+      codeLines.forEach((line, lineIndex) => {
+        const lineRuns = createRunsForLine(
           docx,
           line,
           theme,
           fontFamily,
           fontSize,
           tabSize,
+          lineIndex > 0,
         );
 
-        let lineBg = theme.background;
-        if (line.diffType === "add") {
-          lineBg = theme.diffAddBackground;
-        } else if (line.diffType === "delete") {
-          lineBg = theme.diffDeleteBackground;
+        if (lineRuns.length === 0) {
+          lineRuns.push(
+            new docx.TextRun({
+              text: " ",
+              font: { name: fontFamily },
+              size: fontSize,
+              style: "code",
+              ...(lineIndex > 0 ? { break: 1 } : {}),
+            }),
+          );
         }
 
-        return new docx.TableRow({
-          cantSplit: true,
-          children: [
-            new docx.TableCell({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              shading: {
-                type: ShadingType.SOLID,
-                fill: cleanHex(lineBg),
-              },
-              margins: {
-                top: 20,
-                bottom: 20,
-                left: 100,
-                right: 60,
-              },
-              children: [
-                new docx.Paragraph({
-                  alignment: AlignmentType.LEFT,
-                  spacing: { before: 0, after: 0, line: 240 },
-                  children:
-                    runs.length > 0
-                      ? runs
-                      : [
-                          new docx.TextRun({
-                            text: " ",
-                            font: { name: fontFamily },
-                            size: fontSize,
-                          }),
-                        ],
-                }),
-              ],
-            }),
-          ],
-        });
+        children.push(...lineRuns);
       });
 
-      const table = new docx.Table({
-        width: { size: 100, type: WidthType.PERCENTAGE },
-        borders: {
-          top: subtleBorder,
-          bottom: subtleBorder,
-          left: subtleBorder,
-          right: subtleBorder,
-          insideHorizontal: noneBorder,
-          insideVertical: noneBorder,
-        },
-        rows,
-      });
-
-      return [table];
+      return [
+        new docx.Paragraph({
+          border: {
+            bottom: { style: BorderStyle.SINGLE, space: 5, size: 1 },
+            left: { style: BorderStyle.SINGLE, space: 10, size: 1 },
+            right: { style: BorderStyle.SINGLE, space: 5, size: 1 },
+            top: { style: BorderStyle.SINGLE, space: 6, size: 1 },
+          },
+          ...paraProps,
+          alignment: AlignmentType.LEFT,
+          style: "blockCode",
+          keepLines: true,
+          children,
+        }),
+      ];
     },
 
     inline: (docx, node) => {
@@ -441,11 +236,8 @@ export const codePlugin: CodePluginFactory = (
           text: rawValue,
           font: { name: fontFamily },
           size: fontSize,
+          style: "code",
           color: cleanHex(theme.text),
-          shading: {
-            type: ShadingType.SOLID,
-            fill: cleanHex(theme.background),
-          },
         }),
       ];
     },
