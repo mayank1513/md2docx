@@ -1,5 +1,16 @@
 # @m2d/cli
 
+## 1.1.0
+
+### Minor Changes
+
+- [#25](https://github.com/md2docx/md2docx/pull/25) [`9f36380`](https://github.com/md2docx/md2docx/commit/9f36380247a05c783e675bbe122898c9bdcdfa08) Thanks [@mayank1513](https://github.com/mayank1513)! - Enable syntax-highlighted code blocks out of the box for CLI markdown conversions via `@m2d/remark-docx-node`.
+
+### Patch Changes
+
+- Updated dependencies [[`6effeb9`](https://github.com/md2docx/md2docx/commit/6effeb979bcd0c459963e61917b86ef4c16157f7)]:
+  - @m2d/remark-docx-node@0.3.0
+
 ## 1.0.2
 
 ### Patch Changes
