@@ -67,7 +67,7 @@ export interface FrontmatterPluginOptions {
    * @example
    * ```ts
    * import { parse as parseToml } from "smol-toml";
-   * frontmatterPlugin(undefined, {
+   * frontmatterPlugin({
    *   parser: (raw, type) => type === "toml" ? parseToml(raw) : parseFrontmatter(raw, type)
    * });
    * ```
@@ -593,7 +593,6 @@ const buildInfoBoxNode = (
  * Front-matter plugin for md2docx.
  */
 export const frontmatterPlugin = (
-  _docx?: unknown,
   options: FrontmatterPluginOptions = {},
 ): IPlugin => ({
   preprocess: (tree, _definitions, docxProps) => {
