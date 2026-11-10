@@ -39,6 +39,9 @@ interface LayoutOptions {
 }
 
 let cachedServerShiki: ReturnType<typeof createCodeShikiPlugin> | null = null;
+/**
+ * Retrieves or initializes the shared server-side Shiki highlighter plugin singleton.
+ */
 const getServerShikiPlugin = () => {
   if (!cachedServerShiki) {
     cachedServerShiki = createCodeShikiPlugin({
@@ -60,6 +63,9 @@ const getServerShikiPlugin = () => {
   return cachedServerShiki;
 };
 
+/**
+ * Resolves the server-side code highlighting plugin based on the selected syntax engine.
+ */
 const resolveServerCodePlugin = async (codeEngine = "code") => {
   if (codeEngine === "lowlight") {
     return codeLowlightPlugin();
@@ -70,6 +76,9 @@ const resolveServerCodePlugin = async (codeEngine = "code") => {
   return codePlugin();
 };
 
+/**
+ * Constructs the server-side plugin array based on enabled flags, layout options, and code engine.
+ */
 const getServerPlugins = async (
   enabled?: Record<string, boolean>,
   layoutOptions?: LayoutOptions,
@@ -217,6 +226,9 @@ export const GET = async () => {
   }
 };
 
+/**
+ * POST endpoint converting user payload Markdown to DOCX with selected target and plugins.
+ */
 export const POST = async (req: NextRequest) => {
   try {
     const body = await req.json();

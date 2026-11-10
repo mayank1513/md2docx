@@ -27,6 +27,9 @@ export const getPresetDocxFilename = (
     ? `full-sample-${target}-${mode}.docx`
     : `md2docx-${preset}-${target}-${mode}.docx`;
 
+/**
+ * Returns import statements, initializers, and plugin expressions for alternative code engines.
+ */
 const getCustomCodePluginSnippet = (codeEngine: CodeEngine) => {
   if (codeEngine === "lowlight") {
     return {
@@ -50,6 +53,9 @@ const getCustomCodePluginSnippet = (codeEngine: CodeEngine) => {
   return null;
 };
 
+/**
+ * Formats plugin configuration properties into a serialized object snippet string.
+ */
 const formatPluginProps = (
   enabledPlugins: Record<PluginId, boolean>,
   coverPage: boolean,
@@ -77,6 +83,9 @@ const formatPluginProps = (
   return `{\n${lines.join("\n")}\n${indent.slice(2)}}`;
 };
 
+/**
+ * Constructs the imports and pipeline invocation code snippet for the mdast2docx target.
+ */
 const buildMdast2DocxSnippet = (
   enabledPlugins: Record<PluginId, boolean>,
   coverPage: boolean,

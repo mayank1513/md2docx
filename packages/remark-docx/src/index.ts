@@ -44,6 +44,9 @@ export interface Mdast2DocxPluginProps {
   frontmatter?: Parameters<typeof frontmatterPlugin>[0] | false;
 }
 
+/**
+ * Parses markdown header or footer options into MDAST Root structures.
+ */
 const parseMarkdownToAst = (
   parser: (md: string) => Root,
   input: unknown,

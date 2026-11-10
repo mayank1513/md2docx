@@ -29,6 +29,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { name } from "@/meta.json";
 
+/**
+ * Full-screen workbench page for authoring, inspecting AST, testing plugins, and exporting DOCX documents.
+ */
 export default function PlaygroundPage() {
   const {
     selectedPreset,

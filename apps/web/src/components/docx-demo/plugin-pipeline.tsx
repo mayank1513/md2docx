@@ -23,6 +23,10 @@ interface PluginPipelineProps {
   onToggleInfoBox: () => void;
 }
 
+/**
+ * Interactive plugin pipeline control grid allowing users to toggle official plugins,
+ * switch syntax highlighting engines, and configure frontmatter layout options.
+ */
 export const PluginPipeline = ({
   enabledPlugins,
   activePluginCount,

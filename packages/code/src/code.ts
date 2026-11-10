@@ -132,6 +132,9 @@ const createRunsForLine = (
   );
 };
 
+/**
+ * Resolves theme, font family, and font size configuration with node-level override support.
+ */
 const resolveNodeStyling = (
   node: unknown,
   defaults: ICodePluginOptions,

@@ -18,6 +18,9 @@ import type {
 } from "./types";
 import { downloadBlob, generateSnippet, getPresetDocxFilename } from "./utils";
 
+/**
+ * Manages full interactive state, preset loading, live preview, and DOCX generation for the demo playground.
+ */
 export const useDocxDemo = () => {
   const [selectedPreset, setSelectedPreset] = useState<PresetId>("all");
   const [isPresetActive, setIsPresetActive] = useState(true);

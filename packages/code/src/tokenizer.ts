@@ -881,6 +881,9 @@ const GENERIC_KEYWORDS = new Set([
 // ---------------------------------------------------------------------------
 // 3. Normalization Helper
 // ---------------------------------------------------------------------------
+/**
+ * Normalizes input language string or alias to a canonical supported grammar name.
+ */
 export const normalizeLanguage = (language?: string): Language => {
   const lang = language?.toLowerCase().trim() ?? "";
   if (
@@ -1581,6 +1584,9 @@ export const tokenize = (code: string, language?: string): Token[][] => {
   return splitTokensIntoLines(tokens);
 };
 
+/**
+ * Classifies a line of diff or patch text into header, addition, deletion, or standard line.
+ */
 const classifyDiffLine = (line: string): CodeLine["diffType"] => {
   if (/^(?:diff --git\s|index\s|---\s|\+\+\+\s|\*\*\*\s|@@)/.test(line)) {
     return "header";

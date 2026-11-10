@@ -34,6 +34,9 @@ export interface GenerateDocxOptions {
 }
 
 let cachedShikiPromise: ReturnType<typeof createCodeShikiPlugin> | null = null;
+/**
+ * Retrieves or initializes the shared browser-side Shiki highlighter plugin singleton.
+ */
 const getShikiPlugin = () => {
   if (!cachedShikiPromise) {
     cachedShikiPromise = createCodeShikiPlugin({
@@ -55,6 +58,9 @@ const getShikiPlugin = () => {
   return cachedShikiPromise;
 };
 
+/**
+ * Resolves the code highlighting plugin based on the selected syntax engine.
+ */
 export const resolveCodePlugin = async (codeEngine: CodeEngine = "code") => {
   if (codeEngine === "lowlight") {
     return codeLowlightPlugin();
@@ -65,6 +71,9 @@ export const resolveCodePlugin = async (codeEngine: CodeEngine = "code") => {
   return codePlugin();
 };
 
+/**
+ * Collects active client-side plugins for mdast2docx AST compilation.
+ */
 export const getActiveClientPlugins = async (
   enabledPlugins?: Partial<Record<PluginId, boolean>>,
   options?: {
@@ -95,6 +104,9 @@ export const getActiveClientPlugins = async (
   return list;
 };
 
+/**
+ * Compiles Markdown to a DOCX Blob in the browser using the specified compilation target.
+ */
 export const generateDocxBlob = async ({
   markdown,
   target = "md2docx",

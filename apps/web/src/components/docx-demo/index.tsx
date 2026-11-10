@@ -8,6 +8,9 @@ import { PluginPipeline } from "./plugin-pipeline";
 import { PreviewPanel } from "./preview-panel";
 import { useDocxDemo } from "./use-docx-demo";
 
+/**
+ * Interactive playground component showcasing the multi-target DOCX compilation engine and plugin ecosystem.
+ */
 export const DocxDemo = () => {
   const {
     selectedPreset,
