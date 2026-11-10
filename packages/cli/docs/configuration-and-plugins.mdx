@@ -56,8 +56,11 @@ export default defineConfig({
     },
   },
 
-  // Built-in plugin options
+  // Built-in plugin options (pass false to disable any default plugin)
   pluginProps: {
+    code: {
+      theme: "github-light",        // Syntax highlighting theme
+    },
     image: {
       pathPrefix: "./public/assets", // Base directory for relative image paths
       maxW: 650,                    // Max width in pixels
@@ -74,6 +77,10 @@ export default defineConfig({
     },
     table: {
       cantSplit: true,              // Prevent rows from splitting across page breaks
+    },
+    frontmatter: {
+      coverPage: false,             // Render title page from frontmatter
+      infoBox: true,                // Render document properties info box
     },
   },
 });
@@ -144,9 +151,14 @@ $ md2docx documentation.md -c md2docx.config.ts -o documentation.docx
    Any plugins listed in the `plugins: [...]` array are passed to `@m2d/core`.
 2. **Default Fallback**:
    When `plugins` is omitted or empty, `@m2d/cli` defaults to the standard server pipeline (`@m2d/remark-docx-node`):
+   - Syntax-highlighted code blocks (`@m2d/code`)
    - Native image rasterization (`@m2d/image-node` via `sharp`)
    - Native Mermaid diagram rendering (`@m2d/mermaid-node` via `beautiful-mermaid`)
+   - Frontmatter metadata and title blocks (`@m2d/frontmatter`)
+   - HTML markup parsing (`@m2d/html-node`)
    - Lists (`@m2d/list`)
    - Tables (`@m2d/table`)
    - Math (`@m2d/math`)
    - Emoji (`@m2d/emoji`)
+   
+   To disable any built-in plugin, pass `false` in `pluginProps` (e.g. `pluginProps: { code: false }`).

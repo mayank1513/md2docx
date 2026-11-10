@@ -20,7 +20,7 @@ import { unified } from "unified";
  * @param docxProps - Global document properties passed to `@m2d/core`
  * @param sectionProps - Default section properties (page size, margins, plugins)
  * @param outputType - Desired DOCX output format (`"nodebuffer"` by default on Node)
- * @param pluginProps - Configurations for sub-plugins (nodeImage, nodeMermaid, list, table, emoji)
+ * @param pluginProps - Configurations for built-in plugins (code, nodeImage, nodeMermaid, list, table, emoji, html, math, frontmatter), or pass `false` to disable any default plugin
  * @returns The generated DOCX output
  */
 export const md2docx = async <T extends OutputType = "nodebuffer">(

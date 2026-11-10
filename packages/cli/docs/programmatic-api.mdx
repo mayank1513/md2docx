@@ -53,7 +53,7 @@ export const md2docx = async <T extends OutputType = "nodebuffer">(
 | `docxProps` | `IDocxProps` | Global document metadata (e.g. `title`, `creator`, `description`, `styles`). |
 | `sectionProps` | `ISectionProps` | Section properties (margins, page orientation, headers/footers, custom `plugins`). |
 | `outputType` | `OutputType` | Binary format. Defaults to `"nodebuffer"` on Node. Supported: `"nodebuffer"`, `"blob"`, `"base64"`, `"uint8array"`, `"arraybuffer"`. |
-| `pluginProps` | `Mdast2DocxNodePluginProps` | Configuration options for sub-plugins (`image`, `mermaid`, `list`, `table`, `emoji`). |
+| `pluginProps` | `Mdast2DocxNodePluginProps` | Configuration options for built-in plugins (`code`, `image`, `mermaid`, `list`, `table`, `emoji`, `frontmatter`, `math`, `html`), or pass `false` to disable any default plugin. |
 
 ---
 
