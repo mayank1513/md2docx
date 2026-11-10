@@ -1,0 +1,69 @@
+[**@m2d/frontmatter**](../index.mdx)
+
+***
+
+[@m2d/frontmatter](../index.mdx) / InfoBoxOptions
+
+# Interface: InfoBoxOptions
+
+Defined in: [frontmatter.ts:47](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L47)
+
+## Properties
+
+### enabled?
+
+> `optional` **enabled?**: `boolean`
+
+Defined in: [frontmatter.ts:49](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L49)
+
+Whether the info box is enabled
+
+***
+
+### fields?
+
+> `optional` **fields?**: `string`[]
+
+Defined in: [frontmatter.ts:57](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L57)
+
+Specific frontmatter fields to display, and their order. Default: ["author", "date", "version", "status", "tags"]
+
+***
+
+### format?
+
+> `optional` **format?**: `"blockquote"` \| `"table"`
+
+Defined in: [frontmatter.ts:51](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L51)
+
+Format of the info box: "blockquote" (callout box) or "table". Default: "blockquote"
+
+***
+
+### header?
+
+> `optional` **header?**: `string`
+
+Defined in: [frontmatter.ts:55](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L55)
+
+Header title inside the info box, e.g. "Document Overview"
+
+***
+
+### labels?
+
+> `optional` **labels?**: `Record`\<`string`, `string`\>
+
+Defined in: [frontmatter.ts:59](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L59)
+
+Custom label mapping, e.g. \{ author: "Author", lastModifiedBy: "Last Updated" \}
+
+***
+
+### position?
+
+> `optional` **position?**: `"after-title"` \| `"top"`
+
+Defined in: [frontmatter.ts:53](https://github.com/md2docx/md2docx/blob/main/packages/frontmatter/src/frontmatter.ts#L53)
+
+Placement: "after-title" (after first H1) or "top" (at the very beginning). Default: "after-title"

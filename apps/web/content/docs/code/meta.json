@@ -1,0 +1,12 @@
+{
+  "title": "@m2d/code",
+  "description": "Code Highlighting & Gutter Plugin",
+  "tagLine": "Token-level syntax highlighting and code block formatting plugin for md2docx with gutter line numbering, themes, and git diff support.",
+  "lastModified": "2026-11-10T12:12:51.070Z",
+  "version": "0.1.0",
+  "root": true,
+  "icon": "Code2",
+  "pages": [
+    "v0"
+  ]
+}

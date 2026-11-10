@@ -1,0 +1,82 @@
+---
+title: Preset Themes & Token Styling
+description: Configure syntax highlighting themes, token palettes, and custom styling for code blocks in Word documents.
+---
+
+# Preset Themes & Token Styling
+
+The `@m2d/code` plugin includes a curated catalog of high-contrast, professional syntax themes engineered for Word OpenXML output.
+
+## Preset Themes Catalog
+
+| Theme | Type | Target Environment | Background | Default Text |
+| :--- | :--- | :--- | :--- | :--- |
+| `github-light` | Light (Default) | General technical documentation & white papers | `#f6f8fa` | `#24292e` |
+| `github-dark` | Dark | Modern developer specifications & dark templates | `#0d1117` | `#c9d1d9` |
+| `monokai` | High-Contrast Dark | Code-centric technical manuals & IDE-style guides | `#272822` | `#f8f8f2` |
+| `executive-print` | Monochrome Slate | Crisp black & white executive briefs & formal print | `#f8fafc` | `#1e293b` |
+
+## Activating a Preset Theme
+
+Pass the theme name to `codePlugin`:
+
+```typescript
+import { toDocx } from "@m2d/core";
+import { codePlugin } from "@m2d/code";
+
+const docx = await toDocx(ast, {}, {
+  plugins: [
+    codePlugin({
+      theme: "monokai",
+      fontFamily: "Consolas",
+      fontSize: 19, // ~9.5pt in half-points
+    }),
+  ],
+});
+```
+
+## Defining a Custom Theme
+
+You can provide a complete custom theme object or register multiple named custom themes via `customThemes`:
+
+```typescript
+import { codePlugin } from "@m2d/code";
+
+const customSolarized = {
+  name: "solarized-light",
+  background: "#fdf6e3",
+  text: "#657b83",
+  keyword: "#859900",
+  string: "#2aa198",
+  comment: "#93a1a1",
+  number: "#d33682",
+  function: "#268bd2",
+  operator: "#859900",
+  punctuation: "#657b83",
+  boolean: "#b58900",
+  builtin: "#cb4b16",
+  variable: "#268bd2",
+  gutterText: "#93a1a1",
+  gutterBackground: "#eee8d5",
+  diffAddBackground: "#eaf2c2",
+  diffAddText: "#859900",
+  diffDeleteBackground: "#f9dede",
+  diffDeleteText: "#dc322f",
+  border: "#d33682",
+};
+
+const plugin = codePlugin({
+  theme: customSolarized,
+});
+```
+
+## Inline Code Highlighting
+
+By default, inline code spans (`` `const x = 1;` ``) are intercepted and styled with the active theme font and background tint:
+
+```typescript
+// Disable inline code interception if delegating to core styling:
+const plugin = codePlugin({
+  highlightInline: false,
+});
+```

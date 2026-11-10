@@ -2,8 +2,8 @@
   "title": "@m2d/tiptap",
   "description": "Tiptap DOCX Export Extension",
   "tagLine": "Tiptap extension to export rich-text editor content directly to Word (.docx) documents.",
-  "lastModified": "2026-11-09T13:04:47.271Z",
-  "version": "0.2.1",
+  "lastModified": "2026-11-10T12:13:31.419Z",
+  "version": "0.3.0",
   "root": true,
   "icon": "FileDown",
   "pages": [

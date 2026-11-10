@@ -1,0 +1,8 @@
+{
+  "title": "Version 0.1.0",
+  "description": "Shiki syntax highlighting and code block formatting plugin for md2docx.",
+  "pages": [
+    "overview",
+    "api"
+  ]
+}

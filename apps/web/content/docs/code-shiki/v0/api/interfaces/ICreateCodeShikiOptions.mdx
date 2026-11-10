@@ -1,0 +1,314 @@
+[**@m2d/code-shiki**](../index.mdx)
+
+***
+
+[@m2d/code-shiki](../index.mdx) / ICreateCodeShikiOptions
+
+# Interface: ICreateCodeShikiOptions
+
+Defined in: [code-shiki/src/code-shiki.ts:53](https://github.com/md2docx/md2docx/blob/main/packages/code-shiki/src/code-shiki.ts#L53)
+
+Configuration options for the Shiki code highlighting plugin.
+
+## Extends
+
+- [`ICodeShikiOptions`](ICodeShikiOptions.mdx)
+
+## Properties
+
+### blockType?
+
+> `optional` **blockType?**: `"table"` \| `"paragraph"`
+
+Defined in: [code/src/types.ts:126](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L126)
+
+Block presentation type when lineNumbers is false:
+- "table": renders a padded single-cell table with background shading and border.
+- "paragraph": renders as a native shaded Paragraph.
+
+#### Default
+
+```ts
+"table"
+```
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`blockType`](ICodeShikiOptions.mdx#blocktype)
+
+***
+
+### customThemes?
+
+> `optional` **customThemes?**: `Record`\<`string`, `Partial`\<[`ICodeTheme`](ICodeTheme.mdx)\>\>
+
+Defined in: [code/src/types.ts:88](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L88)
+
+Additional custom themes catalog mapped by name.
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`customThemes`](ICodeShikiOptions.mdx#customthemes)
+
+***
+
+### diffHighlight?
+
+> `optional` **diffHighlight?**: `boolean`
+
+Defined in: [code/src/types.ts:138](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L138)
+
+Whether to detect and style git diff additions and deletions.
+
+#### Default
+
+```ts
+true
+```
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`diffHighlight`](ICodeShikiOptions.mdx#diffhighlight)
+
+***
+
+### fontFamily?
+
+> `optional` **fontFamily?**: `string`
+
+Defined in: [code/src/types.ts:112](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L112)
+
+Monospace font family for code blocks and inline code runs.
+
+#### Default
+
+```ts
+"Consolas"
+```
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`fontFamily`](ICodeShikiOptions.mdx#fontfamily)
+
+***
+
+### fontSize?
+
+> `optional` **fontSize?**: `number`
+
+Defined in: [code/src/types.ts:118](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L118)
+
+Font size in half-points (e.g. 19 = 9.5pt, 20 = 10pt, 24 = 12pt).
+
+#### Default
+
+```ts
+19
+```
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`fontSize`](ICodeShikiOptions.mdx#fontsize)
+
+***
+
+### gutterStart?
+
+> `optional` **gutterStart?**: `number`
+
+Defined in: [code/src/types.ts:100](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L100)
+
+Starting line number for gutter.
+
+#### Default
+
+```ts
+1
+```
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`gutterStart`](ICodeShikiOptions.mdx#gutterstart)
+
+***
+
+### gutterWidthPercent?
+
+> `optional` **gutterWidthPercent?**: `number`
+
+Defined in: [code/src/types.ts:106](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L106)
+
+Width percentage allocated to gutter column when lineNumbers is true.
+Auto-calculated based on line count if not specified.
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`gutterWidthPercent`](ICodeShikiOptions.mdx#gutterwidthpercent)
+
+***
+
+### highlighter?
+
+> `optional` **highlighter?**: [`ShikiHighlighter`](../type-aliases/ShikiHighlighter.mdx)
+
+Defined in: [code-shiki/src/code-shiki.ts:39](https://github.com/md2docx/md2docx/blob/main/packages/code-shiki/src/code-shiki.ts#L39)
+
+Pre-configured Shiki highlighter instance.
+If omitted, a shared singleton highlighter is automatically managed.
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`highlighter`](ICodeShikiOptions.mdx#highlighter)
+
+***
+
+### highlightInline?
+
+> `optional` **highlightInline?**: `boolean`
+
+Defined in: [code/src/types.ts:132](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L132)
+
+Whether to intercept and highlight inlineCode MDAST nodes.
+
+#### Default
+
+```ts
+true
+```
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`highlightInline`](ICodeShikiOptions.mdx#highlightinline)
+
+***
+
+### langs?
+
+> `optional` **langs?**: `BundledLanguage`[]
+
+Defined in: [code-shiki/src/code-shiki.ts:50](https://github.com/md2docx/md2docx/blob/main/packages/code-shiki/src/code-shiki.ts#L50)
+
+Additional languages to preload when auto-initializing Shiki.
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`langs`](ICodeShikiOptions.mdx#langs)
+
+***
+
+### lineNumbers?
+
+> `optional` **lineNumbers?**: `boolean`
+
+Defined in: [code/src/types.ts:94](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L94)
+
+Whether to display line numbers in a gutter column.
+
+#### Default
+
+```ts
+false
+```
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`lineNumbers`](ICodeShikiOptions.mdx#linenumbers)
+
+***
+
+### shikiTheme?
+
+> `optional` **shikiTheme?**: `string`
+
+Defined in: [code-shiki/src/code-shiki.ts:45](https://github.com/md2docx/md2docx/blob/main/packages/code-shiki/src/code-shiki.ts#L45)
+
+Shiki theme identifier to use during tokenization.
+Defaults to matching the plugin `theme` option if string, or "github-light".
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`shikiTheme`](ICodeShikiOptions.mdx#shikitheme)
+
+***
+
+### tabSize?
+
+> `optional` **tabSize?**: `number`
+
+Defined in: [code/src/types.ts:144](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L144)
+
+Number of spaces to replace tab (\t) characters with.
+
+#### Default
+
+```ts
+2
+```
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`tabSize`](ICodeShikiOptions.mdx#tabsize)
+
+***
+
+### theme?
+
+> `optional` **theme?**: [`PresetThemeName`](../type-aliases/PresetThemeName.mdx) \| `string` & `object` \| [`ICodeTheme`](ICodeTheme.mdx)
+
+Defined in: [code/src/types.ts:83](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L83)
+
+Active theme name or custom theme object.
+
+#### Default
+
+```ts
+"github-light"
+```
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`theme`](ICodeShikiOptions.mdx#theme)
+
+***
+
+### themes?
+
+> `optional` **themes?**: `BundledTheme`[]
+
+Defined in: [code-shiki/src/code-shiki.ts:58](https://github.com/md2docx/md2docx/blob/main/packages/code-shiki/src/code-shiki.ts#L58)
+
+Shiki themes to preload during creation.
+
+#### Default
+
+```ts
+["github-light", "github-dark", "monokai"]
+```
+
+***
+
+### tokenizer?
+
+> `optional` **tokenizer?**: (`code`, `language?`) => [`Token`](Token.mdx)[][]
+
+Defined in: [code/src/types.ts:149](https://github.com/md2docx/md2docx/blob/main/packages/code/src/types.ts#L149)
+
+Optional custom tokenizer override.
+
+#### Parameters
+
+##### code
+
+`string`
+
+##### language?
+
+`string`
+
+#### Returns
+
+[`Token`](Token.mdx)[][]
+
+#### Inherited from
+
+[`ICodeShikiOptions`](ICodeShikiOptions.mdx).[`tokenizer`](ICodeShikiOptions.mdx#tokenizer)

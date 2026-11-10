@@ -2,8 +2,8 @@
   "title": "@m2d/md2docx",
   "description": "The simplest way to convert Markdown to DOCX. Batteries-included wrapper around all @m2d/remark-docx package and Unified.",
   "tagLine": "The simplest way to convert Markdown to DOCX. Batteries-included wrapper around all @m2d/remark-docx package and Unified. One import, one call — full Markdown → Word conversion with HTML, images, math, tables, and more.",
-  "lastModified": "2026-11-09T13:04:33.513Z",
-  "version": "0.1.4",
+  "lastModified": "2026-11-10T12:13:12.856Z",
+  "version": "0.2.0",
   "root": true,
   "icon": "LibraryBig",
   "pages": [

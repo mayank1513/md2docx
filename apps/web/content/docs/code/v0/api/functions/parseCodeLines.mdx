@@ -1,0 +1,35 @@
+[**@m2d/code**](../index.mdx)
+
+***
+
+[@m2d/code](../index.mdx) / parseCodeLines
+
+# Function: parseCodeLines()
+
+> **parseCodeLines**(`code`, `language?`, `diffHighlight?`, `customTokenizer?`): [`CodeLine`](../interfaces/CodeLine.mdx)[]
+
+Defined in: [tokenizer.ts:1479](https://github.com/md2docx/md2docx/blob/main/packages/code/src/tokenizer.ts#L1479)
+
+Parses source code into structured lines with tokens and git diff metadata.
+
+## Parameters
+
+### code
+
+`string`
+
+### language?
+
+`string`
+
+### diffHighlight?
+
+`boolean` = `true`
+
+### customTokenizer?
+
+(`code`, `lang?`) => [`Token`](../interfaces/Token.mdx)[][]
+
+## Returns
+
+[`CodeLine`](../interfaces/CodeLine.mdx)[]

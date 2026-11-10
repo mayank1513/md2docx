@@ -1,0 +1,49 @@
+[**@m2d/code-lowlight**](../index.mdx)
+
+***
+
+[@m2d/code-lowlight](../index.mdx) / createLowlightTokenizer
+
+# Function: createLowlightTokenizer()
+
+> **createLowlightTokenizer**(`lowlight?`, `highlightAuto?`): (`code`, `language?`) => [`Token`](../interfaces/Token.mdx)[][]
+
+Defined in: [packages/code-lowlight/src/code-lowlight.ts:137](https://github.com/md2docx/md2docx/blob/main/packages/code-lowlight/src/code-lowlight.ts#L137)
+
+Creates a lowlight-powered tokenizer function compatible with @m2d/code.
+
+## Parameters
+
+### lowlight?
+
+#### highlight
+
+(`language`, `value`, `options?`) => `Root`
+
+#### highlightAuto
+
+(`value`, `options?`) => `Root`
+
+#### listLanguages
+
+() => `string`[]
+
+#### register
+
+\{(`grammars`): `undefined`; (`name`, `grammar?`): `undefined`; \}
+
+#### registerAlias
+
+\{(`aliases`): `undefined`; (`language`, `alias?`): `undefined`; \}
+
+#### registered
+
+(`aliasOrName`) => `boolean`
+
+### highlightAuto?
+
+`boolean` = `true`
+
+## Returns
+
+(`code`, `language?`) => [`Token`](../interfaces/Token.mdx)[][]

@@ -1,0 +1,36 @@
+[**@m2d/code**](../index.mdx)
+
+***
+
+[@m2d/code](../index.mdx) / tokenizeCode
+
+# Function: tokenizeCode()
+
+> **tokenizeCode**(`source`, `language?`): [`Token`](../interfaces/Token.mdx)[]
+
+Defined in: [tokenizer.ts:986](https://github.com/md2docx/md2docx/blob/main/packages/code/src/tokenizer.ts#L986)
+
+Tokenizes entire code block string into a flat token list.
+Adheres to fundamental compiler lexical precedence:
+1. Whitespace & universal newlines (\r\n, \n, standalone \r)
+2. Comments (line & block)
+3. Strings & prefixed literals (e.g. f"...", r"...", `...`)
+4. Context-sensitive RegExp literals (JavaScript)
+5. Numbers (hex, binary, float, bigint, complex, CSS hex colors)
+6. Identifiers + O(1) Set classifications (keywords, builtins, booleans, functions)
+7. Operators (longest match first) & Punctuation
+8. Fallback character preservation
+
+## Parameters
+
+### source
+
+`string`
+
+### language?
+
+`string`
+
+## Returns
+
+[`Token`](../interfaces/Token.mdx)[]

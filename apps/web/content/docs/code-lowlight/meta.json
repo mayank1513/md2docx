@@ -1,0 +1,12 @@
+{
+  "title": "@m2d/code-lowlight",
+  "description": "Lowlight Code Highlighting Plugin",
+  "tagLine": "Lowlight (highlight.js) syntax highlighting and code block formatting plugin for md2docx.",
+  "lastModified": "2026-11-10T12:12:53.062Z",
+  "version": "0.1.0",
+  "root": true,
+  "icon": "Highlighter",
+  "pages": [
+    "v0"
+  ]
+}

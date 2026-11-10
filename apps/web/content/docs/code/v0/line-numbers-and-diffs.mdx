@@ -1,0 +1,72 @@
+---
+title: Gutter Line Numbering & Git Diffs
+description: Configure two-column line gutters and visual git diff highlights in Word documents.
+---
+
+# Gutter Line Numbering & Git Diffs
+
+## Gutter & Line Numbers
+
+When `lineNumbers: true` is configured, code blocks render as a 2-column Word table with subtle borders and independent cell shading:
+
+- **Column 1 (Gutter)**: Right-aligned line numbers in muted typography (`gutterText`) over `gutterBackground`.
+- **Column 2 (Code)**: Tokenized code lines preserving whitespace and tab indentation.
+
+```typescript
+import { codePlugin } from "@m2d/code";
+
+const plugin = codePlugin({
+  lineNumbers: true,
+  gutterStart: 1, // Optional starting number
+});
+```
+
+### Per-Block Line Number Overrides
+
+You can also enable line numbering on individual markdown code blocks using meta strings:
+
+````markdown
+```typescript showLineNumbers
+import \{ toDocx \} from "@m2d/core";
+
+const buffer = await toDocx(ast);
+```
+````
+
+Supported meta tags include `showLineNumbers`, `lineNumbers`, and `lines`.
+
+---
+
+## Git Diff Highlighting
+
+The plugin automatically formats additions and deletions with dedicated green and red background tints:
+
+### 1. Dedicated `diff` Language
+
+````markdown
+```diff
+--- a/calculator.ts
++++ b/calculator.ts
+@@ -1,3 +1,3 @@
+-function add(a, b) \{ return a - b; \}
++function add(a: number, b: number): number \{ return a + b; \}
+```
+````
+
+- Lines starting with `+` are shaded with `diffAddBackground` and text styled with `diffAddText`.
+- Lines starting with `-` are shaded with `diffDeleteBackground` and text styled with `diffDeleteText`.
+- Diff headers (`+++`, `---`, `@@`) use muted styling.
+
+### 2. Diff Syntax Inside Code Blocks
+
+When `diffHighlight: true` (default), lines inside any standard language block starting with `+ ` or `- ` are automatically highlighted with diff tints:
+
+````markdown
+```typescript
+function compute() \{
++  const optimized = true;
+-  const legacy = false;
+  return optimized;
+\}
+```
+````

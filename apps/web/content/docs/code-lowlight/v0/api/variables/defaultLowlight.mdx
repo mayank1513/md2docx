@@ -1,0 +1,231 @@
+[**@m2d/code-lowlight**](../index.mdx)
+
+***
+
+[@m2d/code-lowlight](../index.mdx) / defaultLowlight
+
+# Variable: defaultLowlight
+
+> `const` **defaultLowlight**: `object`
+
+Defined in: [packages/code-lowlight/src/code-lowlight.ts:12](https://github.com/md2docx/md2docx/blob/main/packages/code-lowlight/src/code-lowlight.ts#L12)
+
+## Type Declaration
+
+### highlight
+
+> **highlight**: (`language`, `value`, `options?`) => `Root`
+
+#### Parameters
+
+##### language
+
+`string`
+
+##### value
+
+`string`
+
+##### options?
+
+`Readonly`\<`Options`\> \| `null`
+
+#### Returns
+
+`Root`
+
+### highlightAuto
+
+> **highlightAuto**: (`value`, `options?`) => `Root`
+
+#### Parameters
+
+##### value
+
+`string`
+
+##### options?
+
+`Readonly`\<`AutoOptions`\> \| `null`
+
+#### Returns
+
+`Root`
+
+### listLanguages
+
+> **listLanguages**: () => `string`[]
+
+#### Returns
+
+`string`[]
+
+### register
+
+> **register**: \{(`grammars`): `undefined`; (`name`, `grammar?`): `undefined`; \}
+
+#### Call Signature
+
+> (`grammars`): `undefined`
+
+Register languages.
+
+##### Parameters
+
+###### grammars
+
+`Readonly`\<`Record`\<`string`, `LanguageFn`\>\>
+
+##### Returns
+
+`undefined`
+
+##### Example
+
+```js
+  import {createLowlight} from 'lowlight'
+  import xml from 'highlight.js/lib/languages/xml'
+
+  const lowlight = createLowlight()
+
+  lowlight.register({xml})
+
+  // Note: `html` is an alias for `xml`.
+  console.log(lowlight.highlight('html', '<em>Emphasis</em>'))
+  ```
+
+  Yields:
+
+  ```js
+  {type: 'root', children: [Array], data: {language: 'html', relevance: 2}}
+  ```
+
+#### Call Signature
+
+> (`name`, `grammar?`): `undefined`
+
+Register languages.
+
+##### Parameters
+
+###### name
+
+`string`
+
+###### grammar?
+
+`LanguageFn`
+
+##### Returns
+
+`undefined`
+
+##### Example
+
+```js
+  import {createLowlight} from 'lowlight'
+  import xml from 'highlight.js/lib/languages/xml'
+
+  const lowlight = createLowlight()
+
+  lowlight.register({xml})
+
+  // Note: `html` is an alias for `xml`.
+  console.log(lowlight.highlight('html', '<em>Emphasis</em>'))
+  ```
+
+  Yields:
+
+  ```js
+  {type: 'root', children: [Array], data: {language: 'html', relevance: 2}}
+  ```
+
+### registerAlias
+
+> **registerAlias**: \{(`aliases`): `undefined`; (`language`, `alias?`): `undefined`; \}
+
+#### Call Signature
+
+> (`aliases`): `undefined`
+
+Register aliases.
+
+##### Parameters
+
+###### aliases
+
+`Readonly`\<`Record`\<`string`, `ReadonlyArray`\<`string`\> \| `string`\>\>
+
+##### Returns
+
+`undefined`
+
+##### Example
+
+```js
+  import {createLowlight} from 'lowlight'
+  import markdown from 'highlight.js/lib/languages/markdown'
+
+  const lowlight = createLowlight()
+
+  lowlight.register({markdown})
+
+  // lowlight.highlight('mdown', '<em>Emphasis</em>')
+  // ^ would throw: Error: Unknown language: `mdown` is not registered
+
+  lowlight.registerAlias({markdown: ['mdown', 'mkdn', 'mdwn', 'ron']})
+  lowlight.highlight('mdown', '<em>Emphasis</em>')
+  // ^ Works!
+  ```
+
+#### Call Signature
+
+> (`language`, `alias?`): `undefined`
+
+Register aliases.
+
+##### Parameters
+
+###### language
+
+`string`
+
+###### alias?
+
+`string` \| readonly `string`[]
+
+##### Returns
+
+`undefined`
+
+##### Example
+
+```js
+  import {createLowlight} from 'lowlight'
+  import markdown from 'highlight.js/lib/languages/markdown'
+
+  const lowlight = createLowlight()
+
+  lowlight.register({markdown})
+
+  // lowlight.highlight('mdown', '<em>Emphasis</em>')
+  // ^ would throw: Error: Unknown language: `mdown` is not registered
+
+  lowlight.registerAlias({markdown: ['mdown', 'mkdn', 'mdwn', 'ron']})
+  lowlight.highlight('mdown', '<em>Emphasis</em>')
+  // ^ Works!
+  ```
+
+### registered
+
+> **registered**: (`aliasOrName`) => `boolean`
+
+#### Parameters
+
+##### aliasOrName
+
+`string`
+
+#### Returns
+
+`boolean`

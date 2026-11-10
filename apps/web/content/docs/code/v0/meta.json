@@ -1,0 +1,10 @@
+{
+  "title": "Code Highlighting & Gutter Plugin",
+  "description": "Token-level syntax highlighting and code block formatting plugin for md2docx with gutter line numbering, themes, and git diff support.",
+  "pages": [
+    "overview",
+    "themes-and-styling",
+    "line-numbers-and-diffs",
+    "api"
+  ]
+}

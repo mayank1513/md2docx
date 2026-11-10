@@ -1,0 +1,12 @@
+{
+  "title": "@m2d/code-shiki",
+  "description": "Shiki Code Highlighting Plugin",
+  "tagLine": "Shiki syntax highlighting and code block formatting plugin for md2docx.",
+  "lastModified": "2026-11-10T12:12:55.037Z",
+  "version": "0.1.0",
+  "root": true,
+  "icon": "Sparkles",
+  "pages": [
+    "v0"
+  ]
+}

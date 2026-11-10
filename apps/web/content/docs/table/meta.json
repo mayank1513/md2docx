@@ -2,7 +2,7 @@
   "title": "@m2d/table",
   "description": "MDAST Table Formatting Plugin",
   "tagLine": "Plugin to convert Markdown tables (MDAST) to DOCX with support for rich formatting and seamless integration into mdast2docx.",
-  "lastModified": "2026-11-09T13:04:45.764Z",
+  "lastModified": "2026-11-10T12:13:29.412Z",
   "version": "0.2.1",
   "root": true,
   "icon": "Table",

@@ -27,8 +27,10 @@
 
 - 💻 **CLI Tool**: Convert Markdown files to styled `.docx` documents directly from your terminal or CI/CD pipelines.
 - 🚀 **Programmatic Node.js API**: Exported `md2docx` function pre-wired with `@m2d/remark-docx-node` for server rendering.
+- 🎨 **Syntax-Highlighted Code Blocks**: Built-in syntax highlighting (`@m2d/code`) for popular languages (TypeScript, JavaScript, Python, JSON, HTML, CSS, SQL, Shell, Markdown, Diff) rendered as native styled Word paragraphs.
 - 🖼️ **Native Image Resolution**: Automatically resolves local file paths, HTTPS URLs, and Base64 data URIs via `sharp`.
 - 📊 **Headless Mermaid Diagrams**: Compiles flowcharts, sequence diagrams, and architecture diagrams into Word DrawingML pictures.
+- ⚙️ **Configurable Default Plugins**: Easily customize options or disable any built-in plugin (`code`, `mermaid`, `image`, `html`, `table`, `list`, `math`, `emoji`, `frontmatter`) via `pluginProps`.
 
 > 💡 **Looking for client-side / browser compilation?** Use [`@m2d/md2docx`](https://npmjs.com/package/@m2d/md2docx) or [`@m2d/remark-docx`](https://npmjs.com/package/@m2d/remark-docx).
 

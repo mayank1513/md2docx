@@ -8,10 +8,10 @@
 
 > `const` **remarkDocx**: `Plugin`\<\[`outputType?`: `OutputType`, `docxProps?`: `IDocxProps`, `sectionProps?`: [`RemarkSectionProps`](../interfaces/RemarkSectionProps.mdx), `pluginProps?`: [`Mdast2DocxNodePluginProps`](../interfaces/Mdast2DocxNodePluginProps.mdx)\], `Root`\>
 
-Defined in: [packages/remark-docx-node/src/index.ts:70](https://github.com/md2docx/md2docx/blob/main/packages/remark-docx-node/src/index.ts#L70)
+Defined in: [packages/remark-docx-node/src/index.ts:81](https://github.com/md2docx/md2docx/blob/main/packages/remark-docx-node/src/index.ts#L81)
 
 A unified compiler plugin to convert MDAST to DOCX on Node.js using `mdast2docx/plugins/node`.
-Automatically configures `nodeHtmlPlugin`, `nodeImagePlugin`, and `nodeMermaidPlugin` for server-side rasterization and parsing.
+Automatically configures `codePlugin`, `nodeHtmlPlugin`, `nodeImagePlugin`, and `nodeMermaidPlugin` for server-side rasterization and parsing.
 
 ## Param
 
@@ -36,7 +36,7 @@ Section-level props including plugin overrides. Optional.
 
 **pluginProps**
 
-Configurations for node plugins (nodeHtml, nodeMermaid, list, table, emoji, nodeImage).
+Configurations for node plugins, or pass `false` to disable any default plugin.
 
 ## Returns
 
