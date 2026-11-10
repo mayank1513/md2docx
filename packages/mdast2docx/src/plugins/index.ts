@@ -1,3 +1,4 @@
+export * from "@m2d/code";
 export * from "@m2d/emoji";
 export * from "@m2d/frontmatter";
 export * from "@m2d/html";

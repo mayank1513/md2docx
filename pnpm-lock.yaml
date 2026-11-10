@@ -925,6 +925,9 @@ importers:
       '@m2d/cache':
         specifier: workspace:*
         version: link:../cache
+      '@m2d/code':
+        specifier: workspace:*
+        version: link:../code
       '@m2d/core':
         specifier: workspace:*
         version: link:../core
